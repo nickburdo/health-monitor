@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Health Monitor UI Draft</title>
+  <style>
+    :root {
+      --bg: #fff7ed;
+      --surface: #ffffff;
+      --surface-soft: #fffaf3;
+      --primary: #f97316;
+      --primary-dark: #ea580c;
+      --primary-soft: #ffedd5;
+      --text: #2f2a26;
+      --muted: #81736a;
+      --border: #f3dfcf;
+
+      --glucose: #fb923c;
+      --pressure: #93c5fd;
+      --weight: #86efac;
+      --symptoms: #c4b5fd;
+      --danger-soft: #fee2e2;
+      --danger: #dc2626;
+
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --shadow: 0 20px 60px rgba(124, 45, 18, 0.10);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 237, 213, 0.95), transparent 34%),
+        radial-gradient(circle at top right, rgba(219, 234, 254, 0.75), transparent 28%),
+        var(--bg);
+    }
+
+    .app {
+      min-height: 100vh;
+      padding-bottom: 78px;
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 24px;
+      padding: 18px 32px;
+      backdrop-filter: blur(18px);
+      background: rgba(255, 247, 237, 0.78);
+      border-bottom: 1px solid rgba(243, 223, 207, 0.7);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      font-size: 20px;
+    }
+
+    .logo {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      color: white;
+      background: linear-gradient(135deg, var(--primary), #fb923c);
+      box-shadow: 0 10px 30px rgba(249, 115, 22, 0.32);
+      font-size: 17px;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.78);
+      box-shadow: 0 8px 30px rgba(124, 45, 18, 0.06);
+    }
+
+    .nav a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 650;
+      padding: 10px 14px;
+      border-radius: 999px;
+    }
+
+    .nav a.active {
+      color: var(--primary-dark);
+      background: var(--primary-soft);
+    }
+
+    .header-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-primary {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 18px;
+      background: var(--primary);
+      color: white;
+      font-weight: 800;
+      box-shadow: 0 14px 30px rgba(249, 115, 22, 0.28);
+      cursor: pointer;
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 32px));
+      margin: 28px auto;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      background: rgba(255, 255, 255, 0.86);
+      box-shadow: var(--shadow);
+    }
+
+    .welcome {
+      padding: 30px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    h1 {
+      margin: 18px 0 10px;
+      max-width: 720px;
+      font-size: clamp(34px, 5vw, 56px);
+      line-height: 0.96;
+      letter-spacing: -0.06em;
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.65;
+      max-width: 650px;
+    }
+
+    .periods {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 26px;
+    }
+
+    .chip {
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 9px 13px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .chip.active {
+      border-color: transparent;
+      background: var(--primary);
+      color: white;
+    }
+
+    .quick-card {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 260px;
+      background:
+        linear-gradient(150deg, rgba(255, 237, 213, .92), rgba(255,255,255,.9)),
+        var(--surface);
+    }
+
+    .quick-card h2 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: -0.04em;
+    }
+
+    .quick-form {
+      display: grid;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .field {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 13px 14px;
+      background: white;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 22px;
+    }
+
+    .metric {
+      padding: 20px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: 0 12px 38px rgba(124, 45, 18, 0.06);
+    }
+
+    .metric-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .dot.glucose { background: var(--glucose); }
+    .dot.pressure { background: var(--pressure); }
+    .dot.weight { background: var(--weight); }
+    .dot.symptoms { background: var(--symptoms); }
+
+    .value {
+      margin-top: 18px;
+      font-size: 36px;
+      font-weight: 850;
+      letter-spacing: -0.05em;
+    }
+
+    .unit {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .chart {
+      padding: 24px;
+    }
+
+    .section-title {
+      margin: 0 0 18px;
+      font-size: 22px;
+      letter-spacing: -0.04em;
+    }
+
+    .fake-chart {
+      height: 260px;
+      display: flex;
+      align-items: end;
+      gap: 14px;
+      padding: 18px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(255,250,243,0.8), rgba(255,237,213,0.45));
+      border: 1px solid var(--border);
+    }
+
+    .bar {
+      flex: 1;
+      border-radius: 999px 999px 10px 10px;
+      background: linear-gradient(180deg, var(--primary), #fdba74);
+      opacity: 0.92;
+      min-height: 40px;
+    }
+
+    .list {
+      padding: 24px;
+    }
+
+    .entry {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .entry:last-child {
+      border-bottom: 0;
+    }
+
+    .entry strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .entry span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .badge {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .badge.ignore {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .mobile-footer {
+      display: none;
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      z-index: 20;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: rgba(255,255,255,.9);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 16px 40px rgba(124, 45, 18, 0.16);
+    }
+
+    .mobile-footer a {
+      text-align: center;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 20px;
+      padding: 10px 0;
+      border-radius: 16px;
+    }
+
+    .mobile-footer a.active {
+      color: var(--primary-dark);
+      background: var(--primary-soft);
+    }
+
+    @media (max-width: 900px) {
+      .header {
+        grid-template-columns: 1fr auto;
+      }
+
+      .nav {
+        display: none;
+      }
+
+      .hero,
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .mobile-footer {
+        display: grid;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .header {
+        padding: 14px 16px;
+      }
+
+      .brand span {
+        display: none;
+      }
+
+      .container {
+        width: min(100% - 22px, 1180px);
+        margin-top: 16px;
+      }
+
+      .welcome,
+      .quick-card,
+      .chart,
+      .list {
+        padding: 18px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .btn-primary {
+        padding: 11px 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="brand">
+        <div class="logo">HM</div>
+        <span>Health Monitor</span>
+      </div>
+
+      <nav class="nav" aria-label="Main navigation">
+        <a class="active" href="#">🏠 Dashboard</a>
+        <a href="#">🩸 Glucose</a>
+        <a href="#">❤️ Pressure</a>
+        <a href="#">⚖️ Weight</a>
+        <a href="#">📝 Symptoms</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="btn-primary">+ Add Entry</button>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="hero">
+        <div class="panel welcome">
+          <div class="eyebrow">Pastel health dashboard · orange accent</div>
+          <h1>Спокойный мониторинг здоровья без лишнего шума</h1>
+          <p class="lead">
+            Быстрый ввод глюкозы, давления, веса и симптомов. Ошибочные значения остаются в истории,
+            но не участвуют в статистике благодаря флагу ignore.
+          </p>
+
+          <div class="periods">
+            <button class="chip active">1 месяц</button>
+            <button class="chip">3 месяца</button>
+            <button class="chip">6 месяцев</button>
+            <button class="chip">С начала года</button>
+          </div>
+        </div>
+
+        <aside class="panel quick-card">
+          <div>
+            <h2>Quick Entry</h2>
+            <div class="quick-form">
+              <div class="field">Glucose · fasting · 6.1 mmol/L</div>
+              <div class="field">Blood pressure · 128 / 82</div>
+              <div class="field">Weight · 91.4 kg</div>
+            </div>
+          </div>
+          <button class="btn-primary">Save entry</button>
+        </aside>
+      </section>
+
+      <section class="grid">
+        <article class="metric">
+          <div class="metric-top">Glucose <span class="dot glucose"></span></div>
+          <div class="value">6.1 <span class="unit">mmol/L</span></div>
+        </article>
+        <article class="metric">
+          <div class="metric-top">Pressure <span class="dot pressure"></span></div>
+          <div class="value">128/82</div>
+        </article>
+        <article class="metric">
+          <div class="metric-top">Weight <span class="dot weight"></span></div>
+          <div class="value">91.4 <span class="unit">kg</span></div>
+        </article>
+        <article class="metric">
+          <div class="metric-top">Symptoms <span class="dot symptoms"></span></div>
+          <div class="value">3 <span class="unit">this week</span></div>
+        </article>
+      </section>
+
+      <section class="dashboard">
+        <article class="panel chart">
+          <h2 class="section-title">Glucose trend</h2>
+          <div class="fake-chart">
+            <div class="bar" style="height: 42%"></div>
+            <div class="bar" style="height: 64%"></div>
+            <div class="bar" style="height: 51%"></div>
+            <div class="bar" style="height: 70%"></div>
+            <div class="bar" style="height: 56%"></div>
+            <div class="bar" style="height: 76%"></div>
+            <div class="bar" style="height: 61%"></div>
+            <div class="bar" style="height: 68%"></div>
+          </div>
+        </article>
+
+        <article class="panel list">
+          <h2 class="section-title">Latest entries</h2>
+          <div class="entry">
+            <div><strong>Glucose after meal</strong><span>Today · 8.4 mmol/L</span></div>
+            <div class="badge">OK</div>
+          </div>
+          <div class="entry">
+            <div><strong>Blood pressure</strong><span>Yesterday · 128 / 82</span></div>
+            <div class="badge">OK</div>
+          </div>
+          <div class="entry">
+            <div><strong>Weight</strong><span>June 3 · 91.4 kg</span></div>
+            <div class="badge">OK</div>
+          </div>
+          <div class="entry">
+            <div><strong>Glucose fasting</strong><span>June 1 · suspicious input</span></div>
+            <div class="badge ignore">Ignored</div>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <footer class="mobile-footer" aria-label="Mobile navigation">
+      <a class="active" href="#">🏠</a>
+      <a href="#">🩸</a>
+      <a href="#">❤️</a>
+      <a href="#">⚖️</a>
+      <a href="#">📝</a>
+    </footer>
+  </div>
+</body>
+</html>

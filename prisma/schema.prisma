@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model GlucoseMeasurement {
+  id             String   @id @default(cuid())
+  measuredAt     DateTime
+
+  fastingValue   Float?
+  fastingIgnore  Boolean  @default(false)
+
+  afterMealValue Float?
+  afterMealIgnore Boolean @default(false)
+
+  note           String?
+
+  createdAt      DateTime @default(now())
+
+  @@index([measuredAt])
+}
+
+model BloodPressureMeasurement {
+  id             String   @id @default(cuid())
+  measuredAt     DateTime
+
+  systolic       Int?
+  systolicIgnore  Boolean  @default(false)
+
+  diastolic      Int?
+  diastolicIgnore Boolean  @default(false)
+
+  pulse          Int?
+  pulseIgnore    Boolean  @default(false)
+
+  note           String?
+
+  createdAt      DateTime @default(now())
+
+  @@index([measuredAt])
+}
+
+model WeightMeasurement {
+  id         String   @id @default(cuid())
+  measuredAt DateTime
+
+  value      Float?
+  ignore     Boolean  @default(false)
+
+  note       String?
+
+  createdAt  DateTime @default(now())
+
+  @@index([measuredAt])
+}
+
+model SymptomEntry {
+  id         String   @id @default(cuid())
+  happenedAt DateTime
+
+  type       String
+  intensity  Int?
+  ignore     Boolean  @default(false)
+
+  note       String?
+
+  createdAt  DateTime @default(now())
+
+  @@index([happenedAt])
+  @@index([type])
+}

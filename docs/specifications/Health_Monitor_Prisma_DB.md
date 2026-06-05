@@ -33,7 +33,6 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
 }
 
 model GlucoseMeasurement {
@@ -41,10 +40,8 @@ model GlucoseMeasurement {
   measuredAt        DateTime
 
   fastingValue      Float?
-  fastingIgnore     Boolean  @default(false)
-
   afterMealValue    Float?
-  afterMealIgnore   Boolean  @default(false)
+  ignore            Boolean  @default(false)
 
   note              String?
 
@@ -58,13 +55,9 @@ model BloodPressureMeasurement {
   measuredAt        DateTime
 
   systolic          Int?
-  systolicIgnore    Boolean  @default(false)
-
   diastolic         Int?
-  diastolicIgnore   Boolean  @default(false)
-
   pulse             Int?
-  pulseIgnore       Boolean  @default(false)
+  ignore            Boolean  @default(false)
 
   note              String?
 
@@ -118,20 +111,17 @@ model SymptomEntry {
 
 ### Глюкоза
 
-У глюкозы ignore сделан отдельно для каждого значения:
+У глюкозы ignore сделан на уровне всей записи:
 
-- `fastingIgnore`;
-- `afterMealIgnore`.
+- `ignore`.
 
 Это нужно, потому что одно значение может быть корректным, а второе — ошибочным.
 
 ### Давление
 
-У давления ignore тоже сделан отдельно:
+У давления ignore тоже сделан на уровне всей записи:
 
-- `systolicIgnore`;
-- `diastolicIgnore`;
-- `pulseIgnore`.
+- `ignore`.
 
 ### Вес
 
@@ -157,7 +147,7 @@ where: {
     gte: dateFrom,
     lte: dateTo
   },
-  fastingIgnore: false
+  ignore: false
 }
 ```
 
@@ -219,13 +209,13 @@ server/api/
 ### GlucoseMeasurement
 
 ```ts
-type GlucoseIgnoreField = 'fasting' | 'afterMeal'
+type GlucoseIgnoreField = 'entry'
 ```
 
 ### BloodPressureMeasurement
 
 ```ts
-type BloodPressureIgnoreField = 'systolic' | 'diastolic' | 'pulse'
+type BloodPressureIgnoreField = 'entry'
 ```
 
 ### WeightMeasurement
@@ -249,7 +239,7 @@ type SymptomIgnoreField = 'entry'
 ```
 
 ```env
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="file:./prisma/dev.db"
 ```
 
 ## Команды Prisma
@@ -258,7 +248,7 @@ DATABASE_URL="file:./dev.db"
 npx prisma init
 npx prisma migrate dev --name init
 npx prisma generate
-npx prisma studio
+npx prisma studio --port 5555
 ```
 
 ## Что можно добавить позже

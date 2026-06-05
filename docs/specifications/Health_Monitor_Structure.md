@@ -403,9 +403,8 @@ export interface GlucoseMeasurement {
   id: string
   measuredAt: string
   fastingValue?: number | null
-  fastingIgnore: boolean
   afterMealValue?: number | null
-  afterMealIgnore: boolean
+  ignore: boolean
   note?: string | null
   createdAt: string
 }
@@ -414,11 +413,9 @@ export interface BloodPressureMeasurement {
   id: string
   measuredAt: string
   systolic?: number | null
-  systolicIgnore: boolean
   diastolic?: number | null
-  diastolicIgnore: boolean
   pulse?: number | null
-  pulseIgnore: boolean
+  ignore: boolean
   note?: string | null
   createdAt: string
 }

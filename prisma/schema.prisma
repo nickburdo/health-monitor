@@ -7,38 +7,32 @@ datasource db {
 }
 
 model GlucoseMeasurement {
-  id             String   @id @default(cuid())
-  measuredAt     DateTime
+  id         String   @id @default(cuid())
+  measuredAt DateTime
 
   fastingValue   Float?
-  fastingIgnore  Boolean  @default(false)
-
   afterMealValue Float?
-  afterMealIgnore Boolean @default(false)
+  ignore         Boolean  @default(false)
 
-  note           String?
+  note String?
 
-  createdAt      DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([measuredAt])
 }
 
 model BloodPressureMeasurement {
-  id             String   @id @default(cuid())
-  measuredAt     DateTime
+  id         String   @id @default(cuid())
+  measuredAt DateTime
 
-  systolic       Int?
-  systolicIgnore  Boolean  @default(false)
+  systolic   Int?
+  diastolic  Int?
+  pulse      Int?
+  ignore     Boolean  @default(false)
 
-  diastolic      Int?
-  diastolicIgnore Boolean  @default(false)
+  note String?
 
-  pulse          Int?
-  pulseIgnore    Boolean  @default(false)
-
-  note           String?
-
-  createdAt      DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([measuredAt])
 }

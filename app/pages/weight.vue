@@ -7,11 +7,6 @@ type RecordItem = {
   note: string | null;
 };
 
-const formatDate = new Intl.DateTimeFormat('ru-RU', {
-  day: 'numeric',
-  month: 'short',
-});
-
 const { data } = await useAsyncData('weight-page', () =>
   $fetch<RecordItem[]>('/api/weight'),
 );
@@ -40,14 +35,7 @@ const page = computed(() => {
         value: String(ignored.length),
       },
     ],
-    items: items.map(item => ({
-      title: 'Вес',
-      subtitle: `${formatDate.format(new Date(item.measuredAt))} · ${
-        item.value?.toFixed(1) ?? '—'
-      } кг`,
-      badge: item.ignore ? 'Ignored' : 'OK',
-      ignored: item.ignore,
-    })),
+    items,
   };
 });
 
@@ -67,8 +55,8 @@ useHead({ title: 'Weight · Health Monitor' });
               Вес
             </h1>
             <p class="health-page-lead">
-              Последние измерения веса и простой список истории с отметкой
-              ignored для плохих записей.
+              Таблица веса с подтверждением игнорирования через note и прямым
+              восстановлением записи.
             </p>
           </div>
         </div>
@@ -85,8 +73,7 @@ useHead({ title: 'Weight · Health Monitor' });
         />
       </section>
 
-      <HealthEntryList
-        title="История"
+      <WeightTable
         :items="page.items"
       />
     </section>

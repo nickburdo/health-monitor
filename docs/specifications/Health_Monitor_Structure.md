@@ -339,8 +339,8 @@ health-monitor/
 
 - `Игнорировать` открывает confirm dialog;
 - в confirm dialog обязательно вводится `note`;
-- после подтверждения отправляется `PATCH /api/blood-pressure/:id/ignore` с `ignore: true` и `note`;
-- `Восстановить` отправляет `PATCH /api/blood-pressure/:id/ignore` с `ignore: false` без подтверждения;
+- после подтверждения отправляется `PATCH /api/weight/:id/ignore` с `ignore: true` и `note`;
+- `Восстановить` отправляет `PATCH /api/weight/:id/ignore` с `ignore: false` без подтверждения;
 - строки с `ignore=true` визуально приглушаются.
 
 
@@ -351,6 +351,24 @@ health-monitor/
 - таблицу веса;
 - график веса;
 - возможность пометить запись как ignored.
+
+#### Таблица веса
+
+Таблица веса на странице `/weight` должна показывать:
+
+- дату и время;
+- значение;
+- `notes`;
+- кнопку `Игнорировать` или `Восстановить`.
+
+##### Поведение
+
+- `Игнорировать` открывает confirm dialog;
+- в confirm dialog обязательно вводится `note`;
+- после подтверждения отправляется `PATCH /api/blood-pressure/:id/ignore` с `ignore: true` и `note`;
+- `Восстановить` отправляет `PATCH /api/blood-pressure/:id/ignore` с `ignore: false` без подтверждения;
+- строки с `ignore=true` визуально приглушаются.
+
 
 ### Symptoms — `/symptoms`
 

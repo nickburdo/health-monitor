@@ -24,6 +24,8 @@ Health Monitor is a personal health tracking app built with Nuxt 4, Nuxt UI, Tai
 - Added a working quick-entry modal with forms for glucose, blood pressure, weight, and symptoms.
 - Added a symptom table with inline note editing.
 - Added a glucose table with ignore/restore actions and mandatory note on ignore.
+- Added a blood pressure table with ignore/restore actions and mandatory note on ignore.
+- Added a weight table with ignore/restore actions and mandatory note on ignore.
 
 ## Current State
 
@@ -33,6 +35,7 @@ Health Monitor is a personal health tracking app built with Nuxt 4, Nuxt UI, Tai
 - The quick-entry flow now creates real records through the POST APIs and refreshes the UI.
 - Symptoms are editable only through `note`; they no longer have ignore/restore.
 - The glucose table now uses a confirm dialog for ignore and a direct restore action.
+- The blood pressure and weight tables use the same ignore/restore interaction model.
 
 ## Important Decisions
 

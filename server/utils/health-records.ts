@@ -389,7 +389,7 @@ export async function createWeightMeasurement(
 ) {
   const measuredAt = parseDate(input.measuredAt, 'measuredAt');
   const value = parseRequiredNumber(input.value, 'value');
-  const note = parseRequiredNullableString(input.note, 'note');
+  const note = parseOptionalString(input.note, 'note');
 
   return db.weightMeasurement.create({
     data: {

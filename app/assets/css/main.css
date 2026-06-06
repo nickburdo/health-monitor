@@ -621,6 +621,34 @@ select {
   opacity: 0.72;
 }
 
+.health-modal-summary {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: rgba(255, 250, 243, 0.8);
+}
+
+.health-modal-summary p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.health-modal-summary strong {
+  color: var(--text);
+}
+
+.health-form-error {
+  margin: 0;
+  color: var(--danger);
+  font-size: 13px;
+  font-weight: 650;
+}
+
 .health-page-grid {
   display: grid;
   gap: 18px;
@@ -688,6 +716,14 @@ select {
   vertical-align: top;
 }
 
+.health-table-row[data-ignored='true'] td {
+  color: rgba(129, 115, 106, 0.82);
+}
+
+.health-table-row[data-ignored='true'] .health-table-note {
+  color: rgba(129, 115, 106, 0.74);
+}
+
 .health-table th {
   color: var(--muted);
   font-size: 12px;
@@ -709,6 +745,10 @@ select {
   color: var(--muted);
   line-height: 1.5;
   white-space: pre-wrap;
+}
+
+.health-table-row[data-ignored='true'] {
+  background: rgba(255, 250, 243, 0.54);
 }
 
 .health-table-textarea {

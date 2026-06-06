@@ -115,6 +115,19 @@ describe('health records api helpers', () => {
     });
   });
 
+  it('restores a glucose record without requiring a note', async () => {
+    const db = makeDb({
+      glucoseMeasurement: makeDelegate({ id: 'glucose-1' }),
+    });
+
+    await setGlucoseMeasurementIgnore(db, 'glucose-1', { ignore: false });
+
+    expect(db.glucoseMeasurement.update).toHaveBeenCalledWith({
+      where: { id: 'glucose-1' },
+      data: { ignore: false },
+    });
+  });
+
   it('filters blood pressure measurements by date range', async () => {
     const db = makeDb({ bloodPressureMeasurement: makeDelegate() });
 

@@ -8,21 +8,12 @@ type RecordItem = {
   note: string | null;
 };
 
-const formatDate = new Intl.DateTimeFormat('ru-RU', {
-  day: 'numeric',
-  month: 'short',
-});
-
 const { data } = await useAsyncData('glucose-page', () =>
   $fetch<RecordItem[]>('/api/glucose'),
 );
 
 function glucoseToMmol(value: number | null) {
   return value === null ? null : value / 18;
-}
-
-function formatWhen(value: string) {
-  return formatDate.format(new Date(value));
 }
 
 const page = computed(() => {
@@ -32,14 +23,7 @@ const page = computed(() => {
 
   return {
     latest,
-    items: items.map(item => ({
-      title: item.afterMealValue ? 'После еды' : 'Натощак',
-      subtitle: `${formatWhen(item.measuredAt)} · ${
-        glucoseToMmol(item.afterMealValue ?? item.fastingValue ?? 0)?.toFixed(1)
-      } ммоль/л`,
-      badge: item.ignore ? 'Ignored' : 'OK',
-      ignored: item.ignore,
-    })),
+    items,
     stats: [
       {
         label: 'Последняя',
@@ -79,8 +63,8 @@ useHead({ title: 'Glucose · Health Monitor' });
               Глюкоза
             </h1>
             <p class="health-page-lead">
-              Последние измерения глюкозы, быстрый фильтр по истории и отметки
-              ошибочных значений.
+              Таблица измерений глюкозы с подтверждением игнорирования через
+              note.
             </p>
           </div>
         </div>
@@ -97,8 +81,7 @@ useHead({ title: 'Glucose · Health Monitor' });
         />
       </section>
 
-      <HealthEntryList
-        title="История"
+      <GlucoseTable
         :items="page.items"
       />
     </section>

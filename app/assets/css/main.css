@@ -723,6 +723,40 @@ select {
   font-weight: 850;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.health-table-head-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+
+.health-table-head-date-word {
+  display: inline;
+  white-space: nowrap;
+}
+
+.health-table-head-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+
+.health-table-head-value-full {
+  display: inline;
+}
+
+.health-table-head-value-short {
+  display: none;
 }
 
 .health-table td {
@@ -748,12 +782,19 @@ select {
   color: var(--muted);
   font-size: 13px;
   font-weight: 650;
+  white-space: nowrap;
 }
 
 .health-table-date {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+}
+
+.health-table-date-text {
+  display: inline-grid;
+  gap: 0;
+  white-space: nowrap;
 }
 
 .health-table-type-icon {
@@ -776,8 +817,73 @@ select {
 }
 
 .health-table-note-cell {
-  width: auto;
+  width: 100%;
   min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .health-table-head-date {
+    display: grid;
+    gap: 0;
+    white-space: normal;
+    word-break: normal;
+    overflow-wrap: normal;
+  }
+
+  .health-table-head-date-word {
+    display: block;
+    white-space: nowrap;
+  }
+
+  .health-table-head-value {
+    display: grid;
+    gap: 0;
+    white-space: normal;
+    word-break: normal;
+    overflow-wrap: normal;
+  }
+
+  .health-table-head-value-full {
+    display: none;
+  }
+
+  .health-table-head-value-short {
+    display: block;
+  }
+
+  .health-table-value {
+    display: grid;
+    gap: 2px;
+    align-items: start;
+    white-space: normal;
+  }
+
+  .health-table-value-main,
+  .health-table-value-sub {
+    white-space: nowrap;
+  }
+
+  .health-table-date {
+    align-items: start;
+  }
+
+  .health-table-date-text {
+    display: grid;
+    gap: 0;
+    justify-items: start;
+  }
+
+  .health-table-cell-date-glucose .health-table-date {
+    display: grid;
+    justify-items: center;
+    align-items: center;
+    gap: 2px;
+    text-align: center;
+  }
+
+  .health-table-cell-date-glucose .health-table-date-text {
+    justify-items: center;
+  }
 }
 
 .health-table-row[data-ignored='true'] {

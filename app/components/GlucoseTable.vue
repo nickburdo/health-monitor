@@ -221,8 +221,18 @@ onBeforeUnmount(() => {
       <table class="health-table">
         <thead>
           <tr>
-            <th>Дата и время</th>
-            <th>Значение</th>
+            <th>
+              <span class="health-table-head-date">
+                <span class="health-table-head-date-word">Дата</span>
+                <span class="health-table-head-date-word">Время</span>
+              </span>
+            </th>
+            <th>
+              <span class="health-table-head-value">
+                <span class="health-table-head-value-full">ЗНАЧЕНИЕ</span>
+                <span class="health-table-head-value-short">ЗНАЧ.</span>
+              </span>
+            </th>
             <th>ЗАМЕТКИ</th>
             <th
               class="health-table-action-head"
@@ -239,7 +249,7 @@ onBeforeUnmount(() => {
             class="health-table-row"
             :data-ignored="item.ignore"
           >
-            <td class="health-table-cell-date">
+            <td class="health-table-cell-date health-table-cell-date-glucose">
               <span class="health-table-date">
                 <span
                   class="health-table-type-icon"
@@ -249,7 +259,7 @@ onBeforeUnmount(() => {
                 >
                   {{ typeEmoji(item) }}
                 </span>
-                <span>
+                <span class="health-table-date-text">
                   <span class="health-table-date-main">{{ formatWhenParts(item.measuredAt).date }}</span>
                   <span class="health-table-date-sub">{{ formatWhenParts(item.measuredAt).time }}</span>
                 </span>

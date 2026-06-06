@@ -48,17 +48,27 @@
 html {
   color: var(--text);
   background: var(--bg);
+  width: 100%;
+  min-width: 0;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  width: 100%;
+  min-width: 0;
   font-family: var(--font-sans);
   color: var(--text);
+  overflow-x: clip;
   background:
     radial-gradient(circle at top left, rgba(255, 237, 213, 0.95), transparent 34%),
     radial-gradient(circle at top right, rgba(219, 234, 254, 0.75), transparent 28%),
     var(--bg);
+}
+
+#__nuxt {
+  width: 100%;
+  min-width: 0;
 }
 
 a {
@@ -73,28 +83,41 @@ select {
 }
 
 .health-app {
+  width: 100%;
+  min-width: 0;
   min-height: 100vh;
-  padding-bottom: 82px;
+  padding-bottom: 104px;
 }
 
 .health-header {
   position: sticky;
   top: 0;
   z-index: 20;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  backdrop-filter: blur(18px);
+  background: rgba(255, 247, 237, 0.78);
+  border-bottom: 1px solid rgba(243, 223, 207, 0.7);
+  border-radius: 0;
+  box-shadow: 0 12px 34px rgba(124, 45, 18, 0.06);
+}
+
+.health-header-inner {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 24px;
-  padding: 18px 32px;
-  backdrop-filter: blur(18px);
-  background: rgba(255, 247, 237, 0.78);
-  border-bottom: 1px solid rgba(243, 223, 207, 0.7);
+  width: min(1440px, calc(100vw - 48px));
+  margin: 0 auto;
+  padding: 18px 0;
 }
 
 .health-brand {
   display: inline-flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
   text-decoration: none;
   font-size: 20px;
   font-weight: 850;
@@ -123,6 +146,10 @@ select {
   justify-content: center;
   gap: 6px;
   padding: 6px;
+  min-width: 0;
+  width: max-content;
+  max-width: none;
+  justify-self: center;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.78);
@@ -145,6 +172,12 @@ select {
     transform 180ms ease;
 }
 
+.health-nav a span[aria-hidden='true'] {
+  display: inline-flex;
+  width: 1em;
+  justify-content: center;
+}
+
 .health-nav a[data-active='true'] {
   color: var(--primary-dark);
   background: var(--primary-soft);
@@ -156,6 +189,7 @@ select {
 
 .health-actions {
   display: flex;
+  min-width: 0;
   justify-content: flex-end;
 }
 
@@ -185,7 +219,8 @@ select {
 }
 
 .health-shell {
-  width: min(1180px, calc(100% - 32px));
+  width: min(1180px, calc(100vw - 32px));
+  min-width: 0;
   margin: 28px auto 0;
 }
 
@@ -651,6 +686,7 @@ select {
 
 .health-table-panel {
   padding: 30px;
+  min-width: 0;
 }
 
 .health-table-header {
@@ -658,9 +694,12 @@ select {
   align-items: start;
   justify-content: space-between;
   gap: 16px;
+  min-width: 0;
 }
 
 .health-table-wrap {
+  min-width: 0;
+  max-width: 100%;
   overflow-x: auto;
   margin-top: 16px;
 }
@@ -740,6 +779,12 @@ select {
 .health-page-grid {
   display: grid;
   gap: 18px;
+  min-width: 0;
+}
+
+.health-page-card,
+.health-page-stats {
+  min-width: 0;
 }
 
 .health-page-header {
@@ -768,6 +813,7 @@ select {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
+  min-width: 0;
 }
 
 .health-list-items {
@@ -783,18 +829,29 @@ select {
 .health-footer {
   display: none;
   position: fixed;
-  left: 12px;
-  right: 12px;
+  left: 0;
+  right: 0;
   bottom: 12px;
   z-index: 30;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 4px;
-  padding: 8px;
+  width: 100%;
+  padding: 0;
   border: 1px solid var(--border);
-  border-radius: 24px;
+  border-radius: 0;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(18px);
   box-shadow: 0 16px 40px rgba(124, 45, 18, 0.16);
+}
+
+.health-footer-inner {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
+  width: min(100%, 1440px);
+  margin: 0 auto;
+  padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
 }
 
 .health-footer a {
@@ -802,8 +859,8 @@ select {
   place-items: center;
   text-decoration: none;
   color: var(--muted);
-  font-size: 20px;
-  padding: 10px 0;
+  font-size: 18px;
+  padding: 6px 0;
   border-radius: 16px;
 }
 
@@ -812,19 +869,53 @@ select {
   background: var(--primary-soft);
 }
 
+@media (max-width: 1280px) {
+  .health-nav a span[aria-hidden='true'] {
+    display: none;
+  }
+}
+
 @media (max-width: 1024px) {
-  .health-header {
-    grid-template-columns: auto minmax(0, 1fr);
+  .health-header-inner {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 12px;
+    width: min(1440px, calc(100vw - 32px));
+    padding: 14px 0;
   }
 
-  .health-actions {
+  .health-brand {
+    display: grid;
+    grid-template-columns: 44px;
+    justify-items: center;
+    gap: 0;
+    line-height: 1;
+  }
+
+  .health-brand span:last-child {
     display: none;
   }
 
+  .health-brand .health-mark {
+    grid-column: 1;
+  }
+
   .health-nav {
+    overflow: hidden;
+    width: max-content;
+  }
+
+  .health-actions {
     justify-self: end;
-    overflow-x: auto;
-    max-width: 100%;
+  }
+
+  .health-nav a {
+    padding: 9px 11px;
+    font-size: 13px;
+  }
+
+  .health-button {
+    padding: 11px 14px;
+    font-size: 13px;
   }
 
   .health-hero,
@@ -844,20 +935,33 @@ select {
   .health-field-grid-3 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .health-table {
+    min-width: 0;
+    table-layout: fixed;
+  }
+
+  .health-table th,
+  .health-table td {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
 }
 
 @media (max-width: 640px) {
-  .health-header {
-    padding: 14px 16px;
+  .health-header-inner {
+    width: calc(100vw - 16px);
+    padding: 12px 0 14px;
     gap: 12px;
   }
 
-  .health-brand span:last-child {
-    display: none;
+  .health-brand {
+    justify-items: center;
+    min-width: 0;
   }
 
   .health-shell {
-    width: min(100% - 22px, 1180px);
+    width: min(1180px, calc(100vw - 22px));
     margin-top: 16px;
   }
 
@@ -870,6 +974,21 @@ select {
     padding: 18px;
   }
 
+  .health-table th,
+  .health-table td {
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+
+  .health-table-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .health-table-actions .health-button {
+    width: 100%;
+  }
+
   .health-meta-grid,
   .health-page-stats {
     grid-template-columns: 1fr;
@@ -877,10 +996,20 @@ select {
 
   .health-footer {
     display: grid;
+    bottom: 0;
+  }
+
+  .health-footer-inner {
+    padding: 4px 8px calc(4px + env(safe-area-inset-bottom, 0px));
   }
 
   .health-nav {
     display: none;
+  }
+
+  .health-actions {
+    display: flex;
+    flex: 0 0 auto;
   }
 
   .health-button {

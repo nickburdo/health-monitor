@@ -22,37 +22,39 @@ function isActive(path: string) {
 <template>
   <div class="health-app">
     <header class="health-header">
-      <NuxtLink
-        to="/"
-        class="health-brand"
-      >
-        <span class="health-mark">HM</span>
-        <span>Health Monitor</span>
-      </NuxtLink>
-
-      <nav
-        class="health-nav"
-        aria-label="Main navigation"
-      >
+      <div class="health-header-inner">
         <NuxtLink
-          v-for="item in navigation"
-          :key="item.path"
-          :to="item.path"
-          :data-active="isActive(item.path)"
+          to="/"
+          class="health-brand"
         >
-          <span aria-hidden="true">{{ item.icon }}</span>
-          <span>{{ item.label }}</span>
+          <span class="health-mark">HM</span>
+          <span>Health Monitor</span>
         </NuxtLink>
-      </nav>
 
-      <div class="health-actions">
-        <button
-          type="button"
-          class="health-button"
-          @click="quickEntryOpen = true"
+        <nav
+          class="health-nav"
+          aria-label="Main navigation"
         >
-          + Add Entry
-        </button>
+          <NuxtLink
+            v-for="item in navigation"
+            :key="item.path"
+            :to="item.path"
+            :data-active="isActive(item.path)"
+          >
+            <span aria-hidden="true">{{ item.icon }}</span>
+            <span>{{ item.label }}</span>
+          </NuxtLink>
+        </nav>
+
+        <div class="health-actions">
+          <button
+            type="button"
+            class="health-button"
+            @click="quickEntryOpen = true"
+          >
+            + Add Entry
+          </button>
+        </div>
       </div>
     </header>
 
@@ -69,14 +71,16 @@ function isActive(path: string) {
       class="health-footer"
       aria-label="Mobile navigation"
     >
-      <NuxtLink
-        v-for="item in navigation"
-        :key="item.path"
-        :to="item.path"
-        :data-active="isActive(item.path)"
-      >
-        <span aria-hidden="true">{{ item.icon }}</span>
-      </NuxtLink>
+      <div class="health-footer-inner">
+        <NuxtLink
+          v-for="item in navigation"
+          :key="item.path"
+          :to="item.path"
+          :data-active="isActive(item.path)"
+        >
+          <span aria-hidden="true">{{ item.icon }}</span>
+        </NuxtLink>
+      </div>
     </footer>
   </div>
 </template>

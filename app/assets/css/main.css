@@ -714,7 +714,7 @@ select {
   padding: 14px 12px;
   text-align: left;
   border-bottom: 1px solid var(--border);
-  vertical-align: top;
+  vertical-align: middle;
 }
 
 .health-table th {
@@ -814,6 +814,7 @@ select {
   color: var(--muted);
   line-height: 1.5;
   white-space: pre-wrap;
+  vertical-align: middle;
 }
 
 .health-table-note-cell {

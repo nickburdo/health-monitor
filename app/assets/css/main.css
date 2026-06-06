@@ -826,6 +826,10 @@ select {
   min-width: 0;
 }
 
+.health-table-note-cell-mobile-edit {
+  width: 100%;
+}
+
 @media (max-width: 768px) {
   .health-table-head-date-measurement {
     white-space: nowrap;
@@ -917,6 +921,11 @@ select {
   outline: 2px solid rgba(249, 115, 22, 0.22);
   outline-offset: 1px;
   border-color: rgba(249, 115, 22, 0.4);
+}
+
+.health-table-textarea-mobile-edit {
+  width: 100%;
+  min-width: 0;
 }
 
 .health-table-actions {
@@ -1188,10 +1197,6 @@ select {
   .health-table-actions {
     flex-direction: column;
     align-items: stretch;
-  }
-
-  .health-table-actions .health-button {
-    width: 100%;
   }
 
   .health-meta-grid,

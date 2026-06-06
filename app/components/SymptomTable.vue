@@ -15,6 +15,8 @@ const toast = useToast();
 const editingId = ref<string | null>(null);
 const savingId = ref<string | null>(null);
 const draftNote = ref('');
+const isMobileEditLayout = ref(false);
+let mobileEditMediaQuery: MediaQueryList | null = null;
 
 const formatDateOnly = new Intl.DateTimeFormat('ru-RU', {
   day: 'numeric',
@@ -43,6 +45,10 @@ function startEditing(item: SymptomRow) {
 function cancelEditing() {
   editingId.value = null;
   draftNote.value = '';
+}
+
+function syncMobileEditLayout() {
+  isMobileEditLayout.value = mobileEditMediaQuery?.matches ?? false;
 }
 
 function normalizeNote(value: string) {
@@ -95,6 +101,29 @@ async function saveNote(item: SymptomRow) {
     savingId.value = null;
   }
 }
+
+onMounted(() => {
+  mobileEditMediaQuery = window.matchMedia('(max-width: 767px)');
+  syncMobileEditLayout();
+
+  if (typeof mobileEditMediaQuery.addEventListener === 'function') {
+    mobileEditMediaQuery.addEventListener('change', syncMobileEditLayout);
+  } else {
+    mobileEditMediaQuery.addListener(syncMobileEditLayout);
+  }
+});
+
+onBeforeUnmount(() => {
+  if (!mobileEditMediaQuery) {
+    return;
+  }
+
+  if (typeof mobileEditMediaQuery.removeEventListener === 'function') {
+    mobileEditMediaQuery.removeEventListener('change', syncMobileEditLayout);
+  } else {
+    mobileEditMediaQuery.removeListener(syncMobileEditLayout);
+  }
+});
 </script>
 
 <template>
@@ -133,49 +162,20 @@ async function saveNote(item: SymptomRow) {
             v-for="item in props.items"
             :key="item.id"
           >
-            <td class="health-table-cell-date">
-              <span class="health-table-date">
-                <span class="health-table-date-text">
-                  <span class="health-table-date-main">{{ formatWhenParts(item.happenedAt).date }}</span>
-                  <span class="health-table-date-sub">{{ formatWhenParts(item.happenedAt).time }}</span>
-                </span>
-              </span>
-            </td>
-            <td>{{ item.type }}</td>
-            <td class="health-table-cell-value">
-              <span class="health-table-value">
-                <span class="health-table-value-main">{{ item.intensity ?? '—' }}</span>
-              </span>
-            </td>
-            <td class="health-table-note health-table-note-cell">
-              <template v-if="editingId === item.id">
+            <template v-if="editingId === item.id && isMobileEditLayout">
+              <td
+                class="health-table-note health-table-note-cell health-table-note-cell-mobile-edit"
+                colspan="4"
+              >
                 <textarea
                   v-model="draftNote"
-                  class="health-table-textarea"
+                  class="health-table-textarea health-table-textarea-mobile-edit"
                   rows="3"
                   placeholder="Заметка"
                 />
-              </template>
-              <template v-else>
-                <span class="health-table-note">
-                  {{ item.note ?? '—' }}
-                </span>
-              </template>
-            </td>
-            <td class="health-table-action-cell">
-              <div class="health-table-actions">
-                <button
-                  v-if="editingId !== item.id"
-                  type="button"
-                  class="health-button health-button-secondary health-button-small health-table-icon-button"
-                  title="Редактировать"
-                  aria-label="Редактировать"
-                  @click="startEditing(item)"
-                >
-                  <UIcon name="i-lucide-pencil" />
-                  <span class="sr-only">Редактировать</span>
-                </button>
-                <template v-else>
+              </td>
+              <td class="health-table-action-cell">
+                <div class="health-table-actions">
                   <button
                     type="button"
                     class="health-button health-button-secondary health-button-small health-table-icon-button"
@@ -199,9 +199,80 @@ async function saveNote(item: SymptomRow) {
                       {{ savingId === item.id ? 'Сохранение' : 'Сохранить' }}
                     </span>
                   </button>
+                </div>
+              </td>
+            </template>
+            <template v-else>
+              <td class="health-table-cell-date">
+                <span class="health-table-date">
+                  <span class="health-table-date-text">
+                    <span class="health-table-date-main">{{ formatWhenParts(item.happenedAt).date }}</span>
+                    <span class="health-table-date-sub">{{ formatWhenParts(item.happenedAt).time }}</span>
+                  </span>
+                </span>
+              </td>
+              <td>{{ item.type }}</td>
+              <td class="health-table-cell-value">
+                <span class="health-table-value">
+                  <span class="health-table-value-main">{{ item.intensity ?? '—' }}</span>
+                </span>
+              </td>
+              <td class="health-table-note health-table-note-cell">
+                <template v-if="editingId === item.id">
+                  <textarea
+                    v-model="draftNote"
+                    class="health-table-textarea"
+                    rows="3"
+                    placeholder="Заметка"
+                  />
                 </template>
-              </div>
-            </td>
+                <template v-else>
+                  <span class="health-table-note">
+                    {{ item.note ?? '—' }}
+                  </span>
+                </template>
+              </td>
+              <td class="health-table-action-cell">
+                <div class="health-table-actions">
+                  <button
+                    v-if="editingId !== item.id"
+                    type="button"
+                    class="health-button health-button-secondary health-button-small health-table-icon-button"
+                    title="Редактировать"
+                    aria-label="Редактировать"
+                    @click="startEditing(item)"
+                  >
+                    <UIcon name="i-lucide-pencil" />
+                    <span class="sr-only">Редактировать</span>
+                  </button>
+                  <template v-else>
+                    <button
+                      type="button"
+                      class="health-button health-button-secondary health-button-small health-table-icon-button"
+                      title="Отмена"
+                      aria-label="Отмена"
+                      @click="cancelEditing"
+                    >
+                      <UIcon name="i-lucide-x" />
+                      <span class="sr-only">Отмена</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="health-button health-button-small health-table-icon-button"
+                      :disabled="savingId === item.id"
+                      title="Сохранить"
+                      aria-label="Сохранить"
+                      @click="saveNote(item)"
+                    >
+                      <UIcon name="i-lucide-check" />
+                      <span class="sr-only">
+                        {{ savingId === item.id ? 'Сохранение' : 'Сохранить' }}
+                      </span>
+                    </button>
+                  </template>
+                </div>
+              </td>
+            </template>
           </tr>
         </tbody>
       </table>

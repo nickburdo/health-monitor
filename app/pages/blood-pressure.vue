@@ -9,11 +9,6 @@ type RecordItem = {
   note: string | null;
 };
 
-const formatDate = new Intl.DateTimeFormat('ru-RU', {
-  day: 'numeric',
-  month: 'short',
-});
-
 const { data } = await useAsyncData('blood-pressure-page', () =>
   $fetch<RecordItem[]>('/api/blood-pressure'),
 );
@@ -42,14 +37,7 @@ const page = computed(() => {
         value: String(ignored.length),
       },
     ],
-    items: items.map(item => ({
-      title: 'Артериальное давление',
-      subtitle: `${formatDate.format(new Date(item.measuredAt))} · ${
-        item.systolic ?? '—'
-      } / ${item.diastolic ?? '—'}${item.pulse ? ` · ${item.pulse} bpm` : ''}`,
-      badge: item.ignore ? 'Ignored' : 'OK',
-      ignored: item.ignore,
-    })),
+    items,
   };
 });
 
@@ -69,8 +57,8 @@ useHead({ title: 'Blood Pressure · Health Monitor' });
               Давление
             </h1>
             <p class="health-page-lead">
-              Сводка по давлению, пульсу и отметкам для записи с ошибочными
-              значениями.
+              Таблица давления с подтверждением игнорирования через note и
+              прямым восстановлением записи.
             </p>
           </div>
         </div>
@@ -87,8 +75,7 @@ useHead({ title: 'Blood Pressure · Health Monitor' });
         />
       </section>
 
-      <HealthEntryList
-        title="История"
+      <BloodPressureTable
         :items="page.items"
       />
     </section>

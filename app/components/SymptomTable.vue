@@ -114,9 +114,14 @@ async function saveNote(item: SymptomRow) {
       <table class="health-table">
         <thead>
           <tr>
-            <th>Дата</th>
+            <th>
+              <span class="health-table-head-date health-table-head-date-measurement">
+                <span class="health-table-head-date-full">Дата Время</span>
+                <span class="health-table-head-date-short">ДАТА</span>
+              </span>
+            </th>
             <th>Симптом</th>
-            <th>Интенсивность</th>
+            <th>Балл</th>
             <th>ЗАМЕТКИ</th>
             <th
               class="health-table-action-head"
@@ -133,7 +138,7 @@ async function saveNote(item: SymptomRow) {
           >
             <td class="health-table-cell-date">
               <span class="health-table-date">
-                <span>
+                <span class="health-table-date-text">
                   <span class="health-table-date-main">{{ formatWhenParts(item.happenedAt).date }}</span>
                   <span class="health-table-date-sub">{{ formatWhenParts(item.happenedAt).time }}</span>
                 </span>

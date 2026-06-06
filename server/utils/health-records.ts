@@ -54,8 +54,13 @@ type SymptomCreateInput = {
   note?: unknown;
 };
 
+type SymptomUpdateInput = {
+  note?: unknown;
+};
+
 type IgnoreInput = {
   ignore: unknown;
+  note?: unknown;
 };
 
 function badRequest(message: string): never {
@@ -147,6 +152,41 @@ function parseOptionalString(
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
+function parseRequiredNullableString(
+  value: unknown,
+  fieldName: string,
+): string | null {
+  if (value === undefined) {
+    badRequest(`${fieldName} is required`);
+  }
+
+  if (value === null) {
+    return null;
+  }
+
+  if (typeof value !== 'string') {
+    badRequest(`${fieldName} must be a string`);
+  }
+
+  const trimmed = value.trim();
+
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function buildIgnoreData(input: IgnoreInput): { ignore: boolean; note?: string | null } {
+  const ignore = parseBoolean(input.ignore, 'ignore');
+  const note = parseOptionalString(input.note, 'note');
+
+  if (ignore && note === undefined) {
+    badRequest('note is required when ignore is true');
+  }
+
+  return {
+    ignore,
+    ...(note !== undefined ? { note } : {}),
+  };
+}
+
 function parseBoolean(value: unknown, fieldName: string): boolean {
   if (typeof value === 'boolean') {
     return value;
@@ -206,12 +246,6 @@ function ensureRecordExists(record: unknown, entityName: string): void {
   if (!record) {
     notFound(`${entityName} not found`);
   }
-}
-
-function buildIgnoreData(input: IgnoreInput): { ignore: boolean } {
-  return {
-    ignore: parseBoolean(input.ignore, 'ignore'),
-  };
 }
 
 function ensureSymptomType(value: unknown): SymptomOption {
@@ -355,7 +389,7 @@ export async function createWeightMeasurement(
 ) {
   const measuredAt = parseDate(input.measuredAt, 'measuredAt');
   const value = parseRequiredNumber(input.value, 'value');
-  const note = parseOptionalString(input.note, 'note');
+  const note = parseRequiredNullableString(input.note, 'note');
 
   return db.weightMeasurement.create({
     data: {
@@ -406,16 +440,15 @@ export async function createSymptomEntry(
       happenedAt,
       type,
       intensity,
-      ignore: false,
       note,
     },
   });
 }
 
-export async function setSymptomEntryIgnore(
+export async function updateSymptomEntryNote(
   db: HealthDb,
   id: string | undefined,
-  input: IgnoreInput,
+  input: SymptomUpdateInput,
 ) {
   const recordId = ensureRecordId(id);
   const existing = await db.symptomEntry.findUnique({
@@ -424,8 +457,12 @@ export async function setSymptomEntryIgnore(
 
   ensureRecordExists(existing, 'SymptomEntry');
 
+  const note = parseRequiredNullableString(input.note, 'note');
+
   return db.symptomEntry.update({
     where: { id: recordId },
-    data: buildIgnoreData(input),
+    data: {
+      note,
+    },
   });
 }

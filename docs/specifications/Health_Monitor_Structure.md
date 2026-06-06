@@ -242,7 +242,7 @@ health-monitor/
       symptoms/
         index.get.ts
         index.post.ts
-        [id]/ignore.patch.ts
+        [id].patch.ts
 
     utils/
       prisma.ts
@@ -434,7 +434,6 @@ export interface SymptomEntry {
   happenedAt: string
   type: string
   intensity?: number | null
-  ignore: boolean
   note?: string | null
   createdAt: string
 }
@@ -481,7 +480,8 @@ export function getDateRange(period: Period) {
 - сделать миграцию;
 - сделать API для добавления данных;
 - сделать API для получения данных;
-- сделать API для ignore / restore;
+- сделать API для ignore / restore для глюкозы, давления и веса;
+- сделать API для редактирования note у симптомов;
 - сделать быстрый ввод через модалку;
 - сделать таблицы;
 - сделать графики;

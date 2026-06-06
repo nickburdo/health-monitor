@@ -4,14 +4,8 @@ type RecordItem = {
   happenedAt: string;
   type: string;
   intensity: number | null;
-  ignore: boolean;
   note: string | null;
 };
-
-const formatDate = new Intl.DateTimeFormat('ru-RU', {
-  day: 'numeric',
-  month: 'short',
-});
 
 const { data } = await useAsyncData('symptoms-page', () =>
   $fetch<RecordItem[]>('/api/symptoms'),
@@ -19,7 +13,7 @@ const { data } = await useAsyncData('symptoms-page', () =>
 
 const page = computed(() => {
   const items = data.value ?? [];
-  const ignored = items.filter(item => item.ignore);
+  const noteCount = items.filter(item => item.note?.trim()).length;
 
   return {
     stats: [
@@ -29,9 +23,9 @@ const page = computed(() => {
         value: String(items.length),
       },
       {
-        label: 'Ignored',
+        label: 'С заметкой',
         tone: 'pressure' as const,
-        value: String(ignored.length),
+        value: String(noteCount),
       },
       {
         label: 'Последняя',
@@ -41,12 +35,11 @@ const page = computed(() => {
       },
     ],
     items: items.map(item => ({
-      title: item.type,
-      subtitle: `${formatDate.format(new Date(item.happenedAt))} · ${
-        item.intensity ?? '—'
-      } балл`,
-      badge: item.ignore ? 'Ignored' : 'OK',
-      ignored: item.ignore,
+      id: item.id,
+      happenedAt: item.happenedAt,
+      type: item.type,
+      intensity: item.intensity,
+      note: item.note,
     })),
   };
 });
@@ -67,8 +60,8 @@ useHead({ title: 'Symptoms · Health Monitor' });
               Симптомы
             </h1>
             <p class="health-page-lead">
-              Журнал симптомов с привычным списком, интенсивностью и отметкой
-              ignored для некорректных строк.
+              Журнал симптомов с таблицей, интенсивностью и редактируемой
+              заметкой.
             </p>
           </div>
         </div>
@@ -85,8 +78,7 @@ useHead({ title: 'Symptoms · Health Monitor' });
         />
       </section>
 
-      <HealthEntryList
-        title="История"
+      <SymptomTable
         :items="page.items"
       />
     </section>

@@ -10,7 +10,8 @@
 - симптомы и самочувствие.
 
 В MVP данные не редактируются и не удаляются.  
-Ошибочные значения помечаются флагом `ignore` и не участвуют в статистике.
+Ошибочные значения для глюкозы, давления и веса помечаются флагом `ignore` и не участвуют в статистике.
+При установке `ignore=true` для этих сущностей вместе с флагом сохраняется `note`.
 
 ## Технический стек БД
 
@@ -131,9 +132,8 @@ model SymptomEntry {
 
 ### Симптомы
 
-У симптома вся запись помечается как ошибочная:
-
-- `ignore`.
+Для симптомов `ignore` больше не используется.  
+В MVP редактируется только `note`.
 
 ## Правила статистики
 
@@ -177,7 +177,7 @@ server/api/
   symptoms/
     index.get.ts
     index.post.ts
-    [id]/ignore.patch.ts
+    [id].patch.ts
 ```
 
 ## Пример API: создание записи глюкозы
@@ -193,18 +193,7 @@ server/api/
 }
 ```
 
-## Пример API: ignore значения
-
-```ts
-// PATCH /api/glucose/:id/ignore
-
-{
-  "field": "afterMeal",
-  "ignore": true
-}
-```
-
-## Возможные значения field для ignore
+## Пример API: ignore значения для основных измерений
 
 ### GlucoseMeasurement
 
@@ -224,11 +213,7 @@ type BloodPressureIgnoreField = 'entry'
 type WeightIgnoreField = 'value'
 ```
 
-### SymptomEntry
-
-```ts
-type SymptomIgnoreField = 'entry'
-```
+При вызове `PATCH /api/*/:id/ignore` для глюкозы, давления и веса вместе с `ignore` передается `note`.
 
 ## Переменные окружения
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const route = useRoute();
-const toast = useToast();
+const quickEntryOpen = ref(false);
 
 const navigation = [
   { label: 'Dashboard', path: '/', icon: '⌂' },
@@ -9,13 +9,6 @@ const navigation = [
   { label: 'Weight', path: '/weight', icon: '⚖' },
   { label: 'Symptoms', path: '/symptoms', icon: '⋯' },
 ];
-
-function notifyQuickEntry() {
-  toast.add({
-    title: 'Quick entry',
-    description: 'Form stage comes next. Shell ready.',
-  });
-}
 
 function isActive(path: string) {
   if (path === '/') {
@@ -56,7 +49,7 @@ function isActive(path: string) {
         <button
           type="button"
           class="health-button"
-          @click="notifyQuickEntry"
+          @click="quickEntryOpen = true"
         >
           + Add Entry
         </button>
@@ -66,6 +59,11 @@ function isActive(path: string) {
     <main class="health-shell">
       <slot />
     </main>
+
+    <HealthQuickEntryModal
+      :open="quickEntryOpen"
+      @close="quickEntryOpen = false"
+    />
 
     <footer
       class="health-footer"

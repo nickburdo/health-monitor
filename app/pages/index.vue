@@ -31,7 +31,6 @@ type SymptomRecord = {
   happenedAt: string;
   type: string;
   intensity: number | null;
-  ignore: boolean;
   note: string | null;
 };
 

@@ -222,9 +222,12 @@ onBeforeUnmount(() => {
         <thead>
           <tr>
             <th>
-              <span class="health-table-head-date">
-                <span class="health-table-head-date-word">Дата</span>
-                <span class="health-table-head-date-word">Время</span>
+              <span class="health-table-head-date health-table-head-date-measurement">
+                <span class="health-table-head-date-full">
+                  <span class="health-table-head-date-word">Дата</span>
+                  <span class="health-table-head-date-word">Время</span>
+                </span>
+                <span class="health-table-head-date-short">ДАТА</span>
               </span>
             </th>
             <th>

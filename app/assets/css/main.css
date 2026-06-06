@@ -736,11 +736,6 @@ select {
   hyphens: none;
 }
 
-.health-table-head-date-word {
-  display: inline;
-  white-space: nowrap;
-}
-
 .health-table-head-value {
   display: inline-flex;
   align-items: center;
@@ -757,6 +752,21 @@ select {
 
 .health-table-head-value-short {
   display: none;
+}
+
+.health-table-head-date-full {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+}
+
+.health-table-head-date-short {
+  display: none;
+}
+
+.health-table-head-date-word {
+  display: inline;
+  white-space: nowrap;
 }
 
 .health-table td {
@@ -823,17 +833,16 @@ select {
 }
 
 @media (max-width: 768px) {
-  .health-table-head-date {
-    display: grid;
-    gap: 0;
-    white-space: normal;
-    word-break: normal;
-    overflow-wrap: normal;
+  .health-table-head-date-measurement {
+    white-space: nowrap;
   }
 
-  .health-table-head-date-word {
-    display: block;
-    white-space: nowrap;
+  .health-table-head-date-full {
+    display: none;
+  }
+
+  .health-table-head-date-short {
+    display: inline;
   }
 
   .health-table-head-value {

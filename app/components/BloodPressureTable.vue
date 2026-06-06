@@ -176,10 +176,6 @@ onBeforeUnmount(() => {
         <h2 class="health-section-title">
           История давления
         </h2>
-        <p class="health-section-subtitle">
-          Игнорирование требует подтверждения с обязательным note. Восстановление
-          выполняется сразу.
-        </p>
       </div>
     </div>
 

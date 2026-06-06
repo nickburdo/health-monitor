@@ -104,9 +104,6 @@ async function saveNote(item: SymptomRow) {
         <h2 class="health-section-title">
           История симптомов
         </h2>
-        <p class="health-section-subtitle">
-          В этой таблице редактируется только заметка.
-        </p>
       </div>
     </div>
 

@@ -757,16 +757,10 @@ select {
 .health-table-head-date-full {
   display: inline-flex;
   align-items: center;
-  gap: 0.35em;
 }
 
 .health-table-head-date-short {
   display: none;
-}
-
-.health-table-head-date-word {
-  display: inline;
-  white-space: nowrap;
 }
 
 .health-table td {

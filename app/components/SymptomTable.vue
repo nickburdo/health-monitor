@@ -16,15 +16,23 @@ const editingId = ref<string | null>(null);
 const savingId = ref<string | null>(null);
 const draftNote = ref('');
 
-const formatDate = new Intl.DateTimeFormat('ru-RU', {
+const formatDateOnly = new Intl.DateTimeFormat('ru-RU', {
   day: 'numeric',
   month: 'short',
+});
+
+const formatTimeOnly = new Intl.DateTimeFormat('ru-RU', {
   hour: '2-digit',
   minute: '2-digit',
 });
 
-function formatWhen(value: string) {
-  return formatDate.format(new Date(value));
+function formatWhenParts(value: string) {
+  const date = new Date(value);
+
+  return {
+    date: formatDateOnly.format(date),
+    time: formatTimeOnly.format(date),
+  };
 }
 
 function startEditing(item: SymptomRow) {
@@ -97,8 +105,7 @@ async function saveNote(item: SymptomRow) {
           История симптомов
         </h2>
         <p class="health-section-subtitle">
-          В этой таблице редактируется только заметка. Статус ignore для
-          симптомов не используется.
+          В этой таблице редактируется только заметка.
         </p>
       </div>
     </div>
@@ -110,8 +117,13 @@ async function saveNote(item: SymptomRow) {
             <th>Дата</th>
             <th>Симптом</th>
             <th>Интенсивность</th>
-            <th>Note</th>
-            <th>Действие</th>
+            <th>ЗАМЕТКИ</th>
+            <th
+              class="health-table-action-head"
+              aria-label="Действие"
+            >
+              <span class="sr-only">Действие</span>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -119,10 +131,21 @@ async function saveNote(item: SymptomRow) {
             v-for="item in props.items"
             :key="item.id"
           >
-            <td>{{ formatWhen(item.happenedAt) }}</td>
+            <td class="health-table-cell-date">
+              <span class="health-table-date">
+                <span>
+                  <span class="health-table-date-main">{{ formatWhenParts(item.happenedAt).date }}</span>
+                  <span class="health-table-date-sub">{{ formatWhenParts(item.happenedAt).time }}</span>
+                </span>
+              </span>
+            </td>
             <td>{{ item.type }}</td>
-            <td>{{ item.intensity ?? '—' }}</td>
-            <td>
+            <td class="health-table-cell-value">
+              <span class="health-table-value">
+                <span class="health-table-value-main">{{ item.intensity ?? '—' }}</span>
+              </span>
+            </td>
+            <td class="health-table-note health-table-note-cell">
               <template v-if="editingId === item.id">
                 <textarea
                   v-model="draftNote"
@@ -137,31 +160,42 @@ async function saveNote(item: SymptomRow) {
                 </span>
               </template>
             </td>
-            <td>
+            <td class="health-table-action-cell">
               <div class="health-table-actions">
                 <button
                   v-if="editingId !== item.id"
                   type="button"
-                  class="health-button health-button-secondary health-button-small"
+                  class="health-button health-button-secondary health-button-small health-table-icon-button"
+                  title="Редактировать"
+                  aria-label="Редактировать"
                   @click="startEditing(item)"
                 >
-                  Редактировать
+                  <UIcon name="i-lucide-pencil" />
+                  <span class="sr-only">Редактировать</span>
                 </button>
                 <template v-else>
                   <button
                     type="button"
-                    class="health-button health-button-secondary health-button-small"
+                    class="health-button health-button-secondary health-button-small health-table-icon-button"
+                    title="Отмена"
+                    aria-label="Отмена"
                     @click="cancelEditing"
                   >
-                    Отмена
+                    <UIcon name="i-lucide-x" />
+                    <span class="sr-only">Отмена</span>
                   </button>
                   <button
                     type="button"
-                    class="health-button health-button-small"
+                    class="health-button health-button-small health-table-icon-button"
                     :disabled="savingId === item.id"
+                    title="Сохранить"
+                    aria-label="Сохранить"
                     @click="saveNote(item)"
                   >
-                    {{ savingId === item.id ? 'Сохранение…' : 'Сохранить' }}
+                    <UIcon name="i-lucide-check" />
+                    <span class="sr-only">
+                      {{ savingId === item.id ? 'Сохранение' : 'Сохранить' }}
+                    </span>
                   </button>
                 </template>
               </div>

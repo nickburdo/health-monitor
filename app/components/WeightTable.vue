@@ -26,16 +26,34 @@ const formatDateTime = new Intl.DateTimeFormat('ru-RU', {
   minute: '2-digit',
 });
 
+const formatDateOnly = new Intl.DateTimeFormat('ru-RU', {
+  day: 'numeric',
+  month: 'short',
+});
+
+const formatTimeOnly = new Intl.DateTimeFormat('ru-RU', {
+  hour: '2-digit',
+  minute: '2-digit',
+});
+
 function formatWhen(value: string) {
   return formatDateTime.format(new Date(value));
 }
 
-function formatValue(item: WeightRow) {
-  return item.value === null ? '—' : `${item.value.toFixed(1)} kg`;
+function formatWhenParts(value: string) {
+  const date = new Date(value);
+
+  return {
+    date: formatDateOnly.format(date),
+    time: formatTimeOnly.format(date),
+  };
 }
 
-function formatType() {
-  return 'Вес';
+function formatValueParts(item: WeightRow) {
+  return {
+    value: item.value === null ? '—' : item.value.toFixed(1),
+    unit: item.value === null ? '' : 'kg',
+  };
 }
 
 function openIgnoreDialog(item: WeightRow) {
@@ -165,11 +183,15 @@ onBeforeUnmount(() => {
       <table class="health-table">
         <thead>
           <tr>
-            <th>Тип</th>
             <th>Дата и время</th>
             <th>Значение</th>
-            <th>Notes</th>
-            <th>Действие</th>
+            <th>ЗАМЕТКИ</th>
+            <th
+              class="health-table-action-head"
+              aria-label="Действие"
+            >
+              <span class="sr-only">Действие</span>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -179,30 +201,52 @@ onBeforeUnmount(() => {
             class="health-table-row"
             :data-ignored="item.ignore"
           >
-            <td>{{ formatType() }}</td>
-            <td>{{ formatWhen(item.measuredAt) }}</td>
-            <td>{{ formatValue(item) }}</td>
-            <td class="health-table-note">
+            <td class="health-table-cell-date">
+              <span class="health-table-date">
+                <span>
+                  <span class="health-table-date-main">{{ formatWhenParts(item.measuredAt).date }}</span>
+                  <span class="health-table-date-sub">{{ formatWhenParts(item.measuredAt).time }}</span>
+                </span>
+              </span>
+            </td>
+            <td class="health-table-cell-value">
+              <span class="health-table-value">
+                <span class="health-table-value-main">{{ formatValueParts(item).value }}</span>
+                <span
+                  v-if="formatValueParts(item).unit"
+                  class="health-table-value-sub"
+                >
+                  {{ formatValueParts(item).unit }}
+                </span>
+              </span>
+            </td>
+            <td class="health-table-note health-table-note-cell">
               {{ item.note ?? '—' }}
             </td>
-            <td>
+            <td class="health-table-action-cell">
               <button
                 v-if="!item.ignore"
                 type="button"
-                class="health-button health-button-secondary health-button-small"
+                class="health-button health-button-secondary health-button-small health-table-icon-button"
                 :disabled="savingId === item.id"
+                title="Игнорировать"
+                aria-label="Игнорировать"
                 @click="openIgnoreDialog(item)"
               >
-                Игнорировать
+                <UIcon name="i-lucide-eye-off" />
+                <span class="sr-only">Игнорировать</span>
               </button>
               <button
                 v-else
                 type="button"
-                class="health-button health-button-small"
+                class="health-button health-button-small health-table-icon-button"
                 :disabled="savingId === item.id"
+                title="Восстановить"
+                aria-label="Восстановить"
                 @click="restoreItem(item)"
               >
-                Восстановить
+                <UIcon name="i-lucide-undo-2" />
+                <span class="sr-only">Восстановить</span>
               </button>
             </td>
           </tr>
@@ -252,15 +296,15 @@ onBeforeUnmount(() => {
 
           <div class="health-modal-summary">
             <p>
-              <strong>Тип:</strong> {{ formatType() }}
-            </p>
-            <p>
               <strong>Дата:</strong>
               {{ activeItem ? formatWhen(activeItem.measuredAt) : '—' }}
             </p>
             <p>
               <strong>Значение:</strong>
-              {{ activeItem ? formatValue(activeItem) : '—' }}
+              {{ activeItem ? formatValueParts(activeItem).value : '—' }}
+              <span v-if="activeItem && formatValueParts(activeItem).unit">
+                {{ formatValueParts(activeItem).unit }}
+              </span>
             </p>
           </div>
 
@@ -290,18 +334,20 @@ onBeforeUnmount(() => {
             <div class="health-modal-buttons">
               <button
                 type="button"
-                class="health-button health-button-secondary"
+                class="health-button health-button-secondary health-button-small health-table-icon-button"
                 @click="closeIgnoreDialog"
               >
-                Отмена
+                <UIcon name="i-lucide-x" />
+                <span class="sr-only">Отмена</span>
               </button>
               <button
                 type="button"
-                class="health-button"
+                class="health-button health-button-small health-table-icon-button"
                 :disabled="savingId === activeItem?.id"
                 @click="ignoreSelected"
               >
-                {{ savingId === activeItem?.id ? 'Сохранение…' : 'Подтвердить' }}
+                <UIcon name="i-lucide-check" />
+                <span class="sr-only">Подтвердить</span>
               </button>
             </div>
           </footer>

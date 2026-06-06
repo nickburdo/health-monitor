@@ -26,6 +26,13 @@ Health Monitor is a personal health tracking app built with Nuxt 4, Nuxt UI, Tai
 - Added a glucose table with ignore/restore actions and mandatory note on ignore.
 - Added a blood pressure table with ignore/restore actions and mandatory note on ignore.
 - Added a weight table with ignore/restore actions and mandatory note on ignore.
+- Refined the responsive shell so the header and footer are full-width, the header content stays capped at `1440px`, and the mobile footer is compact and pinned to the bottom.
+- Updated the table pattern across the app:
+  - removed the `Type` column from glucose, blood pressure, and weight tables;
+  - made action cells icon-only and minimal width;
+  - widened the notes column and renamed it to `ЗАМЕТКИ`;
+  - added glucose measurement markers in the date column with apple icons;
+  - split date/time and value/unit into two lines on smaller screens.
 
 ## Current State
 
@@ -36,6 +43,7 @@ Health Monitor is a personal health tracking app built with Nuxt 4, Nuxt UI, Tai
 - Symptoms are editable only through `note`; they no longer have ignore/restore.
 - The glucose table now uses a confirm dialog for ignore and a direct restore action.
 - The blood pressure and weight tables use the same ignore/restore interaction model.
+- The table styling pass is in progress and the latest responsive/table changes are still uncommitted.
 
 ## Important Decisions
 
@@ -46,14 +54,16 @@ Health Monitor is a personal health tracking app built with Nuxt 4, Nuxt UI, Tai
 - Keep the dev server on port `3030`.
 - Keep Prisma Studio on port `5555`.
 - Keep `AGENTS.md` local-only and use `AGENTS.locale.md` for project-specific rules.
+- Keep the shared table layout pattern consistent across the measurement pages, even if individual pages need different note/edit behavior.
 
 ## Known Issues
 
 - The documentation still contains some legacy spec text in the `docs/specifications` folder.
+- The tables are still being tuned for mobile readability; the current mobile table layout is usable but not yet final.
 - No known functional blockers were left in the API layer after the last test run.
 
 ## Next Steps
 
-- Continue with the remaining tables for blood pressure and weight.
-- Wire any remaining page-level polish and filters to the new API routes.
-- Continue with charting and presentation once the chart library integration is started.
+- Finish the mobile table polish, especially the glucose/blood-pressure/weight table layout under `768px`.
+- Decide whether symptoms should stay on the same table pattern or keep a slightly different edit affordance.
+- Then continue with charting and presentation once the chart library integration is started.

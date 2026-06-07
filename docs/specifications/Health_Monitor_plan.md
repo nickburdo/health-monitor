@@ -127,3 +127,4 @@
 - [x] shared line-chart props and per-page series/formatters were extracted into `app/utils/health-line-chart` for glucose, blood pressure, and weight.
 - [x] dashboard now uses shared line charts for glucose, blood pressure, and weight, plus a separate symptom frequency panel and real latest-entry aggregation.
 - [x] dashboard hero now shows the selected period in the title, the summary block keeps only pills, and the latest entries list uses localized statuses.
+- [x] dashboard hero summary and metric grid were extracted into dedicated components; the summary list now uses a flex column with `justify-between` and no top margin.

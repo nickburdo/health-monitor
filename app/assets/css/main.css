@@ -1145,9 +1145,12 @@ select {
 }
 
 .health-dashboard-summary-list {
-  display: grid;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
   gap: 12px;
-  margin-top: 18px;
+  margin-top: 0;
 }
 
 .health-dashboard-summary-row {

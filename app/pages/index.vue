@@ -345,58 +345,28 @@ useSeoMeta({
         </div>
       </div>
 
-      <aside class="health-panel health-panel-soft health-card health-dashboard-summary">
-        <div class="health-dashboard-summary-list">
-          <div class="health-dashboard-summary-row">
-            <span>Активные записи</span>
-            <strong>{{ dashboard.activeRecordCount }}</strong>
-          </div>
-          <div class="health-dashboard-summary-row">
-            <span>Игнорируемые записи</span>
-            <strong>{{ dashboard.ignoredRecordCount }}</strong>
-          </div>
-          <div class="health-dashboard-summary-row health-dashboard-summary-row-wide">
-            <span>Последняя активность</span>
-            <strong>{{ dashboard.latestEntry?.title ?? '—' }}</strong>
-            <small>{{ dashboard.latestEntry?.subtitle ?? 'Нет данных за период' }}</small>
-          </div>
-        </div>
-      </aside>
+      <DashboardSummaryPanel
+        :active-record-count="dashboard.activeRecordCount"
+        :ignored-record-count="dashboard.ignoredRecordCount"
+        :latest-entry-title="dashboard.latestEntry?.title"
+        :latest-entry-subtitle="dashboard.latestEntry?.subtitle"
+      />
     </section>
 
-    <section class="health-meta-grid">
-      <HealthMetricCard
-        label="Glucose"
-        tone="glucose"
-        :value="getLatestGlucoseValue(dashboard.latestGlucose) !== null ? formatMmol(getLatestGlucoseValue(dashboard.latestGlucose) ?? 0) : '—'"
-        unit="mmol/L"
-        :details="dashboard.glucoseAvg !== null ? `Avg period: ${dashboard.glucoseAvg.toFixed(1)} mmol/L` : 'No active values in the selected period'"
-      />
-      <HealthMetricCard
-        label="Pressure"
-        tone="pressure"
-        :value="dashboard.latestBloodPressure ? `${dashboard.latestBloodPressure.systolic ?? '—'}/${dashboard.latestBloodPressure.diastolic ?? '—'}` : '—'"
-        :details="dashboard.bloodPressureAvgSystolic !== null && dashboard.bloodPressureAvgDiastolic !== null
-          ? `Avg period: ${formatBloodPressureAxisValue(dashboard.bloodPressureAvgSystolic)} / ${formatBloodPressureAxisValue(dashboard.bloodPressureAvgDiastolic)} mmHg`
-          : 'No active values in the selected period'"
-      />
-      <HealthMetricCard
-        label="Weight"
-        tone="weight"
-        :value="dashboard.latestWeight ? formatKilograms(dashboard.latestWeight.value) : '—'"
-        unit="kg"
-        :details="dashboard.weightChange !== null ? `Change period: ${formatWeightChange(dashboard.weightChange)}` : 'Need at least two measurements for delta'"
-      />
-      <HealthMetricCard
-        label="Symptoms"
-        tone="symptoms"
-        :value="String(dashboard.symptomCount)"
-        unit="entries"
-        :details="dashboard.topSymptoms.length
-          ? `Most frequent: ${dashboard.topSymptoms[0]?.label ?? '—'}`
-          : 'No symptom entries in the selected period'"
-      />
-    </section>
+    <DashboardMetricsGrid
+      :glucose-value="getLatestGlucoseValue(dashboard.latestGlucose) !== null ? formatMmol(getLatestGlucoseValue(dashboard.latestGlucose) ?? 0) : '—'"
+      :glucose-details="dashboard.glucoseAvg !== null ? `Avg period: ${dashboard.glucoseAvg.toFixed(1)} mmol/L` : 'No active values in the selected period'"
+      :pressure-value="dashboard.latestBloodPressure ? `${dashboard.latestBloodPressure.systolic ?? '—'}/${dashboard.latestBloodPressure.diastolic ?? '—'}` : '—'"
+      :pressure-details="dashboard.bloodPressureAvgSystolic !== null && dashboard.bloodPressureAvgDiastolic !== null
+        ? `Avg period: ${formatBloodPressureAxisValue(dashboard.bloodPressureAvgSystolic)} / ${formatBloodPressureAxisValue(dashboard.bloodPressureAvgDiastolic)} mmHg`
+        : 'No active values in the selected period'"
+      :weight-value="dashboard.latestWeight ? formatKilograms(dashboard.latestWeight.value) : '—'"
+      :weight-details="dashboard.weightChange !== null ? `Change period: ${formatWeightChange(dashboard.weightChange)}` : 'Need at least two measurements for delta'"
+      :symptom-value="String(dashboard.symptomCount)"
+      :symptom-details="dashboard.topSymptoms.length
+        ? `Most frequent: ${dashboard.topSymptoms[0]?.label ?? '—'}`
+        : 'No symptom entries in the selected period'"
+    />
 
     <section class="health-dashboard-chart-grid">
       <HealthLineChart

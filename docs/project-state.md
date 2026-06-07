@@ -11,6 +11,7 @@ Health Monitor is a personal Nuxt 4 app for tracking health. MVP covers glucose,
 - Shared helpers already exist for date ranges, period filtering, measurement list loading, page headers, ignore/restore actions, and date formatting.
 - `HealthLineChart` powers glucose, blood pressure, weight, and the dashboard charts.
 - Dashboard now shows summary cards, three compact line charts, a symptom frequency panel, and a localized latest-entries list.
+- Dashboard hero summary and metric grid are being split into dedicated components to keep the page slimmer.
 - The separate symptom line chart is still deferred.
 
 ## Important Decisions

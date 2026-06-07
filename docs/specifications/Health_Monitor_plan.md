@@ -118,3 +118,4 @@
 - [x] shared ignore/restore component now owns the buttons, confirm dialog, reason handling, direct restore action, and PATCH calls for glucose, blood pressure, and weight.
 - [x] next chart work starts with a standalone glucose chart component on the `/glucose` page; dashboard charting will be added later.
 - [x] page-specific measurement list types were extracted into `app/types` for blood pressure, weight, and symptoms to match the glucose type pattern.
+- [x] shared line-chart props and per-page series/formatters were extracted into `app/utils/health-line-chart` for glucose and blood pressure.

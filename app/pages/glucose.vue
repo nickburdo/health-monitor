@@ -1,28 +1,10 @@
 <script setup lang="ts">
 import type { GlucoseMeasurement } from '~/types/glucose';
-
-const glucoseChartSeries = [
-  {
-    key: 'fastingValue',
-    label: 'Натощак',
-    color: '#fb923c',
-    valueFormatter: (value: number) => `${(value / 18).toFixed(1)} ммоль/л`,
-  },
-  {
-    key: 'afterMealValue',
-    label: 'После еды',
-    color: '#ea580c',
-    valueFormatter: (value: number) => `${(value / 18).toFixed(1)} ммоль/л`,
-  },
-] as const;
-
-function formatGlucoseValue(value: number) {
-  return `${(value / 18).toFixed(1)} ммоль/л`;
-}
-
-function formatGlucoseAxisValue(value: number) {
-  return value.toFixed(1);
-}
+import {
+  formatGlucoseAxisValue,
+  formatGlucoseValue,
+  glucoseChartSeries,
+} from '~/utils/health-line-chart/glucose';
 
 const { periodFilters, data } = await useMeasurementListPage<GlucoseMeasurement>({
   key: 'glucose-page',

@@ -6,6 +6,23 @@ type SymptomFrequency = {
   label: string;
 };
 
+function selectTopSymptoms(
+  items: SymptomFrequency[],
+  limit?: number,
+) {
+  const sortedByFrequency = [...items].sort((left, right) => {
+    if (right.count !== left.count) {
+      return right.count - left.count;
+    }
+
+    return left.label.localeCompare(right.label, 'ru');
+  });
+
+  return typeof limit === 'number'
+    ? sortedByFrequency.slice(0, limit)
+    : sortedByFrequency;
+}
+
 const props = defineProps<{
   data: DashboardData;
   title?: string;
@@ -18,16 +35,10 @@ const dashboard = computed(() => {
     return accumulator;
   }, {});
 
-  const topSymptoms: SymptomFrequency[] = Object.entries(symptomFrequency)
-    .map(([label, count]) => ({ label, count }))
-    .sort((left, right) => {
-      if (right.count !== left.count) {
-        return right.count - left.count;
-      }
-
-      return left.label.localeCompare(right.label, 'ru');
-    })
-    .slice(0, props.maxTypes ?? Number.POSITIVE_INFINITY);
+  const topSymptoms: SymptomFrequency[] = selectTopSymptoms(
+    Object.entries(symptomFrequency).map(([label, count]) => ({ label, count })),
+    props.maxTypes,
+  );
 
   return {
     topSymptoms,

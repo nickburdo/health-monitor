@@ -92,8 +92,8 @@ function barWidth(count: number) {
 
 <style scoped>
 .health-dashboard-symptoms {
-  display: grid;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
   gap: 18px;
 }
 
@@ -116,6 +116,7 @@ function barWidth(count: number) {
 
 .health-dashboard-symptoms-bars {
   display: grid;
+  margin-top: auto;
   gap: 12px;
 }
 

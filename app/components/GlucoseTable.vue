@@ -47,7 +47,7 @@ function formatMeasurementType(item: GlucoseMeasurement) {
 }
 
 function typeEmoji(item: GlucoseMeasurement) {
-  return item.afterMealValue !== null ? '🍏' : '🍎';
+  return item.afterMealValue !== null ? '🍴' : '🍏';
 }
 
 function glucoseSummary(item: GlucoseMeasurement) {

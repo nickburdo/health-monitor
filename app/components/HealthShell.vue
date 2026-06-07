@@ -3,11 +3,11 @@ const route = useRoute();
 const quickEntryOpen = ref(false);
 
 const navigation = [
-  { label: 'Dashboard', path: '/', icon: '⌂' },
-  { label: 'Glucose', path: '/glucose', icon: '◌' },
-  { label: 'Pressure', path: '/blood-pressure', icon: '♥' },
-  { label: 'Weight', path: '/weight', icon: '⚖' },
-  { label: 'Symptoms', path: '/symptoms', icon: '⋯' },
+  { label: 'Dashboard', path: '/', icon: 'i-lucide-layout-dashboard' },
+  { label: 'Glucose', path: '/glucose', icon: 'i-lucide-droplet' },
+  { label: 'Pressure', path: '/blood-pressure', icon: 'i-lucide-heart-pulse' },
+  { label: 'Weight', path: '/weight', icon: 'i-lucide-scale' },
+  { label: 'Symptoms', path: '/symptoms', icon: 'i-lucide-clipboard-list' },
 ];
 
 function isActive(path: string) {
@@ -41,7 +41,7 @@ function isActive(path: string) {
             :to="item.path"
             :data-active="isActive(item.path)"
           >
-            <span aria-hidden="true">{{ item.icon }}</span>
+            <UIcon :name="item.icon" class="nav-icon nav-icon-large" />
             <span>{{ item.label }}</span>
           </NuxtLink>
         </nav>
@@ -78,9 +78,21 @@ function isActive(path: string) {
           :to="item.path"
           :data-active="isActive(item.path)"
         >
-          <span aria-hidden="true">{{ item.icon }}</span>
+          <UIcon :name="item.icon" class="nav-icon" />
         </NuxtLink>
       </div>
     </footer>
   </div>
 </template>
+
+<style>
+.nav-icon-large {
+  width: 22px !important;
+  height: 22px !important;
+}
+.nav-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+</style>

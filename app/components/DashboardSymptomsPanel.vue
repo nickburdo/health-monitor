@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { DashboardData } from '~/types/dashboard';
+import type { SymptomMeasurement } from '~/types/symptom';
 
 type SymptomFrequency = {
   count: number;
@@ -24,13 +24,13 @@ function selectTopSymptoms(
 }
 
 const props = defineProps<{
-  data: DashboardData;
+  symptoms: SymptomMeasurement[];
   title?: string;
   maxTypes?: number;
 }>();
 
 const dashboard = computed(() => {
-  const symptomFrequency = props.data.symptoms.reduce<Record<string, number>>((accumulator, record) => {
+  const symptomFrequency = props.symptoms.reduce<Record<string, number>>((accumulator, record) => {
     accumulator[record.type] = (accumulator[record.type] ?? 0) + 1;
     return accumulator;
   }, {});

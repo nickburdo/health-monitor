@@ -133,3 +133,4 @@
 - [x] dashboard symptom bars now sit at the bottom of the card when there are few symptom types.
 - [x] dashboard symptom chart now accepts an optional `maxTypes` prop so the dashboard can cap the number of displayed symptom types without constraining future reuse.
 - [x] `/symptoms` page now uses the shared symptom bar chart without a `maxTypes` limit, so all symptom types are shown there.
+- [x] `DashboardSymptomsPanel` now accepts only a symptoms array, not the whole dashboard data object.

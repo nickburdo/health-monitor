@@ -272,6 +272,21 @@ select {
   letter-spacing: -0.06em;
 }
 
+.health-dashboard-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.25em;
+}
+
+.health-dashboard-title-prefix {
+  white-space: nowrap;
+}
+
+.health-dashboard-title-period {
+  white-space: normal;
+}
+
 .health-lead {
   margin: 0;
   max-width: 650px;
@@ -1125,25 +1140,6 @@ select {
   min-height: 260px;
 }
 
-.health-dashboard-summary-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.health-dashboard-summary-header h2 {
-  margin: 0;
-  font-size: 22px;
-  letter-spacing: -0.04em;
-}
-
-.health-dashboard-summary-header span {
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 750;
-}
-
 .health-dashboard-summary-list {
   display: grid;
   gap: 12px;
@@ -1157,6 +1153,10 @@ select {
   border: 1px solid var(--border);
   border-radius: 18px;
   background: rgba(255, 250, 243, 0.74);
+}
+
+.health-dashboard-summary-row-wide {
+  min-height: 100px;
 }
 
 .health-dashboard-summary-row span {

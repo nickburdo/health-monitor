@@ -138,6 +138,10 @@ function formatSymptomEntryValue(record: SymptomMeasurement) {
   return parts.join(' · ');
 }
 
+function formatLatestEntryBadge(ignored?: boolean) {
+  return ignored ? 'Игнор.' : 'Активно';
+}
+
 function buildLatestEntries(dataSet: {
   bloodPressure: BloodPressureMeasurement[];
   glucose: GlucoseMeasurement[];
@@ -148,28 +152,28 @@ function buildLatestEntries(dataSet: {
     ...dataSet.glucose.map(record => ({
       title: 'Глюкоза',
       subtitle: `${formatWhen(record.measuredAt)} · ${formatGlucoseEntryValue(record)}`,
-      badge: record.ignore ? 'Ignored' : 'OK',
+      badge: formatLatestEntryBadge(record.ignore),
       ignored: record.ignore,
       timestamp: new Date(record.measuredAt).getTime(),
     })),
     ...dataSet.bloodPressure.map(record => ({
       title: 'Давление',
       subtitle: `${formatWhen(record.measuredAt)} · ${formatBloodPressureEntryValue(record)}`,
-      badge: record.ignore ? 'Ignored' : 'OK',
+      badge: formatLatestEntryBadge(record.ignore),
       ignored: record.ignore,
       timestamp: new Date(record.measuredAt).getTime(),
     })),
     ...dataSet.weight.map(record => ({
       title: 'Вес',
       subtitle: `${formatWhen(record.measuredAt)} · ${record.value !== null ? formatWeightValue(record.value) : '—'}`,
-      badge: record.ignore ? 'Ignored' : 'OK',
+      badge: formatLatestEntryBadge(record.ignore),
       ignored: record.ignore,
       timestamp: new Date(record.measuredAt).getTime(),
     })),
     ...dataSet.symptoms.map(record => ({
       title: `Симптом: ${record.type}`,
       subtitle: `${formatWhen(record.happenedAt)} · ${formatSymptomEntryValue(record)}`,
-      badge: record.intensity !== null ? `${record.intensity} pts` : '—',
+      badge: 'Запись',
       timestamp: new Date(record.happenedAt).getTime(),
     })),
   ];
@@ -195,6 +199,26 @@ const periodLabel = computed(() => {
   }
 
   return 'С начала года';
+});
+
+const periodHeadlineSuffix = computed(() => {
+  const value = periodFilters.value;
+
+  if (value.preset === 'custom') {
+    const from = formatPeriodShortDate(value.dateFrom);
+    const to = formatPeriodShortDate(value.dateTo);
+    return from && to ? `с ${from} по ${to}` : 'за произвольный период';
+  }
+
+  if (value.preset === '3m') {
+    return 'за последние 3 месяца';
+  }
+
+  if (value.preset === '6m') {
+    return 'за последние 6 месяцев';
+  }
+
+  return 'с начала года';
 });
 
 const dashboard = computed(() => {
@@ -291,6 +315,7 @@ const dashboard = computed(() => {
     periodLabel: periodLabel.value,
     symptomCount: symptoms.length,
     topSymptoms,
+    periodHeadlineSuffix: periodHeadlineSuffix.value,
     weightChange,
   };
 });
@@ -312,13 +337,16 @@ useSeoMeta({
         <div class="health-eyebrow">
           Dashboard · summary first
         </div>
-        <h1 class="health-title">
-          Сводка здоровья за выбранный период
+        <h1 class="health-title health-dashboard-title">
+          <span class="health-dashboard-title-prefix">
+            Сводка здоровья
+          </span>
+          <span class="health-dashboard-title-period">
+            {{ dashboard.periodHeadlineSuffix }}
+          </span>
         </h1>
         <p class="health-lead">
-          Dashboard показывает текущее состояние, краткую динамику и последние
-          записи без лишнего шума. Детали по каждому типу измерений остаются на
-          отдельных страницах.
+          Текущее состояние, краткая динамика и последние показатели здоровья.
         </p>
 
         <div class="health-dashboard-filter">
@@ -327,22 +355,17 @@ useSeoMeta({
       </div>
 
       <aside class="health-panel health-panel-soft health-card health-dashboard-summary">
-        <div class="health-dashboard-summary-header">
-          <h2>Период</h2>
-          <span>{{ dashboard.periodLabel }}</span>
-        </div>
-
         <div class="health-dashboard-summary-list">
           <div class="health-dashboard-summary-row">
-            <span>Active records</span>
+            <span>Активные записи</span>
             <strong>{{ dashboard.activeRecordCount }}</strong>
           </div>
           <div class="health-dashboard-summary-row">
-            <span>Ignored records</span>
+            <span>Игнорируемые записи</span>
             <strong>{{ dashboard.ignoredRecordCount }}</strong>
           </div>
           <div class="health-dashboard-summary-row health-dashboard-summary-row-wide">
-            <span>Latest activity</span>
+            <span>Последняя активность</span>
             <strong>{{ dashboard.latestEntry?.title ?? '—' }}</strong>
             <small>{{ dashboard.latestEntry?.subtitle ?? 'Нет данных за период' }}</small>
           </div>
@@ -423,7 +446,7 @@ useSeoMeta({
     </section>
 
     <HealthEntryList
-      title="Latest entries"
+      title="Последние показатели"
       :items="dashboard.latestEntries"
     />
   </HealthShell>

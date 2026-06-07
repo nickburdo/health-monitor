@@ -7,10 +7,10 @@ Health Monitor is a personal Nuxt 4 app for tracking health. MVP covers glucose,
 ## Current State
 
 - Working tree is not clean; there are local edits in the dashboard area.
-- Latest commit: `f0f05da` - `Add weight line chart`.
+- Latest commit: `7d0084c` - `Build dashboard overview`.
 - Shared helpers already exist for date ranges, period filtering, measurement list loading, page headers, ignore/restore actions, and date formatting.
-- `HealthLineChart` now powers glucose, blood pressure, weight, and the dashboard charts.
-- Dashboard now shows summary cards, three compact line charts, a symptom frequency panel, and real latest entries.
+- `HealthLineChart` powers glucose, blood pressure, weight, and the dashboard charts.
+- Dashboard now shows summary cards, three compact line charts, a symptom frequency panel, and a localized latest-entries list.
 - The separate symptom line chart is still deferred.
 
 ## Important Decisions

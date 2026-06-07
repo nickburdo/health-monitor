@@ -18,6 +18,7 @@ Health Monitor is a personal Nuxt 4 app for tracking health. MVP covers glucose,
 - Dashboard symptom chart accepts an optional `maxTypes` prop; the dashboard uses it to cap the rendered symptom types at five.
 - Dashboard symptom cap explicitly keeps the most frequent types, not just the first N items.
 - The separate symptom line chart remains deferred; dashboard symptoms are now shown as a bar chart.
+- The `/symptoms` page now reuses the same symptom bar chart without a `maxTypes` limit.
 
 ## Important Decisions
 

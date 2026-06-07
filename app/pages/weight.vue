@@ -1,13 +1,7 @@
 <script setup lang="ts">
-type RecordItem = {
-  id: string;
-  measuredAt: string;
-  value: number | null;
-  ignore: boolean;
-  note: string | null;
-  reason: string | null;
-};
-const { periodFilters, data } = await useMeasurementListPage<RecordItem>({
+import type { WeightMeasurement } from '~/types/weight';
+
+const { periodFilters, data } = await useMeasurementListPage<WeightMeasurement>({
   key: 'weight-page',
   endpoint: '/api/weight',
 });

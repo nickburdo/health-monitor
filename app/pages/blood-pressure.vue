@@ -1,14 +1,5 @@
 <script setup lang="ts">
-type RecordItem = {
-  id: string;
-  measuredAt: string;
-  systolic: number | null;
-  diastolic: number | null;
-  pulse: number | null;
-  ignore: boolean;
-  note: string | null;
-  reason: string | null;
-};
+import type { BloodPressureMeasurement } from '~/types/blood-pressure';
 
 const bloodPressureChartSeries = [
   {
@@ -33,7 +24,7 @@ function formatBloodPressureAxisValue(value: number) {
   return String(Math.round(value));
 }
 
-const { periodFilters, data } = await useMeasurementListPage<RecordItem>({
+const { periodFilters, data } = await useMeasurementListPage<BloodPressureMeasurement>({
   key: 'blood-pressure-page',
   endpoint: '/api/blood-pressure',
 });

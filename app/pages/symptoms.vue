@@ -1,12 +1,7 @@
 <script setup lang="ts">
-type RecordItem = {
-  id: string;
-  happenedAt: string;
-  type: string;
-  intensity: number | null;
-  note: string | null;
-};
-const { periodFilters, data } = await useMeasurementListPage<RecordItem>({
+import type { SymptomMeasurement } from '~/types/symptom';
+
+const { periodFilters, data } = await useMeasurementListPage<SymptomMeasurement>({
   key: 'symptoms-page',
   endpoint: '/api/symptoms',
 });

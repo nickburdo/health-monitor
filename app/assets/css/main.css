@@ -1259,7 +1259,7 @@ select {
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 900px) {
   .health-header-inner {
     grid-template-columns: auto minmax(0, 1fr) auto;
     gap: 12px;

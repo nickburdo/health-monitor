@@ -1,6 +1,7 @@
 <script setup lang="ts">
 defineProps<{
   label: string;
+  details?: string;
   value: string;
   unit?: string;
   tone: 'glucose' | 'pressure' | 'weight' | 'symptoms';
@@ -23,5 +24,11 @@ defineProps<{
         class="health-unit"
       >{{ unit }}</span>
     </div>
+    <p
+      v-if="details"
+      class="health-metric-detail"
+    >
+      {{ details }}
+    </p>
   </article>
 </template>

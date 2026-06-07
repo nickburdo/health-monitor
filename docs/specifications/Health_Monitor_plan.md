@@ -94,13 +94,15 @@
   - одна линия: вес;
   - использует те же данные, что и таблица;
   - без отдельного фильтра по датам;
-- график симптомов.
+- [ ] график симптомов (отложен; на dashboard используется отдельная frequency-панель).
 
 ### Этап 8. Dashboard
 
 - [x] последние значения;
 - [x] карточки;
-- [ ] графики;
+- [x] графики;
+  - glucose, pressure и weight через общий `HealthLineChart`;
+  - symptoms через отдельную frequency-панель;
 - [x] фильтры периода.
 
 ### Этап 9. Полировка
@@ -123,3 +125,4 @@
 - [x] page-specific measurement list types were extracted into `app/types` for blood pressure, weight, and symptoms to match the glucose type pattern.
 - [x] shared line-chart props and per-page series/formatters were extracted into `app/utils/health-line-chart` for glucose and blood pressure.
 - [x] shared line-chart props and per-page series/formatters were extracted into `app/utils/health-line-chart` for glucose, blood pressure, and weight.
+- [x] dashboard now uses shared line charts for glucose, blood pressure, and weight, plus a separate symptom frequency panel and real latest-entry aggregation.

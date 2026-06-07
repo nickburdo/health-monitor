@@ -1,164 +1,297 @@
 <script setup lang="ts">
-type GlucoseRecord = {
-  id: string;
-  measuredAt: string;
-  fastingValue: number | null;
-  afterMealValue: number | null;
-  ignore: boolean;
-  note: string | null;
+import type { BloodPressureMeasurement } from '~/types/blood-pressure';
+import type { GlucoseMeasurement } from '~/types/glucose';
+import type { SymptomMeasurement } from '~/types/symptom';
+import type { WeightMeasurement } from '~/types/weight';
+import {
+  formatBloodPressureAxisValue,
+  formatBloodPressureValue,
+  bloodPressureChartSeries,
+} from '~/utils/health-line-chart/blood-pressure';
+import {
+  formatGlucoseAxisValue,
+  formatGlucoseValue,
+  glucoseChartSeries,
+} from '~/utils/health-line-chart/glucose';
+import {
+  formatWeightAxisValue,
+  formatWeightValue,
+  weightChartSeries,
+} from '~/utils/health-line-chart/weight';
+import { formatWhen } from '~/utils/date-format';
+import {
+  formatPeriodShortDate,
+  usePeriodFilter,
+} from '~/composables/usePeriodFilter';
+
+type LatestEntry = {
+  badge: string;
+  ignored?: boolean;
+  subtitle: string;
+  timestamp: number;
+  title: string;
 };
 
-type BloodPressureRecord = {
-  id: string;
-  measuredAt: string;
-  systolic: number | null;
-  diastolic: number | null;
-  pulse: number | null;
-  ignore: boolean;
-  note: string | null;
+type SymptomFrequency = {
+  count: number;
+  label: string;
 };
 
-type WeightRecord = {
-  id: string;
-  measuredAt: string;
-  value: number | null;
-  ignore: boolean;
-  note: string | null;
-};
+const { periodFilters, query } = usePeriodFilter();
 
-type SymptomRecord = {
-  id: string;
-  happenedAt: string;
-  type: string;
-  intensity: number | null;
-  note: string | null;
-};
-
-const periodOptions = [
-  { label: '1 месяц', days: 30 },
-  { label: '3 месяца', days: 90 },
-  { label: '6 месяцев', days: 180 },
-  { label: 'С начала года', days: 365 },
-] as const;
-
-const selectedPeriod = ref<(typeof periodOptions)[number]['label']>('1 месяц');
 const { data } = await useAsyncData('dashboard-data', async () => {
   const [glucose, bloodPressure, weight, symptoms] = await Promise.all([
-    $fetch<GlucoseRecord[]>('/api/glucose'),
-    $fetch<BloodPressureRecord[]>('/api/blood-pressure'),
-    $fetch<WeightRecord[]>('/api/weight'),
-    $fetch<SymptomRecord[]>('/api/symptoms'),
+    $fetch<GlucoseMeasurement[]>('/api/glucose', { query: query.value }),
+    $fetch<BloodPressureMeasurement[]>('/api/blood-pressure', { query: query.value }),
+    $fetch<WeightMeasurement[]>('/api/weight', { query: query.value }),
+    $fetch<SymptomMeasurement[]>('/api/symptoms', { query: query.value }),
   ]);
 
   return { glucose, bloodPressure, weight, symptoms };
+}, {
+  watch: [periodFilters],
 });
 
-function parseDate(value: string) {
-  return new Date(value);
+function sortByDateDesc<T>(items: T[], getDate: (item: T) => string) {
+  return [...items].sort((left, right) => {
+    return new Date(getDate(right)).getTime() - new Date(getDate(left)).getTime();
+  });
 }
 
-function startOfDay(date: Date) {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-}
-
-function periodStart(days: number) {
-  const start = new Date();
-  start.setHours(0, 0, 0, 0);
-  start.setDate(start.getDate() - days + 1);
-  return start;
-}
-
-function inSelectedPeriod(value: string) {
-  const option = periodOptions.find(entry => entry.label === selectedPeriod.value);
-  if (!option) {
-    return true;
-  }
-
-  return parseDate(value) >= periodStart(option.days);
-}
-
-function glucoseToMmol(value: number | null) {
-  if (value === null) {
+function average(values: number[]) {
+  if (!values.length) {
     return null;
   }
 
+  const total = values.reduce((sum, value) => sum + value, 0);
+  return total / values.length;
+}
+
+function glucoseRawToMmol(value: number) {
   return value / 18;
 }
 
-const dashboard = computed(() => {
-  const glucose = (data.value?.glucose ?? []).filter(record =>
-    inSelectedPeriod(record.measuredAt),
-  );
-  const bloodPressure = (data.value?.bloodPressure ?? []).filter(record =>
-    inSelectedPeriod(record.measuredAt),
-  );
-  const weight = (data.value?.weight ?? []).filter(record =>
-    inSelectedPeriod(record.measuredAt),
-  );
-  const symptoms = (data.value?.symptoms ?? []).filter(record =>
-    inSelectedPeriod(record.happenedAt),
-  );
+function getLatestGlucoseValue(record?: GlucoseMeasurement) {
+  if (!record) {
+    return null;
+  }
 
-  const latestGlucose = glucose[0];
-  const latestBloodPressure = bloodPressure[0];
-  const latestWeight = weight[0];
-  const latestSymptom = symptoms[0];
-  const symptomCount = symptoms.filter((item) => {
-    const happenedAt = startOfDay(parseDate(item.happenedAt));
-    const today = startOfDay(new Date());
-    return (
-      today.getTime() - happenedAt.getTime() <= 6 * 86400000
-      && today.getTime() - happenedAt.getTime() >= 0
-    );
-  }).length;
+  const rawValue = record.afterMealValue ?? record.fastingValue;
 
-  const glucoseTrend = glucose
-    .slice(0, 8)
-    .reverse()
-    .map((record) => {
-      const value = record.afterMealValue ?? record.fastingValue ?? 0;
-      return {
-        height: Math.max(36, Math.min(84, (glucoseToMmol(value) ?? 0) * 12)),
-      };
-    });
+  return rawValue === null || rawValue === undefined
+    ? null
+    : glucoseRawToMmol(rawValue);
+}
 
-  const latestEntries: Array<{
-    title: string;
-    subtitle: string;
-    badge: string;
-    ignored?: boolean;
-  }> = [
-    {
-      title: 'Глюкоза после еды',
-      subtitle: 'Сегодня · 8.4 ммоль/л',
-      badge: 'OK',
-    },
-    {
-      title: 'Артериальное давление',
-      subtitle: 'Вчера · 128 / 82',
-      badge: 'OK',
-    },
-    {
+function formatMmol(value: number) {
+  return `${value.toFixed(1)}`;
+}
+
+function formatKilograms(value: number) {
+  return `${value.toFixed(1)}`;
+}
+
+function formatWeightChange(value: number) {
+  const sign = value > 0 ? '+' : '';
+  return `${sign}${value.toFixed(1)} кг`;
+}
+
+function formatBloodPressurePair(
+  record: BloodPressureMeasurement,
+) {
+  const systolic = record.systolic ?? '—';
+  const diastolic = record.diastolic ?? '—';
+  return `${systolic}/${diastolic} мм рт. ст.`;
+}
+
+function formatGlucoseEntryValue(record: GlucoseMeasurement) {
+  const values: string[] = [];
+
+  if (record.fastingValue !== null) {
+    values.push(`натощак ${formatGlucoseValue(record.fastingValue)}`);
+  }
+
+  if (record.afterMealValue !== null) {
+    values.push(`после еды ${formatGlucoseValue(record.afterMealValue)}`);
+  }
+
+  return values.length ? values.join(' / ') : '—';
+}
+
+function formatBloodPressureEntryValue(record: BloodPressureMeasurement) {
+  const values: string[] = [formatBloodPressurePair(record)];
+
+  if (record.pulse !== null) {
+    values.push(`пульс ${record.pulse} уд/мин`);
+  }
+
+  return values.join(' · ');
+}
+
+function formatSymptomEntryValue(record: SymptomMeasurement) {
+  const parts = [`балл ${record.intensity ?? '—'}`];
+
+  if (record.note) {
+    parts.push(record.note);
+  }
+
+  return parts.join(' · ');
+}
+
+function buildLatestEntries(dataSet: {
+  bloodPressure: BloodPressureMeasurement[];
+  glucose: GlucoseMeasurement[];
+  symptoms: SymptomMeasurement[];
+  weight: WeightMeasurement[];
+}) {
+  const entries: LatestEntry[] = [
+    ...dataSet.glucose.map(record => ({
+      title: 'Глюкоза',
+      subtitle: `${formatWhen(record.measuredAt)} · ${formatGlucoseEntryValue(record)}`,
+      badge: record.ignore ? 'Ignored' : 'OK',
+      ignored: record.ignore,
+      timestamp: new Date(record.measuredAt).getTime(),
+    })),
+    ...dataSet.bloodPressure.map(record => ({
+      title: 'Давление',
+      subtitle: `${formatWhen(record.measuredAt)} · ${formatBloodPressureEntryValue(record)}`,
+      badge: record.ignore ? 'Ignored' : 'OK',
+      ignored: record.ignore,
+      timestamp: new Date(record.measuredAt).getTime(),
+    })),
+    ...dataSet.weight.map(record => ({
       title: 'Вес',
-      subtitle: '3 июня · 91.4 кг',
-      badge: 'OK',
-    },
-    {
-      title: 'Глюкоза натощак',
-      subtitle: '1 июня · suspicious input',
-      badge: 'Ignored',
-      ignored: true,
-    },
+      subtitle: `${formatWhen(record.measuredAt)} · ${record.value !== null ? formatWeightValue(record.value) : '—'}`,
+      badge: record.ignore ? 'Ignored' : 'OK',
+      ignored: record.ignore,
+      timestamp: new Date(record.measuredAt).getTime(),
+    })),
+    ...dataSet.symptoms.map(record => ({
+      title: `Симптом: ${record.type}`,
+      subtitle: `${formatWhen(record.happenedAt)} · ${formatSymptomEntryValue(record)}`,
+      badge: record.intensity !== null ? `${record.intensity} pts` : '—',
+      timestamp: new Date(record.happenedAt).getTime(),
+    })),
   ];
 
+  return entries.sort((left, right) => right.timestamp - left.timestamp).slice(0, 6);
+}
+
+const periodLabel = computed(() => {
+  const value = periodFilters.value;
+
+  if (value.preset === 'custom') {
+    const from = formatPeriodShortDate(value.dateFrom);
+    const to = formatPeriodShortDate(value.dateTo);
+    return from && to ? `${from} - ${to}` : 'Произвольный период';
+  }
+
+  if (value.preset === '3m') {
+    return 'Последние 3 месяца';
+  }
+
+  if (value.preset === '6m') {
+    return 'Последние 6 месяцев';
+  }
+
+  return 'С начала года';
+});
+
+const dashboard = computed(() => {
+  const glucose = sortByDateDesc(data.value?.glucose ?? [], record => record.measuredAt);
+  const bloodPressure = sortByDateDesc(
+    data.value?.bloodPressure ?? [],
+    record => record.measuredAt,
+  );
+  const weight = sortByDateDesc(data.value?.weight ?? [], record => record.measuredAt);
+  const symptoms = sortByDateDesc(data.value?.symptoms ?? [], record => record.happenedAt);
+
+  const activeGlucose = glucose.filter(record => !record.ignore);
+  const activeBloodPressure = bloodPressure.filter(record => !record.ignore);
+  const activeWeight = weight.filter(record => !record.ignore);
+
+  const glucoseValues = activeGlucose.flatMap((record) => {
+    const values: number[] = [];
+
+    if (record.fastingValue !== null) {
+      values.push(glucoseRawToMmol(record.fastingValue));
+    }
+
+    if (record.afterMealValue !== null) {
+      values.push(glucoseRawToMmol(record.afterMealValue));
+    }
+
+    return values;
+  });
+
+  const bloodPressureSystolicValues = activeBloodPressure
+    .map(record => record.systolic)
+    .filter((value): value is number => value !== null);
+  const bloodPressureDiastolicValues = activeBloodPressure
+    .map(record => record.diastolic)
+    .filter((value): value is number => value !== null);
+
+  const symptomFrequency = symptoms.reduce<Record<string, number>>((accumulator, record) => {
+    accumulator[record.type] = (accumulator[record.type] ?? 0) + 1;
+    return accumulator;
+  }, {});
+
+  const topSymptoms: SymptomFrequency[] = Object.entries(symptomFrequency)
+    .map(([label, count]) => ({ label, count }))
+    .sort((left, right) => {
+      if (right.count !== left.count) {
+        return right.count - left.count;
+      }
+
+      return left.label.localeCompare(right.label, 'ru');
+    })
+    .slice(0, 5);
+
+  const latestGlucose = activeGlucose[0];
+  const latestBloodPressure = activeBloodPressure[0];
+  const weightedRecords = activeWeight.filter(
+    (record): record is WeightMeasurement & { value: number } => record.value !== null,
+  );
+  const latestWeight = weightedRecords[0];
+  const oldestWeight = weightedRecords.at(-1);
+
+  const weightChange = latestWeight && oldestWeight
+    ? latestWeight.value - oldestWeight.value
+    : null;
+
+  const latestEntries = buildLatestEntries({
+    bloodPressure,
+    glucose,
+    symptoms,
+    weight,
+  });
+
+  const activeRecordCount = activeGlucose.length
+    + activeBloodPressure.length
+    + activeWeight.length
+    + symptoms.length;
+
+  const ignoredRecordCount = (glucose.length - activeGlucose.length)
+    + (bloodPressure.length - activeBloodPressure.length)
+    + (weight.length - activeWeight.length);
+
+  const latestEntry = latestEntries[0];
+
   return {
-    latestGlucose,
+    activeRecordCount,
+    bloodPressureAvgDiastolic: average(bloodPressureDiastolicValues),
+    bloodPressureAvgSystolic: average(bloodPressureSystolicValues),
+    glucoseAvg: average(glucoseValues),
     latestBloodPressure,
+    latestEntry,
+    latestGlucose,
     latestWeight,
-    latestSymptom,
-    symptomCount,
-    glucoseTrend,
     latestEntries,
+    ignoredRecordCount,
+    periodLabel: periodLabel.value,
+    symptomCount: symptoms.length,
+    topSymptoms,
+    weightChange,
   };
 });
 
@@ -168,7 +301,7 @@ useHead({
 
 useSeoMeta({
   title: 'Health Monitor',
-  description: 'Тёплый экран мониторинга здоровья с быстрым вводом и историей.',
+  description: 'Сводка по глюкозе, давлению, весу и симптомам за выбранный период.',
 });
 </script>
 
@@ -177,56 +310,43 @@ useSeoMeta({
     <section class="health-hero">
       <div class="health-panel health-hero-main">
         <div class="health-eyebrow">
-          Pastel health dashboard · orange accent
+          Dashboard · summary first
         </div>
         <h1 class="health-title">
-          Спокойный мониторинг здоровья без лишнего шума
+          Сводка здоровья за выбранный период
         </h1>
         <p class="health-lead">
-          Быстрый ввод глюкозы, давления, веса и симптомов. Ошибочные значения
-          остаются в истории, но не участвуют в статистике благодаря флагу
-          ignore.
+          Dashboard показывает текущее состояние, краткую динамику и последние
+          записи без лишнего шума. Детали по каждому типу измерений остаются на
+          отдельных страницах.
         </p>
 
-        <div
-          class="health-pills"
-          role="tablist"
-          aria-label="Period filter"
-        >
-          <button
-            v-for="option in periodOptions"
-            :key="option.label"
-            type="button"
-            class="health-pill"
-            :data-active="selectedPeriod === option.label"
-            @click="selectedPeriod = option.label"
-          >
-            {{ option.label }}
-          </button>
+        <div class="health-dashboard-filter">
+          <PeriodFilter v-model="periodFilters" />
         </div>
       </div>
 
-      <aside class="health-panel health-panel-soft health-card">
-        <div>
-          <h2>Quick Entry</h2>
-          <div class="health-input-sample">
-            <div class="health-input-line">
-              Glucose · fasting · 6.1 mmol/L
-            </div>
-            <div class="health-input-line">
-              Blood pressure · 128 / 82
-            </div>
-            <div class="health-input-line">
-              Weight · 91.4 kg
-            </div>
+      <aside class="health-panel health-panel-soft health-card health-dashboard-summary">
+        <div class="health-dashboard-summary-header">
+          <h2>Период</h2>
+          <span>{{ dashboard.periodLabel }}</span>
+        </div>
+
+        <div class="health-dashboard-summary-list">
+          <div class="health-dashboard-summary-row">
+            <span>Active records</span>
+            <strong>{{ dashboard.activeRecordCount }}</strong>
+          </div>
+          <div class="health-dashboard-summary-row">
+            <span>Ignored records</span>
+            <strong>{{ dashboard.ignoredRecordCount }}</strong>
+          </div>
+          <div class="health-dashboard-summary-row health-dashboard-summary-row-wide">
+            <span>Latest activity</span>
+            <strong>{{ dashboard.latestEntry?.title ?? '—' }}</strong>
+            <small>{{ dashboard.latestEntry?.subtitle ?? 'Нет данных за период' }}</small>
           </div>
         </div>
-        <button
-          type="button"
-          class="health-button"
-        >
-          Save entry
-        </button>
       </aside>
     </section>
 
@@ -234,40 +354,77 @@ useSeoMeta({
       <HealthMetricCard
         label="Glucose"
         tone="glucose"
-        :value="dashboard.latestGlucose ? glucoseToMmol(dashboard.latestGlucose.afterMealValue ?? dashboard.latestGlucose.fastingValue ?? 0)?.toFixed(1) ?? '—' : '—'"
+        :value="getLatestGlucoseValue(dashboard.latestGlucose) !== null ? formatMmol(getLatestGlucoseValue(dashboard.latestGlucose) ?? 0) : '—'"
         unit="mmol/L"
+        :details="dashboard.glucoseAvg !== null ? `Avg period: ${dashboard.glucoseAvg.toFixed(1)} mmol/L` : 'No active values in the selected period'"
       />
       <HealthMetricCard
         label="Pressure"
         tone="pressure"
         :value="dashboard.latestBloodPressure ? `${dashboard.latestBloodPressure.systolic ?? '—'}/${dashboard.latestBloodPressure.diastolic ?? '—'}` : '—'"
+        :details="dashboard.bloodPressureAvgSystolic !== null && dashboard.bloodPressureAvgDiastolic !== null
+          ? `Avg period: ${formatBloodPressureAxisValue(dashboard.bloodPressureAvgSystolic)} / ${formatBloodPressureAxisValue(dashboard.bloodPressureAvgDiastolic)} mmHg`
+          : 'No active values in the selected period'"
       />
       <HealthMetricCard
         label="Weight"
         tone="weight"
-        :value="dashboard.latestWeight ? dashboard.latestWeight.value?.toFixed(1) ?? '—' : '—'"
+        :value="dashboard.latestWeight ? formatKilograms(dashboard.latestWeight.value) : '—'"
         unit="kg"
+        :details="dashboard.weightChange !== null ? `Change period: ${formatWeightChange(dashboard.weightChange)}` : 'Need at least two measurements for delta'"
       />
       <HealthMetricCard
         label="Symptoms"
         tone="symptoms"
         :value="String(dashboard.symptomCount)"
-        unit="this week"
+        unit="entries"
+        :details="dashboard.topSymptoms.length
+          ? `Most frequent: ${dashboard.topSymptoms[0]?.label ?? '—'}`
+          : 'No symptom entries in the selected period'"
       />
     </section>
 
-    <section class="health-grid">
-      <article class="health-panel health-chart">
-        <h2 class="health-section-title">
-          Glucose trend
-        </h2>
-        <HealthTrendBars :bars="dashboard.glucoseTrend" />
-      </article>
+    <section class="health-dashboard-chart-grid">
+      <HealthLineChart
+        class="health-dashboard-chart"
+        v-bind="{ ariaLabel: 'График глюкозы с линиями натощак и после еды' }"
+        title="Глюкоза"
+        :items="data?.glucose ?? []"
+        :series="glucoseChartSeries"
+        :value-formatter="formatGlucoseValue"
+        :y-axis-formatter="formatGlucoseAxisValue"
+      />
 
-      <HealthEntryList
-        title="Latest entries"
-        :items="dashboard.latestEntries"
+      <HealthLineChart
+        class="health-dashboard-chart"
+        v-bind="{ ariaLabel: 'График давления с линиями систолического и диастолического значения' }"
+        title="Давление"
+        :items="data?.bloodPressure ?? []"
+        :series="bloodPressureChartSeries"
+        :value-formatter="formatBloodPressureValue"
+        :y-axis-formatter="formatBloodPressureAxisValue"
+      />
+
+      <HealthLineChart
+        class="health-dashboard-chart"
+        v-bind="{ ariaLabel: 'График веса' }"
+        title="Вес"
+        :items="data?.weight ?? []"
+        :series="weightChartSeries"
+        :value-formatter="formatWeightValue"
+        :y-axis-formatter="formatWeightAxisValue"
+      />
+
+      <DashboardSymptomsPanel
+        :period-label="dashboard.periodLabel"
+        :total-count="dashboard.symptomCount"
+        :top-symptoms="dashboard.topSymptoms"
       />
     </section>
+
+    <HealthEntryList
+      title="Latest entries"
+      :items="dashboard.latestEntries"
+    />
   </HealthShell>
 </template>

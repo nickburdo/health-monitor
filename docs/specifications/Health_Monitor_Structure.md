@@ -192,6 +192,7 @@ health-monitor/
 
       dashboard/
         DashboardCards.vue
+        DashboardSymptomsPanel.vue
         LatestMeasurements.vue
         PeriodSelector.vue
 
@@ -222,6 +223,10 @@ health-monitor/
     utils/
       dates.ts
       formatters.ts
+      health-line-chart/
+        blood-pressure.ts
+        glucose.ts
+        weight.ts
 
   server/
     api/

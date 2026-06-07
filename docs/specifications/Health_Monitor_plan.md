@@ -108,3 +108,4 @@
 - [x] shared client helper now loads measurement lists with the period filter and removes repeated `useAsyncData` code from the four pages.
 - [x] shared page header component now wraps the page title and filter slot for all measurement pages.
 - [x] shared measurement page shell now wraps the repeated page grid and header/table structure for glucose, blood pressure, weight, and symptoms.
+- [x] shared ignore/restore component now owns the buttons, confirm dialogs, note handling, and PATCH calls for glucose, blood pressure, and weight.

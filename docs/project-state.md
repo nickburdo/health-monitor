@@ -1,69 +1,62 @@
 # Health Monitor Project State
 
-## Project Overview
+## Обзор
 
-Health Monitor is a personal health tracking app built with Nuxt 4, Nuxt UI, Tailwind, Prisma, SQLite, and TypeScript. It tracks glucose, blood pressure, weight, and symptoms, with a lightweight MVP focused on fast entry, tables, charts, date filtering, ignore flags for bad records, and note editing for symptoms.
+Health Monitor - личное Nuxt 4-приложение для отслеживания здоровья. В MVP поддерживаются глюкоза, давление, вес и симптомы, быстрый ввод, таблицы, фильтр периода, флаги `ignore` для некорректных записей и редактирование `note` у симптомов.
 
-## Completed Work
+## Что уже сделано
 
-- Scaffolded the Nuxt 4 project and configured `dev` to run on port `3030`.
-- Added `@nuxt/ui`, ESLint, Prettier, and TypeScript setup.
-- Set up Prisma 7 with SQLite, `prisma.config.ts`, `prisma/schema.prisma`, migrations, and a local database at `prisma/dev.db`.
-- Changed `GlucoseMeasurement` and `BloodPressureMeasurement` to use a single `ignore` flag per record.
-- Removed `ignore` from `SymptomEntry` and switched symptoms to note-only editing.
-- Added `README.md` instructions for Prisma Studio on port `5555`.
-- Implemented API routes for all four entities:
-  - `GET` list with optional `dateFrom` and `dateTo`
-  - `POST` create
-  - `PATCH /:id/ignore`
-- Added a shared server utility layer for validation and Prisma operations.
-- Added a static symptom list with `Other`.
-- Added Vitest and module tests for the API helper layer.
-- Introduced local agent rules files and standardized the repo-level guidance flow.
-- Built the first interactive UI shell with dashboard and entity pages.
-- Added a working quick-entry modal with forms for glucose, blood pressure, weight, and symptoms.
-- Added a symptom table with inline note editing.
-- Added a glucose table with ignore/restore actions and mandatory note on ignore.
-- Added a blood pressure table with ignore/restore actions and mandatory note on ignore.
-- Added a weight table with ignore/restore actions and mandatory note on ignore.
-- Refined the responsive shell so the header and footer are full-width, the header content stays capped at `1440px`, and the mobile footer is compact and pinned to the bottom.
-- Updated the table pattern across the app:
-  - removed the `Type` column from glucose, blood pressure, and weight tables;
-  - made action cells icon-only and minimal width;
-  - widened the notes column and renamed it to `ЗАМЕТКИ`;
-  - added glucose measurement markers in the date column with apple icons;
-  - split date/time and value/unit into two lines on smaller screens.
+- Поднят Nuxt 4-проект с TypeScript, Nuxt UI, Tailwind, Prisma и SQLite.
+- Настроены ESLint и Prettier.
+- Созданы Prisma schema, миграция и локальная база `prisma/dev.db`.
+- Реализованы API для всех сущностей:
+  - `GET` списки с `dateFrom` / `dateTo`
+  - `POST` создание записей
+  - `PATCH /:id/ignore` для глюкозы, давления и веса
+  - `PATCH /:id` для `note` у симптомов
+- Вынесена общая серверная логика диапазона дат в [`server/utils/date-range.ts`](C:\Users\nikbu\projects\health-monitor\server\utils\date-range.ts).
+- Вынесена общая клиентская логика периода в [`app/composables/usePeriodFilter.ts`](C:\Users\nikbu\projects\health-monitor\app\composables\usePeriodFilter.ts).
+- Вынесена общая логика загрузки списков с фильтром в [`app/composables/useMeasurementListPage.ts`](C:\Users\nikbu\projects\health-monitor\app\composables\useMeasurementListPage.ts).
+- Вынесена общая шапка страниц с фильтром в [`app/components/HealthPageHeaderWithFilter.vue`](C:\Users\nikbu\projects\health-monitor\app\components\HealthPageHeaderWithFilter.vue).
+- Добавлен компонент фильтра периода в [`app/components/PeriodFilter.vue`](C:\Users\nikbu\projects\health-monitor\app\components\PeriodFilter.vue):
+  - 4 кнопки
+  - custom-период в модальном окне
+  - отображение custom-диапазона в формате `DD.MM.YY - DD.MM.YY`
+- Подключён фильтр периода и общий header-компонент ко всем четырём страницам:
+  - [`app/pages/glucose.vue`](C:\Users\nikbu\projects\health-monitor\app\pages\glucose.vue)
+  - [`app/pages/blood-pressure.vue`](C:\Users\nikbu\projects\health-monitor\app\pages\blood-pressure.vue)
+  - [`app/pages/weight.vue`](C:\Users\nikbu\projects\health-monitor\app\pages\weight.vue)
+  - [`app/pages/symptoms.vue`](C:\Users\nikbu\projects\health-monitor\app\pages\symptoms.vue)
+- Сделаны таблицы с ignore/restore для глюкозы, давления и веса, а для симптомов - inline-edit note.
+- Обновлены спецификации в `docs/specifications`.
 
-## Current State
+## Текущее состояние
 
-- The working tree has new UI changes pending commit.
-- `AGENTS.md` is now ignored locally and kept out of git tracking.
-- `AGENTS.locale.md` exists locally for project-specific rules.
-- The quick-entry flow now creates real records through the POST APIs and refreshes the UI.
-- Symptoms are editable only through `note`; they no longer have ignore/restore.
-- The glucose table now uses a confirm dialog for ignore and a direct restore action.
-- The blood pressure and weight tables use the same ignore/restore interaction model.
-- The table styling pass is in progress and the latest responsive/table changes are still uncommitted.
+- Рабочее дерево чистое.
+- Последний коммит: `a36fc51` - `Extract shared page headers`.
+- Локальные общие helpers уже вынесены, повторяющаяся логика заметно сокращена.
+- Текущая архитектура страниц теперь строится вокруг:
+  - общего period composable
+  - общего list-page composable
+  - общего header-компонента с slot для фильтра
 
-## Important Decisions
+## Важные решения
 
-- Use Nuxt 4 plus Nuxt UI as the app stack.
-- Use SQLite for local storage and Prisma 7 for schema, migrations, and client generation.
-- Use one `ignore` flag per glucose and blood pressure record, not per sub-field.
-- Keep symptoms as a static predefined list in MVP, including `Other`, with note-only editing.
-- Keep the dev server on port `3030`.
-- Keep Prisma Studio on port `5555`.
-- Keep `AGENTS.md` local-only and use `AGENTS.locale.md` for project-specific rules.
-- Keep the shared table layout pattern consistent across the measurement pages, even if individual pages need different note/edit behavior.
+- Используется Nuxt 4 + Nuxt UI.
+- Локальное хранилище - SQLite через Prisma.
+- Для измерений глюкозы, давления и веса используется единый `ignore` на запись.
+- Симптомы остаются статическим справочником в MVP.
+- Дев-сервер держится на порту `3030`.
+- Prisma Studio - на порту `5555`.
 
-## Known Issues
+## Известные моменты
 
-- The documentation still contains some legacy spec text in the `docs/specifications` folder.
-- The tables are still being tuned for mobile readability; the current mobile table layout is usable but not yet final.
-- No known functional blockers were left in the API layer after the last test run.
+- В `docs/specifications` ещё может быть старый текст, который нужно сверять с текущей реализацией.
+- Табличный UI уже приведён к общей схеме, но дальнейшая полировка возможна.
 
-## Next Steps
+## Следующий шаг
 
-- Finish the mobile table polish, especially the glucose/blood-pressure/weight table layout under `768px`.
-- Decide whether symptoms should stay on the same table pattern or keep a slightly different edit affordance.
-- Then continue with charting and presentation once the chart library integration is started.
+- Начать серьёзный рефакторинг UI-слоя:
+  - ещё сильнее сократить дубли в page-shell
+  - проверить, можно ли унифицировать layout-карточки
+  - решить, нужен ли общий компонент для повторяющихся table headers и action cells

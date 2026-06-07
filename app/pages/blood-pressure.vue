@@ -18,19 +18,16 @@ useHead({ title: 'Blood Pressure · Health Monitor' });
 
 <template>
   <HealthShell>
-    <section class="health-page-grid">
-      <div class="health-panel health-page-card">
-        <HealthPageHeaderWithFilter
-          eyebrow="Blood pressure"
-          title="Давление"
-        >
-          <PeriodFilter v-model="periodFilters" />
-        </HealthPageHeaderWithFilter>
-      </div>
-
+    <MeasurementPageShell
+      eyebrow="Blood pressure"
+      title="Давление"
+    >
+      <template #filter>
+        <PeriodFilter v-model="periodFilters" />
+      </template>
       <BloodPressureTable
         :items="data ?? []"
       />
-    </section>
+    </MeasurementPageShell>
   </HealthShell>
 </template>

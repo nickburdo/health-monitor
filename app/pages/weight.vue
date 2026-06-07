@@ -16,19 +16,16 @@ useHead({ title: 'Weight · Health Monitor' });
 
 <template>
   <HealthShell>
-    <section class="health-page-grid">
-      <div class="health-panel health-page-card">
-        <HealthPageHeaderWithFilter
-          eyebrow="Weight"
-          title="Вес"
-        >
-          <PeriodFilter v-model="periodFilters" />
-        </HealthPageHeaderWithFilter>
-      </div>
-
+    <MeasurementPageShell
+      eyebrow="Weight"
+      title="Вес"
+    >
+      <template #filter>
+        <PeriodFilter v-model="periodFilters" />
+      </template>
       <WeightTable
         :items="data ?? []"
       />
-    </section>
+    </MeasurementPageShell>
   </HealthShell>
 </template>

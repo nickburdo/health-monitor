@@ -17,19 +17,16 @@ useHead({ title: 'Glucose · Health Monitor' });
 
 <template>
   <HealthShell>
-    <section class="health-page-grid">
-      <div class="health-panel health-page-card">
-        <HealthPageHeaderWithFilter
-          eyebrow="Glucose"
-          title="Глюкоза"
-        >
-          <PeriodFilter v-model="periodFilters" />
-        </HealthPageHeaderWithFilter>
-      </div>
-
+    <MeasurementPageShell
+      eyebrow="Glucose"
+      title="Глюкоза"
+    >
+      <template #filter>
+        <PeriodFilter v-model="periodFilters" />
+      </template>
       <GlucoseTable
         :items="data ?? []"
       />
-    </section>
+    </MeasurementPageShell>
   </HealthShell>
 </template>

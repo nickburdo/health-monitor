@@ -185,7 +185,7 @@ watch(
 
         <footer class="health-modal-actions">
           <p class="health-form-note">
-            Выберите диапазон и примените его к списку веса.
+            Выберите диапазон и примените его к списку измерений.
           </p>
 
           <div class="health-modal-buttons">

@@ -1,23 +1,47 @@
 <script setup lang="ts">
+import type { DashboardData } from '~/types/dashboard';
+
 type SymptomFrequency = {
   count: number;
   label: string;
 };
 
 const props = defineProps<{
+  data: DashboardData;
   periodLabel: string;
   title?: string;
-  topSymptoms: SymptomFrequency[];
-  totalCount: number;
 }>();
 
+const dashboard = computed(() => {
+  const symptomFrequency = props.data.symptoms.reduce<Record<string, number>>((accumulator, record) => {
+    accumulator[record.type] = (accumulator[record.type] ?? 0) + 1;
+    return accumulator;
+  }, {});
+
+  const topSymptoms: SymptomFrequency[] = Object.entries(symptomFrequency)
+    .map(([label, count]) => ({ label, count }))
+    .sort((left, right) => {
+      if (right.count !== left.count) {
+        return right.count - left.count;
+      }
+
+      return left.label.localeCompare(right.label, 'ru');
+    })
+    .slice(0, 5);
+
+  return {
+    topSymptoms,
+    totalCount: props.data.symptoms.length,
+  };
+});
+
 const maxCount = computed(() => {
-  const counts = props.topSymptoms.map(item => item.count);
+  const counts = dashboard.value.topSymptoms.map(item => item.count);
 
   return counts.length ? Math.max(...counts) : 1;
 });
 
-const leadingSymptom = computed(() => props.topSymptoms[0]);
+const leadingSymptom = computed(() => dashboard.value.topSymptoms[0]);
 
 function barWidth(count: number) {
   const width = (count / maxCount.value) * 100;
@@ -44,13 +68,13 @@ function barWidth(count: number) {
     </header>
 
     <div
-      v-if="topSymptoms.length"
+      v-if="dashboard.topSymptoms.length"
       class="health-dashboard-symptoms-body"
     >
       <div class="health-dashboard-symptoms-summary">
         <div class="health-dashboard-symptoms-stat">
           <span>Entries</span>
-          <strong>{{ totalCount }}</strong>
+          <strong>{{ dashboard.totalCount }}</strong>
         </div>
         <div class="health-dashboard-symptoms-stat">
           <span>Most frequent</span>
@@ -60,7 +84,7 @@ function barWidth(count: number) {
 
       <div class="health-dashboard-symptoms-bars">
         <div
-          v-for="symptom in topSymptoms"
+          v-for="symptom in dashboard.topSymptoms"
           :key="symptom.label"
           class="health-dashboard-symptoms-row"
         >

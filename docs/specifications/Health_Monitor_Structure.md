@@ -202,6 +202,7 @@ health-monitor/
         SymptomsTable.vue
 
       charts/
+        HealthLineChart.vue
         GlucoseChart.vue
         BloodPressureChart.vue
         WeightChart.vue

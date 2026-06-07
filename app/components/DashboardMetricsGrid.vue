@@ -129,35 +129,35 @@ const dashboard = computed(() => {
 <template>
   <section class="health-meta-grid">
     <HealthMetricCard
-      label="Glucose"
+      label="Глюкоза"
       tone="glucose"
       :value="formatGlucoseDisplay(dashboard.latestGlucose)"
       unit="mmol/L"
-      :details="dashboard.glucoseAvg !== null ? `Avg period: ${dashboard.glucoseAvg.toFixed(1)} mmol/L` : 'No active values in the selected period'"
+      :details="dashboard.glucoseAvg !== null ? `Среднее за период: ${dashboard.glucoseAvg.toFixed(1)} mmol/L` : 'Нет активных значений за выбранный период'"
     />
     <HealthMetricCard
-      label="Pressure"
+      label="Давление"
       tone="pressure"
       :value="dashboard.latestBloodPressure ? `${dashboard.latestBloodPressure.systolic ?? '—'}/${dashboard.latestBloodPressure.diastolic ?? '—'}` : '—'"
       :details="dashboard.bloodPressureAvgSystolic !== null && dashboard.bloodPressureAvgDiastolic !== null
-        ? `Avg period: ${formatBloodPressureAxisValue(dashboard.bloodPressureAvgSystolic)} / ${formatBloodPressureAxisValue(dashboard.bloodPressureAvgDiastolic)} mmHg`
-        : 'No active values in the selected period'"
+        ? `Среднее за период: ${formatBloodPressureAxisValue(dashboard.bloodPressureAvgSystolic)} / ${formatBloodPressureAxisValue(dashboard.bloodPressureAvgDiastolic)} мм рт. ст.`
+        : 'Нет активных значений за выбранный период'"
     />
     <HealthMetricCard
-      label="Weight"
+      label="Вес"
       tone="weight"
       :value="dashboard.latestWeight ? formatKilograms(dashboard.latestWeight.value) : '—'"
       unit="kg"
-      :details="dashboard.weightChange !== null ? `Change period: ${formatWeightChange(dashboard.weightChange)}` : 'Need at least two measurements for delta'"
+      :details="dashboard.weightChange !== null ? `Изменение за период: ${formatWeightChange(dashboard.weightChange)}` : 'Нужно хотя бы две записи для расчёта изменения'"
     />
     <HealthMetricCard
-      label="Symptoms"
+      label="Симптомы"
       tone="symptoms"
       :value="String(dashboard.symptomCount)"
       unit="entries"
       :details="dashboard.topSymptoms.length
-        ? `Most frequent: ${dashboard.topSymptoms[0]?.label ?? '—'}`
-        : 'No symptom entries in the selected period'"
+        ? `Самый частый: ${dashboard.topSymptoms[0]?.label ?? '—'}`
+        : 'Нет записей симптомов за выбранный период'"
     />
   </section>
 </template>

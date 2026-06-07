@@ -311,7 +311,7 @@ health-monitor/
 - `Игнорировать` открывает confirm dialog;
 - в confirm dialog обязательно вводится `note`;
 - после подтверждения отправляется `PATCH /api/glucose/:id/ignore` с `ignore: true` и `note`;
-- `Восстановить` отправляет `PATCH /api/glucose/:id/ignore` с `ignore: false` без подтверждения;
+- `Восстановить` открывает confirm dialog, требует `note` и отправляет `PATCH /api/glucose/:id/ignore` с `ignore: false` и `note`;
 - строки с `ignore=true` визуально приглушаются.
 
 
@@ -339,7 +339,7 @@ health-monitor/
 - `Игнорировать` открывает confirm dialog;
 - в confirm dialog обязательно вводится `note`;
 - после подтверждения отправляется `PATCH /api/weight/:id/ignore` с `ignore: true` и `note`;
-- `Восстановить` отправляет `PATCH /api/weight/:id/ignore` с `ignore: false` без подтверждения;
+- `Восстановить` открывает confirm dialog, требует `note` и отправляет `PATCH /api/weight/:id/ignore` с `ignore: false` и `note`;
 - строки с `ignore=true` визуально приглушаются.
 
 
@@ -365,7 +365,7 @@ health-monitor/
 - `Игнорировать` открывает confirm dialog;
 - в confirm dialog обязательно вводится `note`;
 - после подтверждения отправляется `PATCH /api/blood-pressure/:id/ignore` с `ignore: true` и `note`;
-- `Восстановить` отправляет `PATCH /api/blood-pressure/:id/ignore` с `ignore: false` без подтверждения;
+- `Восстановить` открывает confirm dialog, требует `note` и отправляет `PATCH /api/blood-pressure/:id/ignore` с `ignore: false` и `note`;
 - строки с `ignore=true` визуально приглушаются.
 
 

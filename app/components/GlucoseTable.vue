@@ -16,6 +16,9 @@ const toast = useToast();
 const ignoreDialogOpen = ref(false);
 const activeItem = ref<GlucoseRow | null>(null);
 const ignoreNote = ref('');
+const restoreDialogOpen = ref(false);
+const restoreItem = ref<GlucoseRow | null>(null);
+const restoreNote = ref('');
 const savingId = ref<string | null>(null);
 const errorText = ref('');
 let onKeydown: ((event: KeyboardEvent) => void) | null = null;
@@ -101,10 +104,24 @@ function openIgnoreDialog(item: GlucoseRow) {
   ignoreDialogOpen.value = true;
 }
 
+function openRestoreDialog(item: GlucoseRow) {
+  restoreItem.value = item;
+  restoreNote.value = '';
+  errorText.value = '';
+  restoreDialogOpen.value = true;
+}
+
 function closeIgnoreDialog() {
   ignoreDialogOpen.value = false;
   activeItem.value = null;
   ignoreNote.value = '';
+  errorText.value = '';
+}
+
+function closeRestoreDialog() {
+  restoreDialogOpen.value = false;
+  restoreItem.value = null;
+  restoreNote.value = '';
   errorText.value = '';
 }
 
@@ -126,7 +143,7 @@ async function ignoreSelected() {
     return;
   }
 
-  const note = ignoreNote.value.trim();
+  const note = String(ignoreNote.value ?? '').trim();
 
   if (!note) {
     errorText.value = 'note обязателен';
@@ -158,14 +175,26 @@ async function ignoreSelected() {
   }
 }
 
-async function restoreItem(item: GlucoseRow) {
-  try {
-    savingId.value = item.id;
+async function restoreSelected() {
+  if (!restoreItem.value) {
+    return;
+  }
 
-    await $fetch(`/api/glucose/${item.id}/ignore`, {
+  const note = String(restoreNote.value ?? '').trim();
+
+  if (!note) {
+    errorText.value = 'note обязателен';
+    return;
+  }
+
+  try {
+    savingId.value = restoreItem.value.id;
+
+    await $fetch(`/api/glucose/${restoreItem.value.id}/ignore`, {
       method: 'PATCH',
       body: {
         ignore: false,
+        note,
       },
     });
 
@@ -174,6 +203,7 @@ async function restoreItem(item: GlucoseRow) {
       description: 'Статус ignored снят без подтверждения.',
     });
 
+    closeRestoreDialog();
     await refreshNuxtData('glucose-page');
   } catch (error) {
     toast.add({
@@ -188,8 +218,9 @@ async function restoreItem(item: GlucoseRow) {
 
 onMounted(() => {
   onKeydown = (event: KeyboardEvent) => {
-    if (event.key === 'Escape' && ignoreDialogOpen.value) {
+    if (event.key === 'Escape' && (ignoreDialogOpen.value || restoreDialogOpen.value)) {
       closeIgnoreDialog();
+      closeRestoreDialog();
     }
   };
 
@@ -295,7 +326,7 @@ onBeforeUnmount(() => {
                 :disabled="savingId === item.id"
                 title="Восстановить"
                 aria-label="Восстановить"
-                @click="restoreItem(item)"
+                @click="openRestoreDialog(item)"
               >
                 <UIcon name="i-lucide-undo-2" />
                 <span class="sr-only">Восстановить</span>
@@ -400,6 +431,108 @@ onBeforeUnmount(() => {
                 class="health-button health-button-small health-table-icon-button"
                 :disabled="savingId === activeItem?.id"
                 @click="ignoreSelected"
+              >
+                <UIcon name="i-lucide-check" />
+                <span class="sr-only">Подтвердить</span>
+              </button>
+            </div>
+          </footer>
+        </section>
+      </div>
+    </Teleport>
+    <Teleport to="body">
+      <div
+        v-if="restoreDialogOpen"
+        class="health-modal-backdrop"
+        role="presentation"
+        @click.self="closeRestoreDialog"
+      >
+        <section
+          class="health-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="glucose-restore-title"
+        >
+          <header class="health-modal-header">
+            <div>
+              <div class="health-eyebrow">
+                Confirm dialog
+              </div>
+              <h2
+                id="glucose-restore-title"
+                class="health-modal-title"
+              >
+                Восстановить запись глюкозы
+              </h2>
+              <p class="health-modal-lead">
+                Укажите note для восстановления. Запись снова станет активной.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              class="health-modal-close"
+              aria-label="Close restore dialog"
+              @click="closeRestoreDialog"
+            >
+              ×
+            </button>
+          </header>
+
+          <div class="health-modal-summary">
+            <p>
+              <strong>Тип:</strong> Восстановление
+            </p>
+            <p>
+              <strong>Дата:</strong>
+              {{ restoreItem ? formatWhen(restoreItem.measuredAt) : '—' }}
+            </p>
+            <p>
+              <strong>Значение:</strong>
+              {{ restoreItem ? formatValueParts(restoreItem).value : '—' }}
+              <span v-if="restoreItem && formatValueParts(restoreItem).unit">
+                {{ formatValueParts(restoreItem).unit }}
+              </span>
+            </p>
+          </div>
+
+          <div class="health-form-grid">
+            <label class="health-field">
+              <span>note</span>
+              <textarea
+                v-model="restoreNote"
+                class="health-textarea"
+                rows="4"
+                placeholder="Например: запись была помечена ошибочно"
+              />
+            </label>
+            <p
+              v-if="errorText"
+              class="health-form-error"
+            >
+              {{ errorText }}
+            </p>
+          </div>
+
+          <footer class="health-modal-actions">
+            <p class="health-form-note">
+              Без note восстановление недоступно.
+            </p>
+
+            <div class="health-modal-buttons">
+              <button
+                type="button"
+                class="health-button health-button-secondary health-button-small health-table-icon-button"
+                @click="closeRestoreDialog"
+              >
+                <UIcon name="i-lucide-x" />
+                <span class="sr-only">Отмена</span>
+              </button>
+              <button
+                type="button"
+                class="health-button health-button-small health-table-icon-button"
+                :disabled="savingId === restoreItem?.id"
+                @click="restoreSelected"
               >
                 <UIcon name="i-lucide-check" />
                 <span class="sr-only">Подтвердить</span>

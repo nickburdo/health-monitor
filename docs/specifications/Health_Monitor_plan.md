@@ -100,4 +100,6 @@
 - loading states;
 - обработка ошибок;
 - уведомления;
-- адаптивность.
+- адаптивность;
+- [x] quick entry и note-поля теперь нормализуют значения до trim, поэтому создание записи не падает на нестроковом вводе.
+- [x] restore dialogs for glucose, blood pressure, and weight now require note and send PATCH with `ignore: false`.

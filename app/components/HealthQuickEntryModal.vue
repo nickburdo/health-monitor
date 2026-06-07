@@ -89,8 +89,8 @@ function closeModal() {
   emit('close');
 }
 
-function parseOptionalNumber(value: string) {
-  const trimmed = value.trim();
+function parseOptionalNumber(value: unknown) {
+  const trimmed = String(value ?? '').trim();
   if (!trimmed) {
     return undefined;
   }

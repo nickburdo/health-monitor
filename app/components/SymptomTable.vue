@@ -51,8 +51,8 @@ function syncMobileEditLayout() {
   isMobileEditLayout.value = mobileEditMediaQuery?.matches ?? false;
 }
 
-function normalizeNote(value: string) {
-  const trimmed = value.trim();
+function normalizeNote(value: unknown) {
+  const trimmed = String(value ?? '').trim();
   return trimmed.length > 0 ? trimmed : null;
 }
 

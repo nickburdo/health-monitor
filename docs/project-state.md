@@ -7,7 +7,7 @@ Health Monitor is a personal Nuxt 4 app for tracking health. MVP covers glucose,
 ## Current State
 
 - Working tree is not clean; there are local edits in the dashboard area.
-- Latest commit: `1e40b91` - `Fix dashboard symptoms layout`.
+- Latest commit: `7117a38` - `Limit dashboard symptom types`.
 - Shared helpers already exist for date ranges, period filtering, measurement list loading, page headers, ignore/restore actions, and date formatting.
 - `HealthLineChart` powers glucose, blood pressure, weight, and the dashboard charts.
 - Dashboard now shows summary cards, three compact line charts, a dedicated symptom bar chart, and a localized latest-entries list.
@@ -15,6 +15,7 @@ Health Monitor is a personal Nuxt 4 app for tracking health. MVP covers glucose,
 - Dashboard period filtering now refreshes data explicitly on query changes.
 - Dashboard symptom card now keeps its header compact when only a few symptom types are present.
 - Dashboard symptom bars are aligned to the bottom of the card when the content is short.
+- Dashboard symptom chart accepts an optional `maxTypes` prop; the dashboard uses it to cap the rendered symptom types at five.
 - The separate symptom line chart remains deferred; dashboard symptoms are now shown as a bar chart.
 
 ## Important Decisions

@@ -8,6 +8,7 @@ type GlucoseRow = {
   afterMealValue: number | null;
   ignore: boolean;
   note: string | null;
+  reason: string | null;
 };
 
 const props = defineProps<{
@@ -78,6 +79,14 @@ function glucoseSummary(item: GlucoseRow) {
       helper: formatValueParts(item).unit ? formatValueParts(item).unit : undefined,
     },
   ];
+}
+
+function displayNote(item: GlucoseRow) {
+  if (item.ignore) {
+    return item.reason ?? '—';
+  }
+
+  return item.note ?? '—';
 }
 </script>
 
@@ -151,7 +160,7 @@ function glucoseSummary(item: GlucoseRow) {
               </span>
             </td>
             <td class="health-table-note health-table-note-cell">
-              {{ item.note ?? '—' }}
+              {{ displayNote(item) }}
             </td>
             <td class="health-table-action-cell">
               <MeasurementIgnoreControls
@@ -160,8 +169,7 @@ function glucoseSummary(item: GlucoseRow) {
                 refresh-key="glucose-page"
                 entity-label="глюкозы"
                 :summary="glucoseSummary(item)"
-                ignore-placeholder="Например: подозрительно высокий показатель после плотного ужина"
-                restore-placeholder="Например: запись была помечена ошибочно"
+                reason-placeholder="Например: подозрительно высокий показатель после плотного ужина"
               />
             </td>
           </tr>

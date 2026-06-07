@@ -6,6 +6,7 @@ type RecordItem = {
   afterMealValue: number | null;
   ignore: boolean;
   note: string | null;
+  reason: string | null;
 };
 const { periodFilters, data } = await useMeasurementListPage<RecordItem>({
   key: 'glucose-page',

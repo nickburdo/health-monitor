@@ -7,6 +7,7 @@ type RecordItem = {
   pulse: number | null;
   ignore: boolean;
   note: string | null;
+  reason: string | null;
 };
 const { periodFilters, data } = await useMeasurementListPage<RecordItem>({
   key: 'blood-pressure-page',

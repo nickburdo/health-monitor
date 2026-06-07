@@ -2,7 +2,7 @@ import { createError } from 'h3';
 import {
   SYMPTOM_OPTIONS,
   type SymptomOption,
-} from '../../app/components/symptoms/symptom-options';
+} from '~/constants/symptom-options';
 
 type Delegate = {
   create: (args: { data: Record<string, unknown> }) => Promise<unknown>;
@@ -60,7 +60,7 @@ type SymptomUpdateInput = {
 
 type IgnoreInput = {
   ignore: unknown;
-  note?: unknown;
+  reason?: unknown;
 };
 
 function badRequest(message: string): never {
@@ -173,17 +173,23 @@ function parseRequiredNullableString(
   return trimmed.length > 0 ? trimmed : null;
 }
 
-function buildIgnoreData(input: IgnoreInput): { ignore: boolean; note?: string | null } {
+function buildIgnoreData(input: IgnoreInput): { ignore: boolean; reason?: string | null } {
   const ignore = parseBoolean(input.ignore, 'ignore');
-  const note = parseOptionalString(input.note, 'note');
+  const reason = parseOptionalString(input.reason, 'reason');
 
-  if (ignore && note === undefined) {
-    badRequest('note is required when ignore is true');
+  if (!ignore) {
+    return {
+      ignore,
+    };
+  }
+
+  if (reason === undefined) {
+    badRequest('reason is required when ignore is true');
   }
 
   return {
     ignore,
-    ...(note !== undefined ? { note } : {}),
+    reason,
   };
 }
 

@@ -9,6 +9,7 @@ type BloodPressureRow = {
   pulse: number | null;
   ignore: boolean;
   note: string | null;
+  reason: string | null;
 };
 
 const props = defineProps<{
@@ -40,6 +41,14 @@ function bloodPressureSummary(item: BloodPressureRow) {
       helper: formatValueParts(item).unit ? formatValueParts(item).unit : undefined,
     },
   ];
+}
+
+function displayNote(item: BloodPressureRow) {
+  if (item.ignore) {
+    return item.reason ?? '—';
+  }
+
+  return item.note ?? '—';
 }
 </script>
 
@@ -105,7 +114,7 @@ function bloodPressureSummary(item: BloodPressureRow) {
               </span>
             </td>
             <td class="health-table-note health-table-note-cell">
-              {{ item.note ?? '—' }}
+              {{ displayNote(item) }}
             </td>
             <td class="health-table-action-cell">
               <MeasurementIgnoreControls
@@ -114,8 +123,7 @@ function bloodPressureSummary(item: BloodPressureRow) {
                 refresh-key="blood-pressure-page"
                 entity-label="давления"
                 :summary="bloodPressureSummary(item)"
-                ignore-placeholder="Например: манжета была надета неправильно"
-                restore-placeholder="Например: запись была скрыта ошибочно"
+                reason-placeholder="Например: манжета была надета неправильно"
               />
             </td>
           </tr>

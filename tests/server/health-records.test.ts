@@ -94,16 +94,16 @@ describe('health records api helpers', () => {
 
     await setGlucoseMeasurementIgnore(db, 'glucose-1', {
       ignore: true,
-      note: 'invalid input',
+      reason: 'invalid input',
     });
 
     expect(db.glucoseMeasurement.update).toHaveBeenCalledWith({
       where: { id: 'glucose-1' },
-      data: { ignore: true, note: 'invalid input' },
+      data: { ignore: true, reason: 'invalid input' },
     });
   });
 
-  it('requires a note when ignoring a glucose record', async () => {
+  it('requires a reason when ignoring a glucose record', async () => {
     const db = makeDb({
       glucoseMeasurement: makeDelegate({ id: 'glucose-1' }),
     });
@@ -154,12 +154,12 @@ describe('health records api helpers', () => {
 
     await setBloodPressureMeasurementIgnore(db, 'bp-1', {
       ignore: true,
-      note: 'wrong cuff position',
+      reason: 'wrong cuff position',
     });
 
     expect(db.bloodPressureMeasurement.update).toHaveBeenCalledWith({
       where: { id: 'bp-1' },
-      data: { ignore: true, note: 'wrong cuff position' },
+      data: { ignore: true, reason: 'wrong cuff position' },
     });
   });
 
@@ -231,13 +231,13 @@ describe('health records api helpers', () => {
 
     await setWeightMeasurementIgnore(db, 'weight-1', {
       ignore: true,
-      note: 'scale error',
+      reason: 'scale error',
     });
     await updateSymptomEntryNote(db, 'symptom-1', { note: 'updated note' });
 
     expect(db.weightMeasurement.update).toHaveBeenCalledWith({
       where: { id: 'weight-1' },
-      data: { ignore: true, note: 'scale error' },
+      data: { ignore: true, reason: 'scale error' },
     });
 
     expect(db.symptomEntry.update).toHaveBeenCalledWith({

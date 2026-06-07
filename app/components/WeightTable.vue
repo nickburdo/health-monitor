@@ -7,6 +7,7 @@ type WeightRow = {
   value: number | null;
   ignore: boolean;
   note: string | null;
+  reason: string | null;
 };
 
 const props = defineProps<{
@@ -36,6 +37,14 @@ function weightSummary(item: WeightRow) {
       helper: formatValueParts(item).unit ? formatValueParts(item).unit : undefined,
     },
   ];
+}
+
+function displayNote(item: WeightRow) {
+  if (item.ignore) {
+    return item.reason ?? '—';
+  }
+
+  return item.note ?? '—';
 }
 </script>
 
@@ -101,7 +110,7 @@ function weightSummary(item: WeightRow) {
               </span>
             </td>
             <td class="health-table-note health-table-note-cell">
-              {{ item.note ?? '—' }}
+              {{ displayNote(item) }}
             </td>
             <td class="health-table-action-cell">
               <MeasurementIgnoreControls
@@ -110,8 +119,7 @@ function weightSummary(item: WeightRow) {
                 refresh-key="weight-page"
                 entity-label="веса"
                 :summary="weightSummary(item)"
-                ignore-placeholder="Например: неудачное взвешивание после плотного обеда"
-                restore-placeholder="Например: запись была скрыта ошибочно"
+                reason-placeholder="Например: неудачное взвешивание после плотного обеда"
               />
             </td>
           </tr>

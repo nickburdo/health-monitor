@@ -48,27 +48,27 @@
 
 - [x] таблица глюкозы готова;
 - `Игнорировать` открывает confirm dialog;
-- в confirm dialog обязательно вводится `note`;
-- после подтверждения отправляется `PATCH /api/glucose/:id/ignore` с `ignore: true` и `note`;
-- `Восстановить` отправляет `PATCH /api/glucose/:id/ignore` без подтверждения с `ignore: false`;
+- в confirm dialog обязательно вводится `reason`;
+- после подтверждения отправляется `PATCH /api/glucose/:id/ignore` с `ignore: true` и `reason`;
+- `Восстановить` отправляется `PATCH /api/glucose/:id/ignore` без подтверждения с `ignore: false`;
 - ignored-строки визуально приглушаются.
 
 #### Таблица давления
 
 - [x] таблица давления реализована;
 - `Игнорировать` открывает confirm dialog;
-- в confirm dialog обязательно вводится `note`;
-- после подтверждения отправляется `PATCH /api/blood-pressure/:id/ignore` с `ignore: true` и `note`;
-- `Восстановить` отправляет `PATCH /api/blood-pressure/:id/ignore` с `ignore: false` без подтверждения;
+- в confirm dialog обязательно вводится `reason`;
+- после подтверждения отправляется `PATCH /api/blood-pressure/:id/ignore` с `ignore: true` и `reason`;
+- `Восстановить` отправляется `PATCH /api/blood-pressure/:id/ignore` с `ignore: false` без подтверждения;
 - строки с `ignore=true` визуально приглушаются.
 
 #### Таблица веса
 
 - [x] таблица веса реализована;
 - `Игнорировать` открывает confirm dialog;
-- в confirm dialog обязательно вводится `note`;
-- после подтверждения отправляется `PATCH /api/weight/:id/ignore` с `ignore: true` и `note`;
-- `Восстановить` отправляет `PATCH /api/weight/:id/ignore` с `ignore: false` без подтверждения;
+- в confirm dialog обязательно вводится `reason`;
+- после подтверждения отправляется `PATCH /api/weight/:id/ignore` с `ignore: true` и `reason`;
+- `Восстановить` отправляется `PATCH /api/weight/:id/ignore` с `ignore: false` без подтверждения;
 - строки с `ignore=true` визуально приглушаются.
 
 #### Таблица симптомов
@@ -102,10 +102,11 @@
 - уведомления;
 - адаптивность;
 - [x] quick entry и note-поля теперь нормализуют значения до trim, поэтому создание записи не падает на нестроковом вводе.
-- [x] restore dialogs for glucose, blood pressure, and weight now require note and send PATCH with `ignore: false`.
+- [x] ignore dialogs for glucose, blood pressure, and weight now require reason and send PATCH with `ignore: true`.
+- [x] restore actions for glucose, blood pressure, and weight now run without confirmation and send PATCH with `ignore: false`.
 - [x] period filter component now renders as four inline buttons, opens a modal for custom ranges, and is placed inside the main page title blocks with query filtering wired up for glucose, blood pressure, weight, and symptoms.
 - [x] shared server helper now reads `dateFrom` and `dateTo` for all measurement list endpoints.
 - [x] shared client helper now loads measurement lists with the period filter and removes repeated `useAsyncData` code from the four pages.
 - [x] shared page header component now wraps the page title and filter slot for all measurement pages.
 - [x] shared measurement page shell now wraps the repeated page grid and header/table structure for glucose, blood pressure, weight, and symptoms.
-- [x] shared ignore/restore component now owns the buttons, confirm dialogs, note handling, and PATCH calls for glucose, blood pressure, and weight.
+- [x] shared ignore/restore component now owns the buttons, confirm dialog, reason handling, direct restore action, and PATCH calls for glucose, blood pressure, and weight.

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SYMPTOM_OPTIONS } from './symptoms/symptom-options';
+import { SYMPTOM_OPTIONS } from '../constants/symptom-options';
 
 type EntryType = 'glucose' | 'bloodPressure' | 'weight' | 'symptom';
 

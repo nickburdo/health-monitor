@@ -15,6 +15,7 @@ model GlucoseMeasurement {
   ignore         Boolean  @default(false)
 
   note String?
+  reason String?
 
   createdAt DateTime @default(now())
 
@@ -31,6 +32,7 @@ model BloodPressureMeasurement {
   ignore     Boolean  @default(false)
 
   note String?
+  reason String?
 
   createdAt DateTime @default(now())
 
@@ -45,6 +47,7 @@ model WeightMeasurement {
   ignore     Boolean  @default(false)
 
   note       String?
+  reason     String?
 
   createdAt  DateTime @default(now())
 

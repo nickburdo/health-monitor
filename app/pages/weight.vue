@@ -5,6 +5,7 @@ type RecordItem = {
   value: number | null;
   ignore: boolean;
   note: string | null;
+  reason: string | null;
 };
 const { periodFilters, data } = await useMeasurementListPage<RecordItem>({
   key: 'weight-page',

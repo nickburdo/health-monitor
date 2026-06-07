@@ -1,14 +1,7 @@
 <script setup lang="ts">
-type RecordItem = {
-  id: string;
-  measuredAt: string;
-  fastingValue: number | null;
-  afterMealValue: number | null;
-  ignore: boolean;
-  note: string | null;
-  reason: string | null;
-};
-const { periodFilters, data } = await useMeasurementListPage<RecordItem>({
+import type { GlucoseMeasurement } from '~/types/glucose';
+
+const { periodFilters, data } = await useMeasurementListPage<GlucoseMeasurement>({
   key: 'glucose-page',
   endpoint: '/api/glucose',
 });
@@ -25,6 +18,7 @@ useHead({ title: 'Glucose · Health Monitor' });
       <template #filter>
         <PeriodFilter v-model="periodFilters" />
       </template>
+      <GlucoseChart :items="data ?? []" />
       <GlucoseTable
         :items="data ?? []"
       />

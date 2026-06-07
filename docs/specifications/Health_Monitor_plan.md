@@ -82,7 +82,10 @@
 
 ### Этап 7. Графики
 
-- график глюкозы;
+- [x] график глюкозы как отдельный компонент на странице `/glucose`;
+  - две линии: натощак и после еды;
+  - использует те же данные, что и таблица;
+  - без отдельного фильтра по датам;
 - график давления;
 - график веса;
 - график симптомов.
@@ -110,3 +113,4 @@
 - [x] shared page header component now wraps the page title and filter slot for all measurement pages.
 - [x] shared measurement page shell now wraps the repeated page grid and header/table structure for glucose, blood pressure, weight, and symptoms.
 - [x] shared ignore/restore component now owns the buttons, confirm dialog, reason handling, direct restore action, and PATCH calls for glucose, blood pressure, and weight.
+- [x] next chart work starts with a standalone glucose chart component on the `/glucose` page; dashboard charting will be added later.

@@ -1,25 +1,16 @@
 <script setup lang="ts">
 import { formatWhen, formatWhenParts } from '~/utils/date-format';
-
-type GlucoseRow = {
-  id: string;
-  measuredAt: string;
-  fastingValue: number | null;
-  afterMealValue: number | null;
-  ignore: boolean;
-  note: string | null;
-  reason: string | null;
-};
+import type { GlucoseMeasurement } from '~/types/glucose';
 
 const props = defineProps<{
-  items: GlucoseRow[];
+  items: GlucoseMeasurement[];
 }>();
 
 function glucoseToMmol(value: number | null) {
   return value === null ? null : value / 18;
 }
 
-function formatValueParts(item: GlucoseRow) {
+function formatValueParts(item: GlucoseMeasurement) {
   const fasting = glucoseToMmol(item.fastingValue);
   const afterMeal = glucoseToMmol(item.afterMealValue);
 
@@ -43,7 +34,7 @@ function formatValueParts(item: GlucoseRow) {
       };
 }
 
-function formatMeasurementType(item: GlucoseRow) {
+function formatMeasurementType(item: GlucoseMeasurement) {
   if (item.fastingValue !== null && item.afterMealValue !== null) {
     return 'Натощак и после еды';
   }
@@ -55,11 +46,11 @@ function formatMeasurementType(item: GlucoseRow) {
   return 'Натощак';
 }
 
-function typeEmoji(item: GlucoseRow) {
+function typeEmoji(item: GlucoseMeasurement) {
   return item.afterMealValue !== null ? '🍏' : '🍎';
 }
 
-function glucoseSummary(item: GlucoseRow) {
+function glucoseSummary(item: GlucoseMeasurement) {
   if (!item) {
     return [];
   }
@@ -81,7 +72,7 @@ function glucoseSummary(item: GlucoseRow) {
   ];
 }
 
-function displayNote(item: GlucoseRow) {
+function displayNote(item: GlucoseMeasurement) {
   if (item.ignore) {
     return item.reason ?? '—';
   }

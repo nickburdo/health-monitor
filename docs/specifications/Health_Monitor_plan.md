@@ -90,7 +90,10 @@
   - линии: систолическое и диастолическое давление;
   - использует те же данные, что и таблица;
   - без отдельного фильтра по датам;
-- график веса;
+- [x] график веса через общий `HealthLineChart`;
+  - одна линия: вес;
+  - использует те же данные, что и таблица;
+  - без отдельного фильтра по датам;
 - график симптомов.
 
 ### Этап 8. Dashboard
@@ -119,3 +122,4 @@
 - [x] next chart work starts with a standalone glucose chart component on the `/glucose` page; dashboard charting will be added later.
 - [x] page-specific measurement list types were extracted into `app/types` for blood pressure, weight, and symptoms to match the glucose type pattern.
 - [x] shared line-chart props and per-page series/formatters were extracted into `app/utils/health-line-chart` for glucose and blood pressure.
+- [x] shared line-chart props and per-page series/formatters were extracted into `app/utils/health-line-chart` for glucose, blood pressure, and weight.

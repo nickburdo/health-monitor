@@ -1,5 +1,10 @@
 <script setup lang="ts">
 import type { WeightMeasurement } from '~/types/weight';
+import {
+  formatWeightAxisValue,
+  formatWeightValue,
+  weightChartSeries,
+} from '~/utils/health-line-chart/weight';
 
 const { periodFilters, data } = await useMeasurementListPage<WeightMeasurement>({
   key: 'weight-page',
@@ -18,6 +23,13 @@ useHead({ title: 'Weight · Health Monitor' });
       <template #filter>
         <PeriodFilter v-model="periodFilters" />
       </template>
+      <HealthLineChart
+        v-bind="{ ariaLabel: 'График веса' }"
+        :items="data ?? []"
+        :series="weightChartSeries"
+        :value-formatter="formatWeightValue"
+        :y-axis-formatter="formatWeightAxisValue"
+      />
       <WeightTable
         :items="data ?? []"
       />

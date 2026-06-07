@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import type { PeriodFilterValue } from '~/composables/usePeriodFilter';
 import type { DashboardData } from '~/types/dashboard';
-import { formatPeriodShortDate } from '~/composables/usePeriodFilter';
 
 type SymptomFrequency = {
   count: number;
@@ -10,29 +8,8 @@ type SymptomFrequency = {
 
 const props = defineProps<{
   data: DashboardData;
-  periodFilters: PeriodFilterValue;
   title?: string;
 }>();
-
-const periodLabel = computed(() => {
-  const value = props.periodFilters;
-
-  if (value.preset === 'custom') {
-    const from = formatPeriodShortDate(value.dateFrom);
-    const to = formatPeriodShortDate(value.dateTo);
-    return from && to ? `${from} - ${to}` : 'Произвольный период';
-  }
-
-  if (value.preset === '3m') {
-    return 'Последние 3 месяца';
-  }
-
-  if (value.preset === '6m') {
-    return 'Последние 6 месяцев';
-  }
-
-  return 'С начала года';
-});
 
 const dashboard = computed(() => {
   const symptomFrequency = props.data.symptoms.reduce<Record<string, number>>((accumulator, record) => {
@@ -53,7 +30,6 @@ const dashboard = computed(() => {
 
   return {
     topSymptoms,
-    totalCount: props.data.symptoms.length,
   };
 });
 
@@ -62,8 +38,6 @@ const maxCount = computed(() => {
 
   return counts.length ? Math.max(...counts) : 1;
 });
-
-const leadingSymptom = computed(() => dashboard.value.topSymptoms[0]);
 
 function barWidth(count: number) {
   const width = (count / maxCount.value) * 100;
@@ -77,49 +51,32 @@ function barWidth(count: number) {
     <header class="health-dashboard-symptoms-header">
       <div class="health-dashboard-symptoms-copy">
         <h2 class="health-section-title">
-          {{ title ?? 'Symptoms' }}
+          {{ title ?? 'Симптомы' }}
         </h2>
         <p class="health-dashboard-symptoms-subtitle">
-          {{ periodLabel }}
+          Сколько раз симптомы были отмечены за выбранный период
         </p>
       </div>
-
-      <span class="health-dashboard-symptoms-pill">
-        Frequency
-      </span>
     </header>
 
     <div
       v-if="dashboard.topSymptoms.length"
-      class="health-dashboard-symptoms-body"
+      class="health-dashboard-symptoms-bars"
     >
-      <div class="health-dashboard-symptoms-summary">
-        <div class="health-dashboard-symptoms-stat">
-          <span>Entries</span>
-          <strong>{{ dashboard.totalCount }}</strong>
+      <div
+        v-for="symptom in dashboard.topSymptoms"
+        :key="symptom.label"
+        class="health-dashboard-symptoms-row"
+      >
+        <div class="health-dashboard-symptoms-row-head">
+          <span>{{ symptom.label }}</span>
+          <strong>{{ symptom.count }}</strong>
         </div>
-        <div class="health-dashboard-symptoms-stat">
-          <span>Most frequent</span>
-          <strong>{{ leadingSymptom?.label ?? '—' }}</strong>
-        </div>
-      </div>
-
-      <div class="health-dashboard-symptoms-bars">
-        <div
-          v-for="symptom in dashboard.topSymptoms"
-          :key="symptom.label"
-          class="health-dashboard-symptoms-row"
-        >
-          <div class="health-dashboard-symptoms-row-head">
-            <span>{{ symptom.label }}</span>
-            <strong>{{ symptom.count }}</strong>
-          </div>
-          <div class="health-dashboard-symptoms-track">
-            <div
-              class="health-dashboard-symptoms-fill"
-              :style="{ width: barWidth(symptom.count) }"
-            />
-          </div>
+        <div class="health-dashboard-symptoms-track">
+          <div
+            class="health-dashboard-symptoms-fill"
+            :style="{ width: barWidth(symptom.count) }"
+          />
         </div>
       </div>
     </div>
@@ -140,10 +97,8 @@ function barWidth(count: number) {
 }
 
 .health-dashboard-symptoms-header {
-  display: flex;
-  align-items: start;
-  justify-content: space-between;
-  gap: 12px;
+  display: grid;
+  gap: 6px;
 }
 
 .health-dashboard-symptoms-copy {
@@ -156,52 +111,6 @@ function barWidth(count: number) {
   color: var(--muted);
   font-size: 13px;
   line-height: 1.5;
-}
-
-.health-dashboard-symptoms-pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 7px 11px;
-  border-radius: 999px;
-  background: var(--primary-soft);
-  color: var(--primary-dark);
-  font-size: 12px;
-  font-weight: 800;
-  white-space: nowrap;
-}
-
-.health-dashboard-symptoms-body {
-  display: grid;
-  gap: 16px;
-}
-
-.health-dashboard-symptoms-summary {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.health-dashboard-symptoms-stat {
-  display: grid;
-  gap: 4px;
-  padding: 14px 16px;
-  border-radius: 18px;
-  border: 1px solid var(--border);
-  background: rgba(255, 250, 243, 0.72);
-}
-
-.health-dashboard-symptoms-stat span {
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 750;
-}
-
-.health-dashboard-symptoms-stat strong {
-  color: var(--text);
-  font-size: 18px;
-  line-height: 1.1;
-  letter-spacing: -0.03em;
 }
 
 .health-dashboard-symptoms-bars {
@@ -236,15 +145,16 @@ function barWidth(count: number) {
 
 .health-dashboard-symptoms-track {
   overflow: hidden;
-  height: 12px;
+  height: 18px;
   border-radius: 999px;
-  background: rgba(196, 181, 253, 0.14);
+  background: rgba(59, 130, 246, 0.12);
 }
 
 .health-dashboard-symptoms-fill {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--symptoms), #ddd6fe);
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.24);
 }
 
 .health-dashboard-symptoms-empty {
@@ -257,11 +167,5 @@ function barWidth(count: number) {
   background: rgba(255, 250, 243, 0.58);
   text-align: center;
   padding: 24px;
-}
-
-@media (max-width: 640px) {
-  .health-dashboard-symptoms-summary {
-    grid-template-columns: 1fr;
-  }
 }
 </style>

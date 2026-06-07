@@ -7,12 +7,12 @@ Health Monitor is a personal Nuxt 4 app for tracking health. MVP covers glucose,
 ## Current State
 
 - Working tree is not clean; there are local edits in the dashboard area.
-- Latest commit: `7d0084c` - `Build dashboard overview`.
+- Latest commit: `d21b431` - `Translate dashboard metric labels`.
 - Shared helpers already exist for date ranges, period filtering, measurement list loading, page headers, ignore/restore actions, and date formatting.
 - `HealthLineChart` powers glucose, blood pressure, weight, and the dashboard charts.
-- Dashboard now shows summary cards, three compact line charts, a symptom frequency panel, and a localized latest-entries list.
+- Dashboard now shows summary cards, three compact line charts, a dedicated symptom bar chart, and a localized latest-entries list.
 - Dashboard data aggregation has been pushed down into dedicated dashboard components (`DashboardSummaryPanel`, `DashboardMetricsGrid`, `DashboardSymptomsPanel`, `DashboardLatestEntries`).
-- The separate symptom line chart is still deferred.
+- The separate symptom line chart remains deferred; dashboard symptoms are now shown as a bar chart.
 
 ## Important Decisions
 
@@ -25,7 +25,7 @@ Health Monitor is a personal Nuxt 4 app for tracking health. MVP covers glucose,
 
 ## Next Step
 
-- Decide whether the deferred symptom visualization should become a dedicated line chart, bar chart, or heatmap.
+- Decide whether the deferred symptom visualization should also be added to the standalone `/symptoms` page, or stay dashboard-only for now.
 
 ## Notes
 

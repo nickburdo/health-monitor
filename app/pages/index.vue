@@ -152,7 +152,6 @@ useSeoMeta({
 
       <DashboardSymptomsPanel
         :data="dashboardData"
-        :period-filters="periodFilters"
       />
     </section>
 

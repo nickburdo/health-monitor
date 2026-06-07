@@ -129,3 +129,4 @@
 - [x] dashboard hero now shows the selected period in the title, the summary block keeps only pills, and the latest entries list uses localized statuses.
 - [x] dashboard hero summary and metric grid were extracted into dedicated components; the summary list now uses a flex column with `justify-between` and no top margin.
 - [x] dashboard data aggregation is now owned by dedicated dashboard components instead of a single page-level `dashboard` computed block.
+- [x] dashboard symptoms block now renders a dedicated Russian bar chart with title `Симптомы` and the subtitle `Сколько раз симптомы были отмечены за выбранный период`.

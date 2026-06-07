@@ -9,6 +9,7 @@ type SymptomFrequency = {
 const props = defineProps<{
   data: DashboardData;
   title?: string;
+  maxTypes?: number;
 }>();
 
 const dashboard = computed(() => {
@@ -26,7 +27,7 @@ const dashboard = computed(() => {
 
       return left.label.localeCompare(right.label, 'ru');
     })
-    .slice(0, 5);
+    .slice(0, props.maxTypes ?? Number.POSITIVE_INFINITY);
 
   return {
     topSymptoms,

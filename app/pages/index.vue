@@ -155,6 +155,7 @@ useSeoMeta({
 
       <DashboardSymptomsPanel
         :data="dashboardData"
+        :max-types="5"
       />
     </section>
 

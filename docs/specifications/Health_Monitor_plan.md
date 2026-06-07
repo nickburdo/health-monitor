@@ -131,3 +131,4 @@
 - [x] dashboard data aggregation is now owned by dedicated dashboard components instead of a single page-level `dashboard` computed block.
 - [x] dashboard symptoms block now renders a dedicated Russian bar chart with title `Симптомы` and the subtitle `Сколько раз симптомы были отмечены за выбранный период`.
 - [x] dashboard symptom bars now sit at the bottom of the card when there are few symptom types.
+- [x] dashboard symptom chart now accepts an optional `maxTypes` prop so the dashboard can cap the number of displayed symptom types without constraining future reuse.

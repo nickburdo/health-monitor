@@ -1036,7 +1036,6 @@ select {
   gap: 18px;
 }
 
-.health-weight-header,
 .health-page-header-with-filter {
   display: flex;
   align-items: flex-end;
@@ -1045,12 +1044,10 @@ select {
   width: 100%;
 }
 
-.health-weight-header-copy,
 .health-page-header-copy {
   min-width: 0;
 }
 
-.health-weight-header-filter,
 .health-page-header-filter {
   display: flex;
   flex-wrap: wrap;
@@ -1265,13 +1262,11 @@ select {
     grid-template-columns: 1fr;
   }
 
-  .health-weight-header,
   .health-page-header-with-filter {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .health-weight-header-filter,
   .health-page-header-filter {
     width: 100%;
     flex-direction: column;

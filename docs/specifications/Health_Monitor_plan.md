@@ -105,3 +105,5 @@
 - [x] restore dialogs for glucose, blood pressure, and weight now require note and send PATCH with `ignore: false`.
 - [x] period filter component now renders as four inline buttons, opens a modal for custom ranges, and is placed inside the main page title blocks with query filtering wired up for glucose, blood pressure, weight, and symptoms.
 - [x] shared server helper now reads `dateFrom` and `dateTo` for all measurement list endpoints.
+- [x] shared client helper now loads measurement lists with the period filter and removes repeated `useAsyncData` code from the four pages.
+- [x] shared page header component now wraps the page title and filter slot for all measurement pages.

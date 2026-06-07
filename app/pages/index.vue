@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import DashboardLatestEntries from '~/components/DashboardLatestEntries.vue';
+import DashboardMetricsGrid from '~/components/DashboardMetricsGrid.vue';
+import DashboardSummaryPanel from '~/components/DashboardSummaryPanel.vue';
+import DashboardSymptomsPanel from '~/components/DashboardSymptomsPanel.vue';
 import type { BloodPressureMeasurement } from '~/types/blood-pressure';
 import type { DashboardData } from '~/types/dashboard';
 import type { GlucoseMeasurement } from '~/types/glucose';
@@ -44,6 +48,8 @@ const { data } = await useAsyncData('dashboard-data', async () => {
 }, {
   watch: [periodFilters],
 });
+
+const dashboardData = computed(() => data.value ?? emptyDashboardData);
 
 const periodLabel = computed(() => {
   const value = periodFilters.value;
@@ -119,10 +125,10 @@ useSeoMeta({
         </div>
       </div>
 
-      <DashboardSummaryPanel :data="data ?? emptyDashboardData" />
+      <DashboardSummaryPanel :data="dashboardData" />
     </section>
 
-    <DashboardMetricsGrid :data="data ?? emptyDashboardData" />
+    <DashboardMetricsGrid :data="dashboardData" />
 
     <section class="health-dashboard-chart-grid">
       <HealthLineChart
@@ -156,11 +162,11 @@ useSeoMeta({
       />
 
       <DashboardSymptomsPanel
-        :data="data ?? emptyDashboardData"
+        :data="dashboardData"
         :period-label="periodLabel"
       />
     </section>
 
-    <DashboardLatestEntries :data="data ?? emptyDashboardData" />
+    <DashboardLatestEntries :data="dashboardData" />
   </HealthShell>
 </template>

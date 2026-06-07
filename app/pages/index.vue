@@ -33,7 +33,7 @@ const emptyDashboardData: DashboardData = {
   weight: [],
 };
 
-const { data } = await useAsyncData('dashboard-data', async () => {
+const { data, refresh } = await useAsyncData('dashboard-data', async () => {
   const [glucose, bloodPressure, weight, symptoms] = await Promise.all([
     $fetch<GlucoseMeasurement[]>('/api/glucose', { query: query.value }),
     $fetch<BloodPressureMeasurement[]>('/api/blood-pressure', { query: query.value }),
@@ -42,8 +42,10 @@ const { data } = await useAsyncData('dashboard-data', async () => {
   ]);
 
   return { bloodPressure, glucose, symptoms, weight };
-}, {
-  watch: [periodFilters],
+});
+
+watch(query, () => {
+  refresh();
 });
 
 const dashboardData = computed(() => data.value ?? emptyDashboardData);

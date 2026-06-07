@@ -25,7 +25,6 @@ import {
 } from '~/composables/usePeriodFilter';
 
 type LatestEntry = {
-  badge: string;
   ignored?: boolean;
   subtitle: string;
   timestamp: number;
@@ -138,10 +137,6 @@ function formatSymptomEntryValue(record: SymptomMeasurement) {
   return parts.join(' · ');
 }
 
-function formatLatestEntryBadge(ignored?: boolean) {
-  return ignored ? 'Игнор.' : 'Активно';
-}
-
 function buildLatestEntries(dataSet: {
   bloodPressure: BloodPressureMeasurement[];
   glucose: GlucoseMeasurement[];
@@ -152,28 +147,24 @@ function buildLatestEntries(dataSet: {
     ...dataSet.glucose.map(record => ({
       title: 'Глюкоза',
       subtitle: `${formatWhen(record.measuredAt)} · ${formatGlucoseEntryValue(record)}`,
-      badge: formatLatestEntryBadge(record.ignore),
       ignored: record.ignore,
       timestamp: new Date(record.measuredAt).getTime(),
     })),
     ...dataSet.bloodPressure.map(record => ({
       title: 'Давление',
       subtitle: `${formatWhen(record.measuredAt)} · ${formatBloodPressureEntryValue(record)}`,
-      badge: formatLatestEntryBadge(record.ignore),
       ignored: record.ignore,
       timestamp: new Date(record.measuredAt).getTime(),
     })),
     ...dataSet.weight.map(record => ({
       title: 'Вес',
       subtitle: `${formatWhen(record.measuredAt)} · ${record.value !== null ? formatWeightValue(record.value) : '—'}`,
-      badge: formatLatestEntryBadge(record.ignore),
       ignored: record.ignore,
       timestamp: new Date(record.measuredAt).getTime(),
     })),
     ...dataSet.symptoms.map(record => ({
       title: `Симптом: ${record.type}`,
       subtitle: `${formatWhen(record.happenedAt)} · ${formatSymptomEntryValue(record)}`,
-      badge: 'Запись',
       timestamp: new Date(record.happenedAt).getTime(),
     })),
   ];
@@ -349,7 +340,7 @@ useSeoMeta({
           Текущее состояние, краткая динамика и последние показатели здоровья.
         </p>
 
-        <div class="health-dashboard-filter">
+        <div class="health-page-header-filter health-dashboard-filter">
           <PeriodFilter v-model="periodFilters" />
         </div>
       </div>
@@ -445,9 +436,11 @@ useSeoMeta({
       />
     </section>
 
-    <HealthEntryList
-      title="Последние показатели"
-      :items="dashboard.latestEntries"
-    />
+    <div class="health-dashboard-latest">
+      <HealthEntryList
+        title="Последние показатели"
+        :items="dashboard.latestEntries"
+      />
+    </div>
   </HealthShell>
 </template>

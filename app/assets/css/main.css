@@ -486,6 +486,10 @@ select {
   border-bottom: 1px solid var(--border);
 }
 
+.health-list-row[data-ignored='true'] {
+  opacity: 0.72;
+}
+
 .health-list-row:last-child {
   border-bottom: 0;
   padding-bottom: 0;

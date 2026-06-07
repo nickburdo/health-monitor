@@ -4,7 +4,6 @@ defineProps<{
   items: Array<{
     title: string;
     subtitle: string;
-    badge: string;
     ignored?: boolean;
   }>;
 }>();
@@ -20,13 +19,11 @@ defineProps<{
         v-for="item in items"
         :key="`${item.title}-${item.subtitle}`"
         class="health-list-row"
+        :data-ignored="item.ignored ? 'true' : 'false'"
       >
         <div>
           <strong>{{ item.title }}</strong>
           <span>{{ item.subtitle }}</span>
-        </div>
-        <div :class="['health-badge', item.ignored && 'ignore']">
-          {{ item.badge }}
         </div>
       </div>
     </div>

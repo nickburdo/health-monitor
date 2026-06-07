@@ -1,12 +1,7 @@
-import { getQuery } from 'h3';
 import { healthDb } from '../../utils/prisma';
+import { readDateRangeQuery } from '../../utils/date-range';
 import { listBloodPressureMeasurements } from '../../utils/health-records';
 
 export default defineEventHandler(async (event) => {
-  const query = getQuery(event);
-
-  return listBloodPressureMeasurements(healthDb, {
-    dateFrom: query.dateFrom,
-    dateTo: query.dateTo,
-  });
+  return listBloodPressureMeasurements(healthDb, readDateRangeQuery(event));
 });

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { formatWhen, formatWhenParts } from '~/utils/date-format';
+
 type BloodPressureRow = {
   id: string;
   measuredAt: string;
@@ -12,36 +14,6 @@ type BloodPressureRow = {
 const props = defineProps<{
   items: BloodPressureRow[];
 }>();
-
-const formatDateTime = new Intl.DateTimeFormat('ru-RU', {
-  day: 'numeric',
-  month: 'short',
-  hour: '2-digit',
-  minute: '2-digit',
-});
-
-const formatDateOnly = new Intl.DateTimeFormat('ru-RU', {
-  day: 'numeric',
-  month: 'short',
-});
-
-const formatTimeOnly = new Intl.DateTimeFormat('ru-RU', {
-  hour: '2-digit',
-  minute: '2-digit',
-});
-
-function formatWhen(value: string) {
-  return formatDateTime.format(new Date(value));
-}
-
-function formatWhenParts(value: string) {
-  const date = new Date(value);
-
-  return {
-    date: formatDateOnly.format(date),
-    time: formatTimeOnly.format(date),
-  };
-}
 
 function formatValueParts(item: BloodPressureRow) {
   const value = `${item.systolic ?? '—'} / ${item.diastolic ?? '—'}`;

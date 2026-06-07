@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { formatWhenParts } from '~/utils/date-format';
+
 type SymptomRow = {
   id: string;
   happenedAt: string;
@@ -17,25 +19,6 @@ const savingId = ref<string | null>(null);
 const draftNote = ref('');
 const isMobileEditLayout = ref(false);
 let mobileEditMediaQuery: MediaQueryList | null = null;
-
-const formatDateOnly = new Intl.DateTimeFormat('ru-RU', {
-  day: 'numeric',
-  month: 'short',
-});
-
-const formatTimeOnly = new Intl.DateTimeFormat('ru-RU', {
-  hour: '2-digit',
-  minute: '2-digit',
-});
-
-function formatWhenParts(value: string) {
-  const date = new Date(value);
-
-  return {
-    date: formatDateOnly.format(date),
-    time: formatTimeOnly.format(date),
-  };
-}
 
 function startEditing(item: SymptomRow) {
   editingId.value = item.id;

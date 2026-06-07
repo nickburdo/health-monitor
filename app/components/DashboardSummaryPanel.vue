@@ -113,15 +113,15 @@ const dashboard = computed(() => {
   <aside class="health-panel health-panel-soft health-card health-dashboard-summary">
     <div class="health-dashboard-summary-list">
       <div class="health-dashboard-summary-row">
-        <span>Активные записи</span>
+        <span>Активные измерения</span>
         <strong>{{ dashboard.activeRecordCount }}</strong>
       </div>
       <div class="health-dashboard-summary-row">
-        <span>Игнорируемые записи</span>
+        <span>Игнорируемые измерения</span>
         <strong>{{ dashboard.ignoredRecordCount }}</strong>
       </div>
       <div class="health-dashboard-summary-row health-dashboard-summary-row-wide">
-        <span>Последняя активность</span>
+        <span>Последняя запись</span>
         <strong>{{ dashboard.latestEntry?.title ?? '—' }}</strong>
         <small>{{ dashboard.latestEntry?.subtitle ?? 'Нет данных за период' }}</small>
       </div>

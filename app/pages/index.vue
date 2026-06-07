@@ -23,10 +23,7 @@ import {
   formatWeightValue,
   weightChartSeries,
 } from '~/utils/health-line-chart/weight';
-import {
-  formatPeriodShortDate,
-  usePeriodFilter,
-} from '~/composables/usePeriodFilter';
+import { usePeriodFilter } from '~/composables/usePeriodFilter';
 
 const { periodFilters, query } = usePeriodFilter();
 const emptyDashboardData: DashboardData = {
@@ -51,33 +48,25 @@ const { data } = await useAsyncData('dashboard-data', async () => {
 
 const dashboardData = computed(() => data.value ?? emptyDashboardData);
 
-const periodLabel = computed(() => {
-  const value = periodFilters.value;
-
-  if (value.preset === 'custom') {
-    const from = formatPeriodShortDate(value.dateFrom);
-    const to = formatPeriodShortDate(value.dateTo);
-    return from && to ? `${from} - ${to}` : 'Произвольный период';
-  }
-
-  if (value.preset === '3m') {
-    return 'Последние 3 месяца';
-  }
-
-  if (value.preset === '6m') {
-    return 'Последние 6 месяцев';
-  }
-
-  return 'С начала года';
-});
-
 const periodHeadlineSuffix = computed(() => {
   const value = periodFilters.value;
 
   if (value.preset === 'custom') {
-    const from = formatPeriodShortDate(value.dateFrom);
-    const to = formatPeriodShortDate(value.dateTo);
-    return from && to ? `с ${from} по ${to}` : 'за произвольный период';
+    const from = value.dateFrom ? new Date(value.dateFrom) : null;
+    const to = value.dateTo ? new Date(value.dateTo) : null;
+
+    if (from && to && !Number.isNaN(from.getTime()) && !Number.isNaN(to.getTime())) {
+      const format = (date: Date) => {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = String(date.getFullYear()).slice(-2);
+        return `${day}.${month}.${year}`;
+      };
+
+      return `с ${format(from)} по ${format(to)}`;
+    }
+
+    return 'за произвольный период';
   }
 
   if (value.preset === '3m') {
@@ -163,7 +152,7 @@ useSeoMeta({
 
       <DashboardSymptomsPanel
         :data="dashboardData"
-        :period-label="periodLabel"
+        :period-filters="periodFilters"
       />
     </section>
 

@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import type { PeriodFilterValue } from '~/composables/usePeriodFilter';
 import type { DashboardData } from '~/types/dashboard';
+import { formatPeriodShortDate } from '~/composables/usePeriodFilter';
 
 type SymptomFrequency = {
   count: number;
@@ -8,9 +10,29 @@ type SymptomFrequency = {
 
 const props = defineProps<{
   data: DashboardData;
-  periodLabel: string;
+  periodFilters: PeriodFilterValue;
   title?: string;
 }>();
+
+const periodLabel = computed(() => {
+  const value = props.periodFilters;
+
+  if (value.preset === 'custom') {
+    const from = formatPeriodShortDate(value.dateFrom);
+    const to = formatPeriodShortDate(value.dateTo);
+    return from && to ? `${from} - ${to}` : 'Произвольный период';
+  }
+
+  if (value.preset === '3m') {
+    return 'Последние 3 месяца';
+  }
+
+  if (value.preset === '6m') {
+    return 'Последние 6 месяцев';
+  }
+
+  return 'С начала года';
+});
 
 const dashboard = computed(() => {
   const symptomFrequency = props.data.symptoms.reduce<Record<string, number>>((accumulator, record) => {

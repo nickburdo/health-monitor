@@ -33,7 +33,8 @@ const emptyDashboardData: DashboardData = {
   weight: [],
 };
 
-const { data, refresh } = await useAsyncData('dashboard-data', async () => {
+const dashboardKey = computed(() => `dashboard-data-${query.value.dateFrom}-${query.value.dateTo}`);
+const { data, refresh } = await useAsyncData(dashboardKey, async () => {
   const [glucose, bloodPressure, weight, symptoms] = await Promise.all([
     $fetch<GlucoseMeasurement[]>('/api/glucose', { query: query.value }),
     $fetch<BloodPressureMeasurement[]>('/api/blood-pressure', { query: query.value }),

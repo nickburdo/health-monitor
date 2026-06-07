@@ -43,7 +43,6 @@ useHead({ title: 'Glucose · Health Monitor' });
       </template>
       <HealthLineChart
         v-bind="{ ariaLabel: 'График глюкозы с линиями натощак и после еды' }"
-        title="График глюкозы"
         :items="data ?? []"
         :series="glucoseChartSeries"
         :value-formatter="formatGlucoseValue"

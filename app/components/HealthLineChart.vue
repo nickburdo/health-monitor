@@ -403,7 +403,7 @@ function clearPoint() {
 .health-line-chart-body {
   position: relative;
   display: grid;
-  gap: 14px;
+  gap: 24px;
 }
 
 .health-line-chart-tooltip {

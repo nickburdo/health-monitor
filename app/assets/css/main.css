@@ -191,6 +191,7 @@ select {
   display: flex;
   min-width: 0;
   justify-content: flex-end;
+  gap: 10px;
 }
 
 .health-button {
@@ -696,6 +697,36 @@ select {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.health-auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.health-auth-divider::before,
+.health-auth-divider::after {
+  content: '';
+  flex: 1 1 auto;
+  height: 1px;
+  background: var(--border);
+}
+
+.health-auth-google-button {
+  width: 100%;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.health-auth-callback-card {
+  display: grid;
+  gap: 8px;
+  margin-top: 48px;
 }
 
 .health-button-secondary {

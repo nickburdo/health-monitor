@@ -1,9 +1,10 @@
 import { readBody } from 'h3';
+import { getRequestActor } from '../../utils/auth';
 import { healthDb } from '../../utils/prisma';
 import { createSymptomEntry } from '../../utils/health-records';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
 
-  return createSymptomEntry(healthDb, body);
+  return createSymptomEntry(healthDb, await getRequestActor(event), body);
 });

@@ -1,9 +1,10 @@
 import { readBody } from 'h3';
+import { getRequestActor } from '../../utils/auth';
 import { healthDb } from '../../utils/prisma';
 import { createGlucoseMeasurement } from '../../utils/health-records';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
 
-  return createGlucoseMeasurement(healthDb, body);
+  return createGlucoseMeasurement(healthDb, await getRequestActor(event), body);
 });

@@ -26,6 +26,7 @@ import {
 import { usePeriodFilter } from '~/composables/usePeriodFilter';
 
 const { periodFilters, query } = usePeriodFilter();
+const requestFetch = useRequestFetch();
 const emptyDashboardData: DashboardData = {
   bloodPressure: [],
   glucose: [],
@@ -36,10 +37,10 @@ const emptyDashboardData: DashboardData = {
 const dashboardKey = computed(() => `dashboard-data-${query.value.dateFrom}-${query.value.dateTo}`);
 const { data, refresh } = await useAsyncData(dashboardKey, async () => {
   const [glucose, bloodPressure, weight, symptoms] = await Promise.all([
-    $fetch<GlucoseMeasurement[]>('/api/glucose', { query: query.value }),
-    $fetch<BloodPressureMeasurement[]>('/api/blood-pressure', { query: query.value }),
-    $fetch<WeightMeasurement[]>('/api/weight', { query: query.value }),
-    $fetch<SymptomMeasurement[]>('/api/symptoms', { query: query.value }),
+    requestFetch<GlucoseMeasurement[]>('/api/glucose', { query: query.value }),
+    requestFetch<BloodPressureMeasurement[]>('/api/blood-pressure', { query: query.value }),
+    requestFetch<WeightMeasurement[]>('/api/weight', { query: query.value }),
+    requestFetch<SymptomMeasurement[]>('/api/symptoms', { query: query.value }),
   ]);
 
   return { bloodPressure, glucose, symptoms, weight };

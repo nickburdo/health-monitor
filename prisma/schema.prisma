@@ -19,6 +19,8 @@ model GlucoseMeasurement {
 
   createdAt DateTime @default(now())
 
+  isDemo Boolean @default(false)
+
   @@index([measuredAt])
   @@map("health_monitor_glucose_measurement")
 }
@@ -37,6 +39,8 @@ model BloodPressureMeasurement {
 
   createdAt DateTime @default(now())
 
+  isDemo Boolean @default(false)
+
   @@index([measuredAt])
   @@map("health_monitor_blood_pressure_measurement")
 }
@@ -53,6 +57,8 @@ model WeightMeasurement {
 
   createdAt DateTime @default(now())
 
+  isDemo Boolean @default(false)
+
   @@index([measuredAt])
   @@map("health_monitor_weight_measurement")
 }
@@ -67,6 +73,8 @@ model SymptomEntry {
   note String?
 
   createdAt DateTime @default(now())
+
+  isDemo Boolean @default(false)
 
   @@index([happenedAt])
   @@index([type])

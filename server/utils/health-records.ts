@@ -1,4 +1,5 @@
 import { createError } from 'h3';
+import type { RequestActor } from './auth';
 import {
   SYMPTOM_OPTIONS,
   type SymptomOption,
@@ -61,6 +62,10 @@ type SymptomUpdateInput = {
 type IgnoreInput = {
   ignore: unknown;
   reason?: unknown;
+};
+
+type DemoScopedRecord = {
+  isDemo?: unknown;
 };
 
 function badRequest(message: string): never {
@@ -254,6 +259,19 @@ function ensureRecordExists(record: unknown, entityName: string): void {
   }
 }
 
+function ensureActorRecordAccess(
+  record: unknown,
+  actor: RequestActor,
+  entityName: string,
+): void {
+  const isDemo = (record as DemoScopedRecord | null)?.isDemo;
+  const expectedIsDemo = actor.kind === 'guest';
+
+  if (isDemo !== expectedIsDemo) {
+    notFound(`${entityName} not found`);
+  }
+}
+
 function ensureSymptomType(value: unknown): SymptomOption {
   if (typeof value !== 'string') {
     badRequest('type is required');
@@ -268,16 +286,23 @@ function ensureSymptomType(value: unknown): SymptomOption {
 
 export async function listGlucoseMeasurements(
   db: HealthDb,
+  actor: RequestActor,
   range: QueryRange = {},
 ) {
+  const dateWhere = buildDateWhere('measuredAt', range);
+
   return db.glucoseMeasurement.findMany({
-    where: buildDateWhere('measuredAt', range),
+    where: {
+      ...dateWhere,
+      isDemo: actor.kind === 'guest',
+    },
     orderBy: { measuredAt: 'desc' },
   });
 }
 
 export async function createGlucoseMeasurement(
   db: HealthDb,
+  actor: RequestActor,
   input: GlucoseCreateInput,
 ) {
   const measuredAt = parseDate(input.measuredAt, 'measuredAt');
@@ -298,6 +323,7 @@ export async function createGlucoseMeasurement(
       fastingValue,
       afterMealValue,
       ignore: false,
+      isDemo: actor.kind === 'guest',
       note,
     },
   });
@@ -305,6 +331,7 @@ export async function createGlucoseMeasurement(
 
 export async function setGlucoseMeasurementIgnore(
   db: HealthDb,
+  actor: RequestActor,
   id: string | undefined,
   input: IgnoreInput,
 ) {
@@ -314,6 +341,7 @@ export async function setGlucoseMeasurementIgnore(
   });
 
   ensureRecordExists(existing, 'GlucoseMeasurement');
+  ensureActorRecordAccess(existing, actor, 'GlucoseMeasurement');
 
   return db.glucoseMeasurement.update({
     where: { id: recordId },
@@ -323,16 +351,23 @@ export async function setGlucoseMeasurementIgnore(
 
 export async function listBloodPressureMeasurements(
   db: HealthDb,
+  actor: RequestActor,
   range: QueryRange = {},
 ) {
+  const dateWhere = buildDateWhere('measuredAt', range);
+
   return db.bloodPressureMeasurement.findMany({
-    where: buildDateWhere('measuredAt', range),
+    where: {
+      ...dateWhere,
+      isDemo: actor.kind === 'guest',
+    },
     orderBy: { measuredAt: 'desc' },
   });
 }
 
 export async function createBloodPressureMeasurement(
   db: HealthDb,
+  actor: RequestActor,
   input: BloodPressureCreateInput,
 ) {
   const measuredAt = parseDate(input.measuredAt, 'measuredAt');
@@ -356,6 +391,7 @@ export async function createBloodPressureMeasurement(
       diastolic,
       pulse,
       ignore: false,
+      isDemo: actor.kind === 'guest',
       note,
     },
   });
@@ -363,6 +399,7 @@ export async function createBloodPressureMeasurement(
 
 export async function setBloodPressureMeasurementIgnore(
   db: HealthDb,
+  actor: RequestActor,
   id: string | undefined,
   input: IgnoreInput,
 ) {
@@ -372,6 +409,7 @@ export async function setBloodPressureMeasurementIgnore(
   });
 
   ensureRecordExists(existing, 'BloodPressureMeasurement');
+  ensureActorRecordAccess(existing, actor, 'BloodPressureMeasurement');
 
   return db.bloodPressureMeasurement.update({
     where: { id: recordId },
@@ -381,16 +419,23 @@ export async function setBloodPressureMeasurementIgnore(
 
 export async function listWeightMeasurements(
   db: HealthDb,
+  actor: RequestActor,
   range: QueryRange = {},
 ) {
+  const dateWhere = buildDateWhere('measuredAt', range);
+
   return db.weightMeasurement.findMany({
-    where: buildDateWhere('measuredAt', range),
+    where: {
+      ...dateWhere,
+      isDemo: actor.kind === 'guest',
+    },
     orderBy: { measuredAt: 'desc' },
   });
 }
 
 export async function createWeightMeasurement(
   db: HealthDb,
+  actor: RequestActor,
   input: WeightCreateInput,
 ) {
   const measuredAt = parseDate(input.measuredAt, 'measuredAt');
@@ -402,6 +447,7 @@ export async function createWeightMeasurement(
       measuredAt,
       value,
       ignore: false,
+      isDemo: actor.kind === 'guest',
       note,
     },
   });
@@ -409,6 +455,7 @@ export async function createWeightMeasurement(
 
 export async function setWeightMeasurementIgnore(
   db: HealthDb,
+  actor: RequestActor,
   id: string | undefined,
   input: IgnoreInput,
 ) {
@@ -418,6 +465,7 @@ export async function setWeightMeasurementIgnore(
   });
 
   ensureRecordExists(existing, 'WeightMeasurement');
+  ensureActorRecordAccess(existing, actor, 'WeightMeasurement');
 
   return db.weightMeasurement.update({
     where: { id: recordId },
@@ -425,15 +473,25 @@ export async function setWeightMeasurementIgnore(
   });
 }
 
-export async function listSymptomEntries(db: HealthDb, range: QueryRange = {}) {
+export async function listSymptomEntries(
+  db: HealthDb,
+  actor: RequestActor,
+  range: QueryRange = {},
+) {
+  const dateWhere = buildDateWhere('happenedAt', range);
+
   return db.symptomEntry.findMany({
-    where: buildDateWhere('happenedAt', range),
+    where: {
+      ...dateWhere,
+      isDemo: actor.kind === 'guest',
+    },
     orderBy: { happenedAt: 'desc' },
   });
 }
 
 export async function createSymptomEntry(
   db: HealthDb,
+  actor: RequestActor,
   input: SymptomCreateInput,
 ) {
   const happenedAt = parseDate(input.happenedAt, 'happenedAt');
@@ -446,6 +504,7 @@ export async function createSymptomEntry(
       happenedAt,
       type,
       intensity,
+      isDemo: actor.kind === 'guest',
       note,
     },
   });
@@ -453,6 +512,7 @@ export async function createSymptomEntry(
 
 export async function updateSymptomEntryNote(
   db: HealthDb,
+  actor: RequestActor,
   id: string | undefined,
   input: SymptomUpdateInput,
 ) {
@@ -462,6 +522,7 @@ export async function updateSymptomEntryNote(
   });
 
   ensureRecordExists(existing, 'SymptomEntry');
+  ensureActorRecordAccess(existing, actor, 'SymptomEntry');
 
   const note = parseRequiredNullableString(input.note, 'note');
 

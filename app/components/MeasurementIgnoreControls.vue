@@ -40,21 +40,21 @@ function closeIgnoreDialog() {
 function errorMessage(error: unknown) {
   if (typeof error === 'object' && error !== null && 'data' in error) {
     const data = (error as { data?: { statusMessage?: string; message?: string } }).data;
-    return data?.statusMessage ?? data?.message ?? 'Не удалось изменить статус';
+    return data?.statusMessage ?? data?.message ?? 'Could not change the status';
   }
 
   if (error instanceof Error && error.message) {
     return error.message;
   }
 
-  return 'Не удалось изменить статус';
+  return 'Could not change the status';
 }
 
 async function ignoreSelected() {
   const normalizedReason = String(ignoreReason.value ?? '').trim();
 
   if (!normalizedReason) {
-    errorText.value = 'reason обязателен';
+    errorText.value = 'reason is required';
     return;
   }
 
@@ -70,8 +70,8 @@ async function ignoreSelected() {
     });
 
     toast.add({
-      title: 'Запись помечена как ignored',
-      description: 'Причина сохранена в reason.',
+      title: 'Entry marked ignored',
+      description: 'The reason was saved in reason.',
     });
 
     closeIgnoreDialog();
@@ -95,14 +95,14 @@ async function restoreSelected() {
     });
 
     toast.add({
-      title: 'Запись восстановлена',
-      description: 'Статус ignored снят без подтверждения.',
+      title: 'Entry restored',
+      description: 'The ignored status was removed without confirmation.',
     });
 
     await refreshNuxtData(props.refreshKey);
   } catch (error) {
     toast.add({
-      title: 'Восстановление не удалось',
+      title: 'Restore failed',
       description: errorMessage(error),
       color: 'error',
     });
@@ -146,24 +146,24 @@ onBeforeUnmount(() => {
     type="button"
     class="health-button health-button-secondary health-button-small health-table-icon-button"
     :disabled="savingId === item.id"
-    title="Игнорировать"
-    aria-label="Игнорировать"
+    title="Ignore"
+    aria-label="Ignore"
     @click="openIgnoreDialog"
   >
     <UIcon name="i-lucide-eye-off" />
-    <span class="sr-only">Игнорировать</span>
+    <span class="sr-only">Ignore</span>
   </button>
   <button
     v-else
     type="button"
     class="health-button health-button-small health-table-icon-button"
     :disabled="savingId === item.id"
-    title="Восстановить"
-    aria-label="Восстановить"
+    title="Restore"
+    aria-label="Restore"
     @click="restoreSelected"
   >
     <UIcon name="i-lucide-undo-2" />
-    <span class="sr-only">Восстановить</span>
+    <span class="sr-only">Restore</span>
   </button>
 
   <Teleport to="body">
@@ -188,10 +188,10 @@ onBeforeUnmount(() => {
               :id="`${entityLabel}-ignore-title`"
               class="health-modal-title"
             >
-              Игнорировать запись {{ entityLabel }}
+              Ignore {{ entityLabel }} entry
             </h2>
             <p class="health-modal-lead">
-              {{ ignoreLead ?? 'Укажите причину игнорирования. Эта запись сохранит reason вместе со статусом ignored.' }}
+              {{ ignoreLead ?? 'Provide a reason for ignoring this entry. It will keep reason together with the ignored status.' }}
             </p>
           </div>
 
@@ -224,7 +224,7 @@ onBeforeUnmount(() => {
               v-model="ignoreReason"
               class="health-textarea"
               rows="4"
-              :placeholder="reasonPlaceholder ?? 'Например: причина, по которой запись не должна участвовать в статистике'"
+              :placeholder="reasonPlaceholder ?? 'For example: a reason why this entry should be excluded from statistics'"
             />
           </label>
           <p
@@ -237,7 +237,7 @@ onBeforeUnmount(() => {
 
         <footer class="health-modal-actions">
           <p class="health-form-note">
-            Без reason игнорирование недоступно.
+            Ignoring is unavailable without reason.
           </p>
 
           <div class="health-modal-buttons">
@@ -247,7 +247,7 @@ onBeforeUnmount(() => {
               @click="closeIgnoreDialog"
             >
               <UIcon name="i-lucide-x" />
-              <span class="sr-only">Отмена</span>
+              <span class="sr-only">Cancel</span>
             </button>
             <button
               type="button"
@@ -256,7 +256,7 @@ onBeforeUnmount(() => {
               @click="ignoreSelected"
             >
               <UIcon name="i-lucide-check" />
-              <span class="sr-only">Подтвердить</span>
+              <span class="sr-only">Confirm</span>
             </button>
           </div>
         </footer>

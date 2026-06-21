@@ -67,21 +67,21 @@ const periodHeadlineSuffix = computed(() => {
         return `${day}.${month}.${year}`;
       };
 
-      return `с ${format(from)} по ${format(to)}`;
+      return `from ${format(from)} to ${format(to)}`;
     }
 
-    return 'за произвольный период';
+    return 'for a custom period';
   }
 
   if (value.preset === '3m') {
-    return 'за последние 3 месяца';
+    return 'for the last 3 months';
   }
 
   if (value.preset === '6m') {
-    return 'за последние 6 месяцев';
+    return 'for the last 6 months';
   }
 
-  return 'с начала года';
+  return 'year to date';
 });
 
 useHead({
@@ -90,7 +90,7 @@ useHead({
 
 useSeoMeta({
   title: 'Health Monitor',
-  description: 'Сводка по глюкозе, давлению, весу и симптомам за выбранный период.',
+  description: 'Summary of glucose, blood pressure, weight, and symptoms for the selected period.',
 });
 </script>
 
@@ -103,14 +103,14 @@ useSeoMeta({
         </div>
         <h1 class="health-title health-dashboard-title">
           <span class="health-dashboard-title-prefix">
-            Сводка здоровья
+            Health summary
           </span>
           <span class="health-dashboard-title-period">
             {{ periodHeadlineSuffix }}
           </span>
         </h1>
         <p class="health-lead">
-          Текущее состояние, краткая динамика и последние показатели здоровья.
+          Current status, short-term trends, and latest health readings.
         </p>
 
         <div class="health-page-header-filter health-dashboard-filter">
@@ -126,8 +126,8 @@ useSeoMeta({
     <section class="health-dashboard-chart-grid">
       <HealthLineChart
         class="health-dashboard-chart"
-        v-bind="{ ariaLabel: 'График глюкозы с линиями натощак и после еды' }"
-        title="Глюкоза"
+        v-bind="{ ariaLabel: 'Glucose chart with fasting and after meal lines' }"
+        title="Glucose"
         :items="data?.glucose ?? []"
         :series="glucoseChartSeries"
         :value-formatter="formatGlucoseValue"
@@ -136,8 +136,8 @@ useSeoMeta({
 
       <HealthLineChart
         class="health-dashboard-chart"
-        v-bind="{ ariaLabel: 'График давления с линиями систолического и диастолического значения' }"
-        title="Давление"
+        v-bind="{ ariaLabel: 'Blood pressure chart with systolic and diastolic lines' }"
+        title="Blood pressure"
         :items="data?.bloodPressure ?? []"
         :series="bloodPressureChartSeries"
         :value-formatter="formatBloodPressureValue"
@@ -146,8 +146,8 @@ useSeoMeta({
 
       <HealthLineChart
         class="health-dashboard-chart"
-        v-bind="{ ariaLabel: 'График веса' }"
-        title="Вес"
+        v-bind="{ ariaLabel: 'Weight chart' }"
+        title="Weight"
         :items="data?.weight ?? []"
         :series="weightChartSeries"
         :value-formatter="formatWeightValue"

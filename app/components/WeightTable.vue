@@ -28,11 +28,11 @@ function weightSummary(item: WeightRow) {
 
   return [
     {
-      label: 'Дата',
+      label: 'Date',
       value: formatWhen(item.measuredAt),
     },
     {
-      label: 'Значение',
+      label: 'Reading',
       value: formatValueParts(item).value,
       helper: formatValueParts(item).unit ? formatValueParts(item).unit : undefined,
     },
@@ -53,7 +53,7 @@ function displayNote(item: WeightRow) {
     <div class="health-table-header">
       <div>
         <h2 class="health-section-title">
-          История веса
+          Weight history
         </h2>
       </div>
     </div>
@@ -64,22 +64,22 @@ function displayNote(item: WeightRow) {
           <tr>
             <th>
               <span class="health-table-head-date health-table-head-date-measurement">
-                <span class="health-table-head-date-full">Дата Время</span>
-                <span class="health-table-head-date-short">ДАТА</span>
+                <span class="health-table-head-date-full">Date Time</span>
+                <span class="health-table-head-date-short">DATE</span>
               </span>
             </th>
             <th>
               <span class="health-table-head-value">
-                <span class="health-table-head-value-full">ЗНАЧЕНИЕ</span>
-                <span class="health-table-head-value-short">ЗНАЧ.</span>
+                <span class="health-table-head-value-full">READING</span>
+                <span class="health-table-head-value-short">READ.</span>
               </span>
             </th>
-            <th>ЗАМЕТКИ</th>
+            <th>NOTES</th>
             <th
               class="health-table-action-head"
-              aria-label="Действие"
+              aria-label="Action"
             >
-              <span class="sr-only">Действие</span>
+              <span class="sr-only">Action</span>
             </th>
           </tr>
         </thead>
@@ -117,9 +117,9 @@ function displayNote(item: WeightRow) {
                 :item="item"
                 endpoint="/api/weight"
                 refresh-key="weight-page"
-                entity-label="веса"
+                entity-label="weight"
                 :summary="weightSummary(item)"
-                reason-placeholder="Например: неудачное взвешивание после плотного обеда"
+                reason-placeholder="For example: an inaccurate weigh-in after a heavy meal"
               />
             </td>
           </tr>

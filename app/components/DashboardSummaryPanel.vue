@@ -25,11 +25,11 @@ function formatGlucoseEntryValue(record: DashboardData['glucose'][number]) {
   const values: string[] = [];
 
   if (record.fastingValue !== null) {
-    values.push(`натощак ${formatGlucoseValue(record.fastingValue)}`);
+    values.push(`Fasting ${formatGlucoseValue(record.fastingValue)}`);
   }
 
   if (record.afterMealValue !== null) {
-    values.push(`после еды ${formatGlucoseValue(record.afterMealValue)}`);
+    values.push(`After meal ${formatGlucoseValue(record.afterMealValue)}`);
   }
 
   return values.length ? values.join(' / ') : '—';
@@ -38,17 +38,17 @@ function formatGlucoseEntryValue(record: DashboardData['glucose'][number]) {
 function formatBloodPressureEntryValue(record: DashboardData['bloodPressure'][number]) {
   const systolic = record.systolic ?? '—';
   const diastolic = record.diastolic ?? '—';
-  const values: string[] = [`${systolic}/${diastolic} мм рт. ст.`];
+  const values: string[] = [`${systolic}/${diastolic} mmHg`];
 
   if (record.pulse !== null) {
-    values.push(`пульс ${record.pulse} уд/мин`);
+    values.push(`Pulse ${record.pulse} bpm`);
   }
 
   return values.join(' · ');
 }
 
 function formatSymptomEntryValue(record: DashboardData['symptoms'][number]) {
-  const parts = [`балл ${record.intensity ?? '—'}`];
+  const parts = [`Score ${record.intensity ?? '—'}`];
 
   if (record.note) {
     parts.push(record.note);
@@ -60,25 +60,25 @@ function formatSymptomEntryValue(record: DashboardData['symptoms'][number]) {
 function buildLatestEntries(dataSet: DashboardData) {
   const entries: LatestEntry[] = [
     ...dataSet.glucose.map(record => ({
-      title: 'Глюкоза',
+      title: 'Glucose',
       subtitle: `${formatWhen(record.measuredAt)} · ${formatGlucoseEntryValue(record)}`,
       ignored: record.ignore,
       timestamp: new Date(record.measuredAt).getTime(),
     })),
     ...dataSet.bloodPressure.map(record => ({
-      title: 'Давление',
+      title: 'Blood pressure',
       subtitle: `${formatWhen(record.measuredAt)} · ${formatBloodPressureEntryValue(record)}`,
       ignored: record.ignore,
       timestamp: new Date(record.measuredAt).getTime(),
     })),
     ...dataSet.weight.map(record => ({
-      title: 'Вес',
+      title: 'Weight',
       subtitle: `${formatWhen(record.measuredAt)} · ${record.value !== null ? formatWeightValue(record.value) : '—'}`,
       ignored: record.ignore,
       timestamp: new Date(record.measuredAt).getTime(),
     })),
     ...dataSet.symptoms.map(record => ({
-      title: `Симптом: ${record.type}`,
+      title: `Symptom: ${record.type}`,
       subtitle: `${formatWhen(record.happenedAt)} · ${formatSymptomEntryValue(record)}`,
       timestamp: new Date(record.happenedAt).getTime(),
     })),
@@ -113,17 +113,17 @@ const dashboard = computed(() => {
   <aside class="health-panel health-panel-soft health-card health-dashboard-summary">
     <div class="health-dashboard-summary-list">
       <div class="health-dashboard-summary-row">
-        <span>Активные измерения</span>
+        <span>Active readings</span>
         <strong>{{ dashboard.activeRecordCount }}</strong>
       </div>
       <div class="health-dashboard-summary-row">
-        <span>Игнорируемые измерения</span>
+        <span>Ignored readings</span>
         <strong>{{ dashboard.ignoredRecordCount }}</strong>
       </div>
       <div class="health-dashboard-summary-row health-dashboard-summary-row-wide">
-        <span>Последняя запись</span>
+        <span>Latest entry</span>
         <strong>{{ dashboard.latestEntry?.title ?? '—' }}</strong>
-        <small>{{ dashboard.latestEntry?.subtitle ?? 'Нет данных за период' }}</small>
+        <small>{{ dashboard.latestEntry?.subtitle ?? 'No data for the selected period' }}</small>
       </div>
     </div>
   </aside>

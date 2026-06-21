@@ -20,18 +20,18 @@ function formatBloodPressurePair(
 ) {
   const systolic = record.systolic ?? '—';
   const diastolic = record.diastolic ?? '—';
-  return `${systolic}/${diastolic} мм рт. ст.`;
+  return `${systolic}/${diastolic} mmHg`;
 }
 
 function formatGlucoseEntryValue(record: DashboardData['glucose'][number]) {
   const values: string[] = [];
 
   if (record.fastingValue !== null) {
-    values.push(`натощак ${formatGlucoseValue(record.fastingValue)}`);
+    values.push(`Fasting ${formatGlucoseValue(record.fastingValue)}`);
   }
 
   if (record.afterMealValue !== null) {
-    values.push(`после еды ${formatGlucoseValue(record.afterMealValue)}`);
+    values.push(`After meal ${formatGlucoseValue(record.afterMealValue)}`);
   }
 
   return values.length ? values.join(' / ') : '—';
@@ -41,14 +41,14 @@ function formatBloodPressureEntryValue(record: DashboardData['bloodPressure'][nu
   const values: string[] = [formatBloodPressurePair(record)];
 
   if (record.pulse !== null) {
-    values.push(`пульс ${record.pulse} уд/мин`);
+    values.push(`Pulse ${record.pulse} bpm`);
   }
 
   return values.join(' · ');
 }
 
 function formatSymptomEntryValue(record: DashboardData['symptoms'][number]) {
-  const parts = [`балл ${record.intensity ?? '—'}`];
+  const parts = [`Score ${record.intensity ?? '—'}`];
 
   if (record.note) {
     parts.push(record.note);
@@ -60,25 +60,25 @@ function formatSymptomEntryValue(record: DashboardData['symptoms'][number]) {
 const items = computed<LatestEntry[]>(() => {
   const entries: LatestEntry[] = [
     ...props.data.glucose.map(record => ({
-      title: 'Глюкоза',
+      title: 'Glucose',
       subtitle: `${formatWhen(record.measuredAt)} · ${formatGlucoseEntryValue(record)}`,
       ignored: record.ignore,
       timestamp: new Date(record.measuredAt).getTime(),
     })),
     ...props.data.bloodPressure.map(record => ({
-      title: 'Давление',
+      title: 'Blood pressure',
       subtitle: `${formatWhen(record.measuredAt)} · ${formatBloodPressureEntryValue(record)}`,
       ignored: record.ignore,
       timestamp: new Date(record.measuredAt).getTime(),
     })),
     ...props.data.weight.map(record => ({
-      title: 'Вес',
+      title: 'Weight',
       subtitle: `${formatWhen(record.measuredAt)} · ${record.value !== null ? formatWeightValue(record.value) : '—'}`,
       ignored: record.ignore,
       timestamp: new Date(record.measuredAt).getTime(),
     })),
     ...props.data.symptoms.map(record => ({
-      title: `Симптом: ${record.type}`,
+      title: `Symptom: ${record.type}`,
       subtitle: `${formatWhen(record.happenedAt)} · ${formatSymptomEntryValue(record)}`,
       timestamp: new Date(record.happenedAt).getTime(),
     })),
@@ -91,7 +91,7 @@ const items = computed<LatestEntry[]>(() => {
 <template>
   <div class="health-dashboard-latest">
     <HealthEntryList
-      title="Последние показатели"
+      title="Latest readings"
       :items="items"
     />
   </div>

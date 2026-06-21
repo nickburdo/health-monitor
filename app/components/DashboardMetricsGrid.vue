@@ -35,7 +35,7 @@ function formatKilograms(value: number) {
 
 function formatWeightChange(value: number) {
   const sign = value > 0 ? '+' : '';
-  return `${sign}${value.toFixed(1)} кг`;
+  return `${sign}${value.toFixed(1)} kg`;
 }
 
 function getLatestGlucoseValue(record?: DashboardData['glucose'][number]) {
@@ -98,7 +98,7 @@ const dashboard = computed(() => {
         return right.count - left.count;
       }
 
-      return left.label.localeCompare(right.label, 'ru');
+      return left.label.localeCompare(right.label, 'en');
     })
     .slice(0, 5);
 
@@ -129,35 +129,35 @@ const dashboard = computed(() => {
 <template>
   <section class="health-meta-grid">
     <HealthMetricCard
-      label="Глюкоза"
+      label="Glucose"
       tone="glucose"
       :value="formatGlucoseDisplay(dashboard.latestGlucose)"
       unit="mmol/L"
-      :details="dashboard.glucoseAvg !== null ? `Среднее за период: ${dashboard.glucoseAvg.toFixed(1)} mmol/L` : 'Нет активных значений за выбранный период'"
+      :details="dashboard.glucoseAvg !== null ? `Average for period: ${dashboard.glucoseAvg.toFixed(1)} mmol/L` : 'No active values for the selected period'"
     />
     <HealthMetricCard
-      label="Давление"
+      label="Blood pressure"
       tone="pressure"
       :value="dashboard.latestBloodPressure ? `${dashboard.latestBloodPressure.systolic ?? '—'}/${dashboard.latestBloodPressure.diastolic ?? '—'}` : '—'"
       :details="dashboard.bloodPressureAvgSystolic !== null && dashboard.bloodPressureAvgDiastolic !== null
-        ? `Среднее за период: ${formatBloodPressureAxisValue(dashboard.bloodPressureAvgSystolic)} / ${formatBloodPressureAxisValue(dashboard.bloodPressureAvgDiastolic)} мм рт. ст.`
-        : 'Нет активных значений за выбранный период'"
+        ? `Average for period: ${formatBloodPressureAxisValue(dashboard.bloodPressureAvgSystolic)} / ${formatBloodPressureAxisValue(dashboard.bloodPressureAvgDiastolic)} mmHg`
+        : 'No active values for the selected period'"
     />
     <HealthMetricCard
-      label="Вес"
+      label="Weight"
       tone="weight"
       :value="dashboard.latestWeight ? formatKilograms(dashboard.latestWeight.value) : '—'"
       unit="kg"
-      :details="dashboard.weightChange !== null ? `Изменение за период: ${formatWeightChange(dashboard.weightChange)}` : 'Нужно хотя бы две записи для расчёта изменения'"
+      :details="dashboard.weightChange !== null ? `Change over period: ${formatWeightChange(dashboard.weightChange)}` : 'At least two entries are needed to calculate the change'"
     />
     <HealthMetricCard
-      label="Симптомы"
+      label="Symptoms"
       tone="symptoms"
       :value="String(dashboard.symptomCount)"
       unit="entries"
       :details="dashboard.topSymptoms.length
-        ? `Самый частый: ${dashboard.topSymptoms[0]?.label ?? '—'}`
-        : 'Нет записей симптомов за выбранный период'"
+        ? `Most frequent: ${dashboard.topSymptoms[0]?.label ?? '—'}`
+        : 'No symptom entries for the selected period'"
     />
   </section>
 </template>

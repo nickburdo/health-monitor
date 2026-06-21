@@ -32,11 +32,11 @@ function bloodPressureSummary(item: BloodPressureRow) {
 
   return [
     {
-      label: 'Дата',
+      label: 'Date',
       value: formatWhen(item.measuredAt),
     },
     {
-      label: 'Значение',
+      label: 'Reading',
       value: formatValueParts(item).value,
       helper: formatValueParts(item).unit ? formatValueParts(item).unit : undefined,
     },
@@ -57,7 +57,7 @@ function displayNote(item: BloodPressureRow) {
     <div class="health-table-header">
       <div>
         <h2 class="health-section-title">
-          История давления
+          Blood pressure history
         </h2>
       </div>
     </div>
@@ -68,22 +68,22 @@ function displayNote(item: BloodPressureRow) {
           <tr>
             <th>
               <span class="health-table-head-date health-table-head-date-measurement">
-                <span class="health-table-head-date-full">Дата Время</span>
-                <span class="health-table-head-date-short">ДАТА</span>
+                <span class="health-table-head-date-full">Date Time</span>
+                <span class="health-table-head-date-short">DATE</span>
               </span>
             </th>
             <th>
               <span class="health-table-head-value">
-                <span class="health-table-head-value-full">ЗНАЧЕНИЕ</span>
-                <span class="health-table-head-value-short">ЗНАЧ.</span>
+                <span class="health-table-head-value-full">READING</span>
+                <span class="health-table-head-value-short">READ.</span>
               </span>
             </th>
-            <th>ЗАМЕТКИ</th>
+            <th>NOTES</th>
             <th
               class="health-table-action-head"
-              aria-label="Действие"
+              aria-label="Action"
             >
-              <span class="sr-only">Действие</span>
+              <span class="sr-only">Action</span>
             </th>
           </tr>
         </thead>
@@ -121,9 +121,9 @@ function displayNote(item: BloodPressureRow) {
                 :item="item"
                 endpoint="/api/blood-pressure"
                 refresh-key="blood-pressure-page"
-                entity-label="давления"
+                entity-label="blood pressure"
                 :summary="bloodPressureSummary(item)"
-                reason-placeholder="Например: манжета была надета неправильно"
+                reason-placeholder="For example: the cuff was positioned incorrectly"
               />
             </td>
           </tr>

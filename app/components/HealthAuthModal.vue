@@ -41,7 +41,7 @@ function errorMessage(error: unknown) {
     return error.message;
   }
 
-  return 'Не удалось выполнить вход';
+  return 'Could not sign in';
 }
 
 async function submit() {
@@ -68,12 +68,12 @@ async function submit() {
     await refreshNuxtData();
 
     toast.add({
-      title: 'Вход выполнен',
-      description: 'Данные обновлены для текущей сессии.',
+      title: 'Signed in',
+      description: 'Data was refreshed for the current session.',
     });
   } catch (error) {
     toast.add({
-      title: 'Не удалось войти',
+      title: 'Sign in failed',
       description: errorMessage(error),
       color: 'error',
     });
@@ -105,7 +105,7 @@ async function signInWithGoogle() {
     oauthSubmitting.value = false;
 
     toast.add({
-      title: 'Не удалось войти через Google',
+      title: 'Google sign-in failed',
       description: errorMessage(error),
       color: 'error',
     });
@@ -163,7 +163,7 @@ onBeforeUnmount(() => {
               Sign In
             </h2>
             <p class="health-modal-lead">
-              Войдите через email и пароль Supabase, чтобы открыть приватный режим.
+              Sign in with your Supabase email and password to open private mode.
             </p>
           </div>
 
@@ -204,7 +204,7 @@ onBeforeUnmount(() => {
           </div>
 
           <div class="health-auth-divider">
-            <span>или</span>
+            <span>or</span>
           </div>
 
           <button
@@ -213,12 +213,12 @@ onBeforeUnmount(() => {
             :disabled="submitting || oauthSubmitting"
             @click="signInWithGoogle"
           >
-            {{ oauthSubmitting ? 'Переход к Google…' : 'Continue with Google' }}
+            {{ oauthSubmitting ? 'Redirecting to Google…' : 'Continue with Google' }}
           </button>
 
           <footer class="health-modal-actions">
             <p class="health-form-note">
-              Без дополнительной валидации. Ошибки входа показываются через toast.
+              No extra validation. Sign-in errors are shown with a toast.
             </p>
 
             <div class="health-modal-buttons">
@@ -227,14 +227,14 @@ onBeforeUnmount(() => {
                 class="health-button health-button-secondary"
                 @click="closeModal"
               >
-                Отмена
+                Cancel
               </button>
               <button
                 type="submit"
                 class="health-button"
                 :disabled="submitting"
               >
-                {{ submitting ? 'Вход…' : 'Sign In' }}
+                {{ submitting ? 'Signing in…' : 'Sign In' }}
               </button>
             </div>
           </footer>

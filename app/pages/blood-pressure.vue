@@ -18,13 +18,13 @@ useHead({ title: 'Blood Pressure · Health Monitor' });
   <HealthShell>
     <MeasurementPageShell
       eyebrow="Blood pressure"
-      title="Давление"
+      title="Blood pressure"
     >
       <template #filter>
         <PeriodFilter v-model="periodFilters" />
       </template>
       <HealthLineChart
-        v-bind="{ ariaLabel: 'График давления с линиями систолического и диастолического значения' }"
+        v-bind="{ ariaLabel: 'Blood pressure chart with systolic and diastolic lines' }"
         :items="data ?? []"
         :series="bloodPressureChartSeries"
         :value-formatter="formatBloodPressureValue"

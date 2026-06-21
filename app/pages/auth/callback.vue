@@ -6,7 +6,7 @@ const session = useSupabaseSession();
 const toast = useToast();
 
 const status = ref<'loading' | 'error'>('loading');
-const message = ref('Завершаем вход через Google…');
+const message = ref('Completing Google sign-in...');
 
 function errorMessage(error: unknown) {
   if (typeof error === 'object' && error !== null && 'message' in error) {
@@ -21,7 +21,7 @@ function errorMessage(error: unknown) {
     return error.message;
   }
 
-  return 'Не удалось завершить вход через Google';
+  return 'Could not complete Google sign-in';
 }
 
 async function waitForSession(timeoutMs = 2000) {
@@ -61,14 +61,14 @@ onMounted(async () => {
     }
 
     if (!currentSession) {
-      throw new Error('Не удалось получить активную сессию Google');
+      throw new Error('Could not get an active Google session');
     }
 
     await refreshNuxtData();
 
     toast.add({
-      title: 'Вход выполнен',
-      description: 'Google-сессия активна, данные обновлены.',
+      title: 'Signed in',
+      description: 'The Google session is active and the data was refreshed.',
     });
 
     await router.replace('/');
@@ -77,7 +77,7 @@ onMounted(async () => {
     message.value = errorMessage(error);
 
     toast.add({
-      title: 'Не удалось завершить вход через Google',
+      title: 'Could not complete Google sign-in',
       description: message.value,
       color: 'error',
     });
@@ -98,7 +98,7 @@ useHead({
         Google auth
       </div>
       <h1 class="health-page-title">
-        {{ status === 'loading' ? 'Подключаем сессию' : 'Ошибка авторизации' }}
+        {{ status === 'loading' ? 'Connecting session' : 'Authentication error' }}
       </h1>
       <p class="health-page-lead">
         {{ message }}

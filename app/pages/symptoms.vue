@@ -14,7 +14,7 @@ useHead({ title: 'Symptoms · Health Monitor' });
   <HealthShell>
     <MeasurementPageShell
       eyebrow="Symptoms"
-      title="Симптомы"
+      title="Symptoms"
     >
       <template #filter>
         <PeriodFilter v-model="periodFilters" />

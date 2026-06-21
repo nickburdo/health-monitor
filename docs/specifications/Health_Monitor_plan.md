@@ -139,3 +139,4 @@
 - [x] weight API now resolves actor through `server/utils/auth.ts`, returns only `isDemo=true` rows to guests and only private rows to admin, and forces server-side `isDemo` on create/update flows.
 - [x] glucose, blood pressure, and symptoms APIs now use the same actor resolution and server-side demo/private separation as weight.
 - [x] auth modal now supports Google OAuth and `/auth/callback` completes the session exchange before redirecting back to `/`.
+- [x] the app UI is now fully translated to English, including the dashboard, measurement pages, modals, filters, and toast copy.

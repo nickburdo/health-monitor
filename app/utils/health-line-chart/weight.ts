@@ -1,14 +1,14 @@
 export const weightChartSeries = [
   {
     key: 'value',
-    label: 'Вес',
+    label: 'Weight',
     color: '#22c55e',
-    valueFormatter: (value: number) => `${value.toFixed(1)} кг`,
+    valueFormatter: (value: number) => `${value.toFixed(1)} kg`,
   },
 ] as const;
 
 export function formatWeightValue(value: number) {
-  return `${value.toFixed(1)} кг`;
+  return `${value.toFixed(1)} kg`;
 }
 
 export function formatWeightAxisValue(value: number) {

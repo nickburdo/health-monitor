@@ -53,16 +53,16 @@ const weightSeed = [
 ];
 
 const symptomSeed = [
-  { happenedAt: daysAgo(0), type: 'Other', intensity: 2, note: 'Light discomfort', isDemo: true },
-  { happenedAt: daysAgo(2), type: 'Other', intensity: 3, note: 'Short episode', isDemo: true },
-  { happenedAt: daysAgo(7), type: 'Other', intensity: 1, note: 'Brief note', isDemo: true },
-  { happenedAt: daysAgo(9), type: 'Other', intensity: 4, note: 'Managed well', isDemo: true },
-  { happenedAt: daysAgo(14), type: 'Other', intensity: 2, note: 'Mild issue', isDemo: true },
-  { happenedAt: daysAgo(16), type: 'Other', intensity: 5, note: 'Noticeable symptom', isDemo: true },
-  { happenedAt: daysAgo(21), type: 'Other', intensity: 3, note: 'Short episode', isDemo: true },
-  { happenedAt: daysAgo(23), type: 'Other', intensity: 4, note: 'Evening note', isDemo: true },
-  { happenedAt: daysAgo(28), type: 'Other', intensity: 2, note: 'Mild issue', isDemo: true },
-  { happenedAt: daysAgo(30), type: 'Other', intensity: 1, note: 'Brief note', isDemo: true },
+  { happenedAt: daysAgo(0), type: 'bloating', intensity: 2, note: 'Light discomfort', isDemo: true },
+  { happenedAt: daysAgo(2), type: 'headache', intensity: 3, note: 'Short episode', isDemo: true },
+  { happenedAt: daysAgo(7), type: 'bloating', intensity: 1, note: 'Brief note', isDemo: true },
+  { happenedAt: daysAgo(9), type: 'bloating', intensity: 4, note: 'Managed well', isDemo: true },
+  { happenedAt: daysAgo(14), type: 'headache', intensity: 2, note: 'Mild issue', isDemo: true },
+  { happenedAt: daysAgo(16), type: 'stress', intensity: 5, note: 'Noticeable symptom', isDemo: true },
+  { happenedAt: daysAgo(21), type: 'bloating', intensity: 3, note: 'Short episode', isDemo: true },
+  { happenedAt: daysAgo(23), type: 'headache', intensity: 4, note: 'Evening note', isDemo: true },
+  { happenedAt: daysAgo(28), type: 'bloating', intensity: 2, note: 'Mild issue', isDemo: true },
+  { happenedAt: daysAgo(30), type: 'bloating', intensity: 1, note: 'Brief note', isDemo: true },
 ];
 
 async function main() {

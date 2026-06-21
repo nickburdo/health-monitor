@@ -18,13 +18,13 @@ useHead({ title: 'Weight · Health Monitor' });
   <HealthShell>
     <MeasurementPageShell
       eyebrow="Weight"
-      title="Вес"
+      title="Weight"
     >
       <template #filter>
         <PeriodFilter v-model="periodFilters" />
       </template>
       <HealthLineChart
-        v-bind="{ ariaLabel: 'График веса' }"
+        v-bind="{ ariaLabel: 'Weight chart' }"
         :items="data ?? []"
         :series="weightChartSeries"
         :value-formatter="formatWeightValue"

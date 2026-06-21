@@ -18,13 +18,13 @@ useHead({ title: 'Glucose · Health Monitor' });
   <HealthShell>
     <MeasurementPageShell
       eyebrow="Glucose"
-      title="Глюкоза"
+      title="Glucose"
     >
       <template #filter>
         <PeriodFilter v-model="periodFilters" />
       </template>
       <HealthLineChart
-        v-bind="{ ariaLabel: 'График глюкозы с линиями натощак и после еды' }"
+        v-bind="{ ariaLabel: 'Glucose chart with fasting and after meal lines' }"
         :items="data ?? []"
         :series="glucoseChartSeries"
         :value-formatter="formatGlucoseValue"

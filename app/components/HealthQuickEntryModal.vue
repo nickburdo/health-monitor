@@ -20,23 +20,23 @@ const entryTypes: Array<{
 }> = [
   {
     id: 'glucose',
-    label: 'Глюкоза',
-    description: 'Натощак или после еды',
+    label: 'Glucose',
+    description: 'Fasting or after meal',
   },
   {
     id: 'bloodPressure',
-    label: 'Давление',
-    description: 'Систолическое, диастолическое, пульс',
+    label: 'Blood pressure',
+    description: 'Systolic, diastolic, pulse',
   },
   {
     id: 'weight',
-    label: 'Вес',
-    description: 'Одна цифра и заметка',
+    label: 'Weight',
+    description: 'One number and a note',
   },
   {
     id: 'symptom',
-    label: 'Симптом',
-    description: 'Список симптомов MVP',
+    label: 'Symptom',
+    description: 'MVP symptom list',
   },
 ];
 
@@ -106,14 +106,14 @@ function toIsoDateTime(value: string) {
 function errorMessage(error: unknown) {
   if (typeof error === 'object' && error !== null && 'data' in error) {
     const data = (error as { data?: { statusMessage?: string; message?: string } }).data;
-    return data?.statusMessage ?? data?.message ?? 'Не удалось сохранить запись';
+    return data?.statusMessage ?? data?.message ?? 'Could not save the entry';
   }
 
   if (error instanceof Error && error.message) {
     return error.message;
   }
 
-  return 'Не удалось сохранить запись';
+  return 'Could not save the entry';
 }
 
 async function submit() {
@@ -130,8 +130,8 @@ async function submit() {
 
       if (fastingValue === undefined && afterMealValue === undefined) {
         toast.add({
-          title: 'Нужен показатель глюкозы',
-          description: 'Заполните натощак или после еды.',
+          title: 'A glucose value is required',
+          description: 'Fill in fasting or after meal.',
           color: 'error',
         });
         return;
@@ -155,8 +155,8 @@ async function submit() {
 
       if (systolic === undefined && diastolic === undefined && pulse === undefined) {
         toast.add({
-          title: 'Нужно хотя бы одно значение',
-          description: 'Введите давление или пульс.',
+          title: 'At least one value is required',
+          description: 'Enter blood pressure or pulse.',
           color: 'error',
         });
         return;
@@ -179,8 +179,8 @@ async function submit() {
 
       if (value === undefined) {
         toast.add({
-          title: 'Укажите вес',
-          description: 'Поле веса обязательно для записи.',
+          title: 'Enter a weight',
+          description: 'The weight field is required for this entry.',
           color: 'error',
         });
         return;
@@ -211,8 +211,8 @@ async function submit() {
     }
 
     toast.add({
-      title: 'Запись сохранена',
-      description: 'История обновлена и сводка пересчитана.',
+      title: 'Entry saved',
+      description: 'History was updated and the summary was recalculated.',
     });
 
     resetForm(activeType.value);
@@ -220,7 +220,7 @@ async function submit() {
     closeModal();
   } catch (error) {
     toast.add({
-      title: 'Сохранение не удалось',
+      title: 'Save failed',
       description: errorMessage(error),
       color: 'error',
     });
@@ -276,10 +276,10 @@ onBeforeUnmount(() => {
               id="quick-entry-title"
               class="health-modal-title"
             >
-              Быстрый ввод записи
+              Quick entry
             </h2>
             <p class="health-modal-lead">
-              Выберите тип записи и отправьте ее сразу в локальную базу.
+              Choose an entry type and send it straight to the local database.
             </p>
           </div>
 
@@ -316,7 +316,7 @@ onBeforeUnmount(() => {
             class="health-form-grid"
           >
             <label class="health-field">
-              <span>Дата и время</span>
+              <span>Date and time</span>
               <input
                 v-model="form.glucose.measuredAt"
                 type="datetime-local"
@@ -325,7 +325,7 @@ onBeforeUnmount(() => {
             </label>
             <div class="health-field-grid">
               <label class="health-field">
-                <span>Натощак</span>
+                <span>Fasting</span>
                 <input
                   v-model="form.glucose.fastingValue"
                   type="number"
@@ -336,7 +336,7 @@ onBeforeUnmount(() => {
                 >
               </label>
               <label class="health-field">
-                <span>После еды</span>
+                <span>After meal</span>
                 <input
                   v-model="form.glucose.afterMealValue"
                   type="number"
@@ -348,12 +348,12 @@ onBeforeUnmount(() => {
               </label>
             </div>
             <label class="health-field">
-              <span>Заметка</span>
+              <span>Note</span>
               <textarea
                 v-model="form.glucose.note"
                 rows="3"
                 class="health-textarea"
-                placeholder="Например: утренний замер"
+                placeholder="For example: morning reading"
               />
             </label>
           </div>
@@ -363,7 +363,7 @@ onBeforeUnmount(() => {
             class="health-form-grid"
           >
             <label class="health-field">
-              <span>Дата и время</span>
+              <span>Date and time</span>
               <input
                 v-model="form.bloodPressure.measuredAt"
                 type="datetime-local"
@@ -372,7 +372,7 @@ onBeforeUnmount(() => {
             </label>
             <div class="health-field-grid health-field-grid-3">
               <label class="health-field">
-                <span>Систолическое</span>
+                <span>Systolic</span>
                 <input
                   v-model="form.bloodPressure.systolic"
                   type="number"
@@ -383,7 +383,7 @@ onBeforeUnmount(() => {
                 >
               </label>
               <label class="health-field">
-                <span>Диастолическое</span>
+                <span>Diastolic</span>
                 <input
                   v-model="form.bloodPressure.diastolic"
                   type="number"
@@ -394,7 +394,7 @@ onBeforeUnmount(() => {
                 >
               </label>
               <label class="health-field">
-                <span>Пульс</span>
+                <span>Pulse</span>
                 <input
                   v-model="form.bloodPressure.pulse"
                   type="number"
@@ -406,12 +406,12 @@ onBeforeUnmount(() => {
               </label>
             </div>
             <label class="health-field">
-              <span>Заметка</span>
+              <span>Note</span>
               <textarea
                 v-model="form.bloodPressure.note"
                 rows="3"
                 class="health-textarea"
-                placeholder="Например: после прогулки"
+                placeholder="For example: after a walk"
               />
             </label>
           </div>
@@ -421,7 +421,7 @@ onBeforeUnmount(() => {
             class="health-form-grid"
           >
             <label class="health-field">
-              <span>Дата и время</span>
+              <span>Date and time</span>
               <input
                 v-model="form.weight.measuredAt"
                 type="datetime-local"
@@ -429,7 +429,7 @@ onBeforeUnmount(() => {
               >
             </label>
             <label class="health-field">
-              <span>Вес, кг</span>
+              <span>Weight, kg</span>
               <input
                 v-model="form.weight.value"
                 type="number"
@@ -440,12 +440,12 @@ onBeforeUnmount(() => {
               >
             </label>
             <label class="health-field">
-              <span>Заметка</span>
+              <span>Note</span>
               <textarea
                 v-model="form.weight.note"
                 rows="3"
                 class="health-textarea"
-                placeholder="Например: утренний замер"
+                placeholder="For example: morning reading"
               />
             </label>
           </div>
@@ -455,7 +455,7 @@ onBeforeUnmount(() => {
             class="health-form-grid"
           >
             <label class="health-field">
-              <span>Дата и время</span>
+              <span>Date and time</span>
               <input
                 v-model="form.symptom.happenedAt"
                 type="datetime-local"
@@ -464,7 +464,7 @@ onBeforeUnmount(() => {
             </label>
             <div class="health-field-grid">
               <label class="health-field">
-                <span>Симптом</span>
+                <span>Symptom</span>
                 <select
                   v-model="form.symptom.type"
                   class="health-input"
@@ -479,7 +479,7 @@ onBeforeUnmount(() => {
                 </select>
               </label>
               <label class="health-field">
-                <span>Интенсивность</span>
+                <span>Intensity</span>
                 <input
                   v-model="form.symptom.intensity"
                   type="number"
@@ -492,20 +492,20 @@ onBeforeUnmount(() => {
               </label>
             </div>
             <label class="health-field">
-              <span>Заметка</span>
+              <span>Note</span>
               <textarea
                 v-model="form.symptom.note"
                 rows="3"
                 class="health-textarea"
-                placeholder="Например: после ужина"
+                placeholder="For example: after dinner"
               />
             </label>
           </div>
 
           <footer class="health-modal-actions">
             <p class="health-form-note">
-              Запись сохранится без метки ignored, если данные выглядят
-              корректно.
+              The entry will be saved without the ignored flag if the data looks
+              valid.
             </p>
 
             <div class="health-modal-buttons">
@@ -514,14 +514,14 @@ onBeforeUnmount(() => {
                 class="health-button health-button-secondary"
                 @click="closeModal"
               >
-                Отмена
+                Cancel
               </button>
               <button
                 type="submit"
                 class="health-button"
                 :disabled="saving"
               >
-                {{ saving ? 'Сохранение…' : 'Сохранить' }}
+                {{ saving ? 'Saving…' : 'Save' }}
               </button>
             </div>
           </footer>

@@ -1,16 +1,16 @@
-const dateTimeFormatter = new Intl.DateTimeFormat('ru-RU', {
+const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
   day: 'numeric',
   month: 'short',
   hour: '2-digit',
   minute: '2-digit',
 });
 
-const dateOnlyFormatter = new Intl.DateTimeFormat('ru-RU', {
+const dateOnlyFormatter = new Intl.DateTimeFormat('en-US', {
   day: 'numeric',
   month: 'short',
 });
 
-const timeOnlyFormatter = new Intl.DateTimeFormat('ru-RU', {
+const timeOnlyFormatter = new Intl.DateTimeFormat('en-US', {
   hour: '2-digit',
   minute: '2-digit',
 });

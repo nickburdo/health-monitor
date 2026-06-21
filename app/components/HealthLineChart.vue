@@ -341,7 +341,7 @@ function clearPoint() {
       </svg>
 
       <div class="health-line-chart-axis">
-        <span>{{ chartTitle || 'Нет данных' }}</span>
+        <span>{{ chartTitle || 'No data' }}</span>
       </div>
     </div>
 
@@ -349,7 +349,7 @@ function clearPoint() {
       v-else
       class="health-line-chart-empty"
     >
-      {{ emptyLabel ?? 'Нет активных данных для построения графика.' }}
+      {{ emptyLabel ?? 'No active data available to build the chart.' }}
     </div>
   </article>
 </template>

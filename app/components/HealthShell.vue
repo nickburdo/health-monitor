@@ -48,7 +48,7 @@ function errorMessage(error: unknown) {
     return error.message;
   }
 
-  return 'Не удалось выполнить выход';
+  return 'Could not sign out';
 }
 
 async function signOut() {
@@ -62,12 +62,12 @@ async function signOut() {
     await refreshNuxtData();
 
     toast.add({
-      title: 'Выход выполнен',
-      description: 'Приложение вернулось в гостевой режим.',
+      title: 'Signed out',
+      description: 'The app returned to guest mode.',
     });
   } catch (error) {
     toast.add({
-      title: 'Не удалось выйти',
+      title: 'Sign out failed',
       description: errorMessage(error),
       color: 'error',
     });
@@ -120,7 +120,7 @@ async function signOut() {
             class="health-button"
             @click="quickEntryOpen = true"
           >
-            + Add Entry
+            + Add entry
           </button>
         </div>
       </div>

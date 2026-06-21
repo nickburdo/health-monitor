@@ -36,14 +36,14 @@ function formatValueParts(item: GlucoseMeasurement) {
 
 function formatMeasurementType(item: GlucoseMeasurement) {
   if (item.fastingValue !== null && item.afterMealValue !== null) {
-    return 'Натощак и после еды';
+    return 'Fasting and after meal';
   }
 
   if (item.afterMealValue !== null) {
-    return 'После еды';
+    return 'After meal';
   }
 
-  return 'Натощак';
+  return 'Fasting';
 }
 
 function typeEmoji(item: GlucoseMeasurement) {
@@ -57,15 +57,15 @@ function glucoseSummary(item: GlucoseMeasurement) {
 
   return [
     {
-      label: 'Дата',
+      label: 'Date',
       value: formatWhen(item.measuredAt),
     },
     {
-      label: 'Тип',
+      label: 'Type',
       value: formatMeasurementType(item),
     },
     {
-      label: 'Значение',
+      label: 'Reading',
       value: formatValueParts(item).value,
       helper: formatValueParts(item).unit ? formatValueParts(item).unit : undefined,
     },
@@ -86,7 +86,7 @@ function displayNote(item: GlucoseMeasurement) {
     <div class="health-table-header">
       <div>
         <h2 class="health-section-title">
-          История глюкозы
+          Glucose history
         </h2>
       </div>
     </div>
@@ -97,22 +97,22 @@ function displayNote(item: GlucoseMeasurement) {
           <tr>
             <th>
               <span class="health-table-head-date health-table-head-date-measurement">
-                <span class="health-table-head-date-full">Дата Время</span>
-                <span class="health-table-head-date-short">ДАТА</span>
+                <span class="health-table-head-date-full">Date Time</span>
+                <span class="health-table-head-date-short">DATE</span>
               </span>
             </th>
             <th>
               <span class="health-table-head-value">
-                <span class="health-table-head-value-full">ЗНАЧЕНИЕ</span>
-                <span class="health-table-head-value-short">ЗНАЧ.</span>
+                <span class="health-table-head-value-full">READING</span>
+                <span class="health-table-head-value-short">READ.</span>
               </span>
             </th>
-            <th>ЗАМЕТКИ</th>
+            <th>NOTES</th>
             <th
               class="health-table-action-head"
-              aria-label="Действие"
+              aria-label="Action"
             >
-              <span class="sr-only">Действие</span>
+              <span class="sr-only">Action</span>
             </th>
           </tr>
         </thead>
@@ -158,9 +158,9 @@ function displayNote(item: GlucoseMeasurement) {
                 :item="item"
                 endpoint="/api/glucose"
                 refresh-key="glucose-page"
-                entity-label="глюкозы"
+                entity-label="glucose"
                 :summary="glucoseSummary(item)"
-                reason-placeholder="Например: подозрительно высокий показатель после плотного ужина"
+                reason-placeholder="For example: a suspiciously high reading after a heavy dinner"
               />
             </td>
           </tr>

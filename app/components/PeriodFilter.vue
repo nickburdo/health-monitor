@@ -25,10 +25,10 @@ const periodButtons: Array<{
   preset: PeriodPreset;
   label: string;
 }> = [
-  { preset: '3m', label: '3 месяца' },
-  { preset: '6m', label: '6 месяцев' },
-  { preset: 'ytd', label: 'С начала года' },
-  { preset: 'custom', label: 'Выбрать' },
+  { preset: '3m', label: '3 months' },
+  { preset: '6m', label: '6 months' },
+  { preset: 'ytd', label: 'Year to date' },
+  { preset: 'custom', label: 'Custom' },
 ];
 
 function emitValue(value: PeriodFilterValue) {
@@ -80,20 +80,20 @@ function cancelCustomRange() {
 
 const customButtonLabel = computed(() => {
   if (props.modelValue.preset !== 'custom') {
-    return 'Выбрать';
+    return 'Custom';
   }
 
   const from = formatPeriodShortDate(props.modelValue.dateFrom);
   const to = formatPeriodShortDate(props.modelValue.dateTo);
 
-  return from && to ? `${from} - ${to}` : 'Выбрать';
+  return from && to ? `${from} - ${to}` : 'Custom';
 });
 
 const selectedCustomRange = computed(() => {
   const from = formatPeriodShortDate(props.modelValue.dateFrom);
   const to = formatPeriodShortDate(props.modelValue.dateTo);
 
-  return from && to ? `${from} - ${to}` : 'Произвольный диапазон';
+  return from && to ? `${from} - ${to}` : 'Custom range';
 });
 
 watch(
@@ -146,7 +146,7 @@ watch(
               id="period-filter-title"
               class="health-modal-title"
             >
-              Выбор периода
+              Period selection
             </h2>
             <p class="health-modal-lead">
               {{ selectedCustomRange }}
@@ -165,7 +165,7 @@ watch(
 
         <div class="health-field-grid health-period-filter-custom-fields">
           <label class="health-field">
-            <span>Дата начала</span>
+            <span>Start date</span>
             <input
               v-model="customDateFrom"
               type="date"
@@ -174,7 +174,7 @@ watch(
           </label>
 
           <label class="health-field">
-            <span>Дата окончания</span>
+            <span>End date</span>
             <input
               v-model="customDateTo"
               type="date"
@@ -185,7 +185,7 @@ watch(
 
         <footer class="health-modal-actions">
           <p class="health-form-note">
-            Выберите диапазон и примените его к списку измерений.
+            Choose a range and apply it to the readings list.
           </p>
 
           <div class="health-modal-buttons">
@@ -194,7 +194,7 @@ watch(
               class="health-button health-button-secondary health-button-small"
               @click="cancelCustomRange"
             >
-              Отмена
+              Cancel
             </button>
             <button
               type="button"
@@ -202,7 +202,7 @@ watch(
               :disabled="!customDateFrom || !customDateTo || customDateFrom > customDateTo"
               @click="applyCustomRange"
             >
-              Применить
+              Apply
             </button>
           </div>
         </footer>

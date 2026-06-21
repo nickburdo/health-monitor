@@ -42,14 +42,14 @@ function normalizeNote(value: unknown) {
 function errorMessage(error: unknown) {
   if (typeof error === 'object' && error !== null && 'data' in error) {
     const data = (error as { data?: { statusMessage?: string; message?: string } }).data;
-    return data?.statusMessage ?? data?.message ?? 'Не удалось обновить заметку';
+    return data?.statusMessage ?? data?.message ?? 'Could not update the note';
   }
 
   if (error instanceof Error && error.message) {
     return error.message;
   }
 
-  return 'Не удалось обновить заметку';
+  return 'Could not update the note';
 }
 
 async function saveNote(item: SymptomRow) {
@@ -68,15 +68,15 @@ async function saveNote(item: SymptomRow) {
     });
 
     toast.add({
-      title: 'Заметка обновлена',
-      description: 'Запись симптома сохранена.',
+      title: 'Note updated',
+      description: 'The symptom entry was saved.',
     });
 
     cancelEditing();
     await refreshNuxtData('symptoms-page');
   } catch (error) {
     toast.add({
-      title: 'Обновление не удалось',
+      title: 'Update failed',
       description: errorMessage(error),
       color: 'error',
     });
@@ -114,7 +114,7 @@ onBeforeUnmount(() => {
     <div class="health-table-header">
       <div>
         <h2 class="health-section-title">
-          История симптомов
+          Symptom history
         </h2>
       </div>
     </div>
@@ -125,18 +125,18 @@ onBeforeUnmount(() => {
           <tr>
             <th>
               <span class="health-table-head-date health-table-head-date-measurement">
-                <span class="health-table-head-date-full">Дата Время</span>
-                <span class="health-table-head-date-short">ДАТА</span>
+                <span class="health-table-head-date-full">Date Time</span>
+                <span class="health-table-head-date-short">DATE</span>
               </span>
             </th>
-            <th>Симптом</th>
-            <th>Балл</th>
-            <th>ЗАМЕТКИ</th>
+            <th>Symptom</th>
+            <th>Score</th>
+            <th>NOTES</th>
             <th
               class="health-table-action-head"
-              aria-label="Действие"
+              aria-label="Action"
             >
-              <span class="sr-only">Действие</span>
+              <span class="sr-only">Action</span>
             </th>
           </tr>
         </thead>
@@ -154,7 +154,7 @@ onBeforeUnmount(() => {
                   v-model="draftNote"
                   class="health-table-textarea health-table-textarea-mobile-edit"
                   rows="3"
-                  placeholder="Заметка"
+                  placeholder="Note"
                 />
               </td>
               <td class="health-table-action-cell">
@@ -162,24 +162,24 @@ onBeforeUnmount(() => {
                   <button
                     type="button"
                     class="health-button health-button-secondary health-button-small health-table-icon-button"
-                    title="Отмена"
-                    aria-label="Отмена"
+                    title="Cancel"
+                    aria-label="Cancel"
                     @click="cancelEditing"
                   >
                     <UIcon name="i-lucide-x" />
-                    <span class="sr-only">Отмена</span>
+                    <span class="sr-only">Cancel</span>
                   </button>
                   <button
                     type="button"
                     class="health-button health-button-small health-table-icon-button"
                     :disabled="savingId === item.id"
-                    title="Сохранить"
-                    aria-label="Сохранить"
+                    title="Save"
+                    aria-label="Save"
                     @click="saveNote(item)"
                   >
                     <UIcon name="i-lucide-check" />
                     <span class="sr-only">
-                      {{ savingId === item.id ? 'Сохранение' : 'Сохранить' }}
+                      {{ savingId === item.id ? 'Saving' : 'Save' }}
                     </span>
                   </button>
                 </div>
@@ -206,7 +206,7 @@ onBeforeUnmount(() => {
                     v-model="draftNote"
                     class="health-table-textarea"
                     rows="3"
-                    placeholder="Заметка"
+                    placeholder="Note"
                   />
                 </template>
                 <template v-else>
@@ -221,35 +221,35 @@ onBeforeUnmount(() => {
                     v-if="editingId !== item.id"
                     type="button"
                     class="health-button health-button-secondary health-button-small health-table-icon-button"
-                    title="Редактировать"
-                    aria-label="Редактировать"
+                    title="Edit"
+                    aria-label="Edit"
                     @click="startEditing(item)"
                   >
                     <UIcon name="i-lucide-pencil" />
-                    <span class="sr-only">Редактировать</span>
+                    <span class="sr-only">Edit</span>
                   </button>
                   <template v-else>
                     <button
                       type="button"
                       class="health-button health-button-secondary health-button-small health-table-icon-button"
-                      title="Отмена"
-                      aria-label="Отмена"
+                      title="Cancel"
+                      aria-label="Cancel"
                       @click="cancelEditing"
                     >
                       <UIcon name="i-lucide-x" />
-                      <span class="sr-only">Отмена</span>
+                      <span class="sr-only">Cancel</span>
                     </button>
                     <button
                       type="button"
                       class="health-button health-button-small health-table-icon-button"
                       :disabled="savingId === item.id"
-                      title="Сохранить"
-                      aria-label="Сохранить"
+                      title="Save"
+                      aria-label="Save"
                       @click="saveNote(item)"
                     >
                       <UIcon name="i-lucide-check" />
                       <span class="sr-only">
-                        {{ savingId === item.id ? 'Сохранение' : 'Сохранить' }}
+                        {{ savingId === item.id ? 'Saving' : 'Save' }}
                       </span>
                     </button>
                   </template>

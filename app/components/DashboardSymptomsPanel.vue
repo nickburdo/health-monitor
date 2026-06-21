@@ -15,7 +15,7 @@ function selectTopSymptoms(
       return right.count - left.count;
     }
 
-    return left.label.localeCompare(right.label, 'ru');
+    return left.label.localeCompare(right.label, 'en');
   });
 
   return typeof limit === 'number'
@@ -63,10 +63,10 @@ function barWidth(count: number) {
     <header class="health-dashboard-symptoms-header">
       <div class="health-dashboard-symptoms-copy">
         <h2 class="health-section-title">
-          {{ title ?? 'Симптомы' }}
+          {{ title ?? 'Symptoms' }}
         </h2>
         <p class="health-dashboard-symptoms-subtitle">
-          Сколько раз симптомы были отмечены за выбранный период
+          How many times symptoms were recorded during the selected period
         </p>
       </div>
     </header>
@@ -97,7 +97,7 @@ function barWidth(count: number) {
       v-else
       class="health-dashboard-symptoms-empty"
     >
-      Нет записей симптомов за выбранный период.
+      No symptom entries for the selected period.
     </div>
   </article>
 </template>

@@ -1,20 +1,20 @@
 export const glucoseChartSeries = [
   {
     key: 'fastingValue',
-    label: 'Натощак',
+    label: 'Fasting',
     color: '#fb923c',
-    valueFormatter: (value: number) => `${(value / 18).toFixed(1)} ммоль/л`,
+    valueFormatter: (value: number) => `${(value / 18).toFixed(1)} mmol/L`,
   },
   {
     key: 'afterMealValue',
-    label: 'После еды',
+    label: 'After meal',
     color: '#ea580c',
-    valueFormatter: (value: number) => `${(value / 18).toFixed(1)} ммоль/л`,
+    valueFormatter: (value: number) => `${(value / 18).toFixed(1)} mmol/L`,
   },
 ] as const;
 
 export function formatGlucoseValue(value: number) {
-  return `${(value / 18).toFixed(1)} ммоль/л`;
+  return `${(value / 18).toFixed(1)} mmol/L`;
 }
 
 export function formatGlucoseAxisValue(value: number) {

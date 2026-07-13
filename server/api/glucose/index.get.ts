@@ -1,12 +1,7 @@
-import { healthDb } from '../../utils/prisma';
-import { getRequestActor } from '../../utils/auth';
-import { readDateRangeQuery } from '../../utils/date-range';
-import { listGlucoseMeasurements } from '../../utils/health-records';
+import { glucoseRepository } from '../../repositories/glucoseRepository';
 
-export default defineEventHandler(async (event) => {
-  return listGlucoseMeasurements(
-    healthDb,
-    await getRequestActor(event),
-    readDateRangeQuery(event),
-  );
+const devUserId = 'dev-user';
+
+export default defineEventHandler(async () => {
+  return glucoseRepository.list(devUserId);
 });

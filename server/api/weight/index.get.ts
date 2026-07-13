@@ -1,12 +1,7 @@
-import { healthDb } from '../../utils/prisma';
-import { getRequestActor } from '../../utils/auth';
-import { readDateRangeQuery } from '../../utils/date-range';
-import { listWeightMeasurements } from '../../utils/health-records';
+import { weightRepository } from '#server/repositories/weightRepository';
 
-export default defineEventHandler(async (event) => {
-  return listWeightMeasurements(
-    healthDb,
-    await getRequestActor(event),
-    readDateRangeQuery(event),
-  );
+const devUserId = 'dev-user';
+
+export default defineEventHandler(async () => {
+  return weightRepository.list(devUserId);
 });

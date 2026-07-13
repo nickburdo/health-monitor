@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import DashboardSymptomsPanel from '~/components/DashboardSymptomsPanel.vue';
-import type { SymptomMeasurement } from '~/types/symptom';
+import type { SymptomEntry } from '~/types/symptom';
 
-const { periodFilters, data } = await useMeasurementListPage<SymptomMeasurement>({
+const { periodFilters, data } = await useMeasurementListPage<SymptomEntry>({
   key: 'symptoms-page',
   endpoint: '/api/symptoms',
 });
@@ -12,19 +12,12 @@ useHead({ title: 'Symptoms · Health Monitor' });
 
 <template>
   <HealthShell>
-    <MeasurementPageShell
-      eyebrow="Symptoms"
-      title="Symptoms"
-    >
+    <MeasurementPageShell eyebrow="Symptoms" title="Symptoms">
       <template #filter>
         <PeriodFilter v-model="periodFilters" />
       </template>
-      <DashboardSymptomsPanel
-        :symptoms="data ?? []"
-      />
-      <SymptomTable
-        :items="data ?? []"
-      />
+      <DashboardSymptomsPanel :symptoms="data ?? []" />
+      <SymptomTable :items="data ?? []" />
     </MeasurementPageShell>
   </HealthShell>
 </template>

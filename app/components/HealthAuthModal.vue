@@ -9,6 +9,7 @@ const emit = defineEmits<{
 
 const supabase = useSupabaseClient();
 const toast = useToast();
+const { loginByGoogle, isLoading } = useFirebaseAuth();
 
 const form = reactive({
   email: '',
@@ -16,10 +17,9 @@ const form = reactive({
 });
 
 const submitting = ref(false);
-const oauthSubmitting = ref(false);
 
 function closeModal() {
-  if (submitting.value || oauthSubmitting.value) {
+  if (submitting.value || isLoading.value) {
     return;
   }
 
@@ -83,27 +83,15 @@ async function submit() {
 }
 
 async function signInWithGoogle() {
-  if (submitting.value || oauthSubmitting.value) {
+  if (submitting.value || isLoading.value) {
     return;
   }
 
   try {
-    oauthSubmitting.value = true;
-
-    const redirectTo = `${window.location.origin}/auth/callback`;
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo,
-      },
-    });
-
-    if (error) {
-      throw error;
-    }
+    await loginByGoogle();
+    closeModal();
+    await refreshNuxtData();
   } catch (error) {
-    oauthSubmitting.value = false;
-
     toast.add({
       title: 'Google sign-in failed',
       description: errorMessage(error),
@@ -153,17 +141,11 @@ onBeforeUnmount(() => {
       >
         <header class="health-modal-header">
           <div>
-            <div class="health-eyebrow">
-              Admin access
-            </div>
-            <h2
-              id="auth-modal-title"
-              class="health-modal-title"
-            >
-              Sign In
-            </h2>
+            <div class="health-eyebrow">Admin access</div>
+            <h2 id="auth-modal-title" class="health-modal-title">Sign In</h2>
             <p class="health-modal-lead">
-              Sign in with your Supabase email and password to open private mode.
+              Sign in with your Supabase email and password to open private
+              mode.
             </p>
           </div>
 
@@ -177,10 +159,7 @@ onBeforeUnmount(() => {
           </button>
         </header>
 
-        <form
-          class="health-modal-body"
-          @submit.prevent="submit"
-        >
+        <form class="health-modal-body" @submit.prevent="submit">
           <div class="health-form-grid">
             <label class="health-field">
               <span>Email</span>
@@ -189,7 +168,7 @@ onBeforeUnmount(() => {
                 type="email"
                 autocomplete="email"
                 class="health-input"
-              >
+              />
             </label>
 
             <label class="health-field">
@@ -199,7 +178,7 @@ onBeforeUnmount(() => {
                 type="password"
                 autocomplete="current-password"
                 class="health-input"
-              >
+              />
             </label>
           </div>
 
@@ -210,10 +189,10 @@ onBeforeUnmount(() => {
           <button
             type="button"
             class="health-button health-button-secondary health-auth-google-button"
-            :disabled="submitting || oauthSubmitting"
+            :disabled="submitting || isLoading"
             @click="signInWithGoogle"
           >
-            {{ oauthSubmitting ? 'Redirecting to Google…' : 'Continue with Google' }}
+            {{ isLoading ? 'Redirecting to Google…' : 'Continue with Google' }}
           </button>
 
           <footer class="health-modal-actions">

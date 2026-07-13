@@ -1,10 +1,13 @@
 import { readBody } from 'h3';
-import { getRequestActor } from '../../utils/auth';
-import { healthDb } from '../../utils/prisma';
-import { createWeightMeasurement } from '../../utils/health-records';
+import { weightRepository } from '#server/repositories/weightRepository';
+
+const devUserId = 'dev-user';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
 
-  return createWeightMeasurement(healthDb, await getRequestActor(event), body);
+  return weightRepository.create({
+    ...body,
+    userId: devUserId,
+  });
 });

@@ -1,14 +1,13 @@
 import { readBody } from 'h3';
-import { getRequestActor } from '../../utils/auth';
-import { healthDb } from '../../utils/prisma';
-import { createBloodPressureMeasurement } from '../../utils/health-records';
+import { bloodPressureRepository } from '#server/repositories/bloodPressureRepository';
+
+const devUserId = 'dev-user';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
 
-  return createBloodPressureMeasurement(
-    healthDb,
-    await getRequestActor(event),
-    body,
-  );
+  return bloodPressureRepository.create({
+    ...body,
+    userId: devUserId,
+  });
 });

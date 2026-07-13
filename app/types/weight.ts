@@ -1,8 +1,14 @@
-export type WeightMeasurement = {
-  id: string;
-  measuredAt: string;
+import type { GeneralMeasurementType } from '~/types/index';
+
+export type WeightMeasurement = GeneralMeasurementType & {
   value: number | null;
-  ignore: boolean;
-  note: string | null;
-  reason: string | null;
 };
+
+export type CreateWeightMeasurementContext = Omit<
+  WeightMeasurement,
+  'id' | 'createdAt' | 'updatedAt'
+>;
+
+export type UpdateWeightMeasurementContext = Partial<
+  Omit<CreateWeightMeasurementContext, 'userId'>
+>;

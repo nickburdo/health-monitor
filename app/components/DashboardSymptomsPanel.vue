@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import type { SymptomMeasurement } from '~/types/symptom';
+import type { SymptomEntry } from '~/types/symptom';
 
 type SymptomFrequency = {
   count: number;
   label: string;
 };
 
-function selectTopSymptoms(
-  items: SymptomFrequency[],
-  limit?: number,
-) {
+function selectTopSymptoms(items: SymptomFrequency[], limit?: number) {
   const sortedByFrequency = [...items].sort((left, right) => {
     if (right.count !== left.count) {
       return right.count - left.count;
@@ -24,19 +21,25 @@ function selectTopSymptoms(
 }
 
 const props = defineProps<{
-  symptoms: SymptomMeasurement[];
+  symptoms: SymptomEntry[];
   title?: string;
   maxTypes?: number;
 }>();
 
 const dashboard = computed(() => {
-  const symptomFrequency = props.symptoms.reduce<Record<string, number>>((accumulator, record) => {
-    accumulator[record.type] = (accumulator[record.type] ?? 0) + 1;
-    return accumulator;
-  }, {});
+  const symptomFrequency = props.symptoms.reduce<Record<string, number>>(
+    (accumulator, record) => {
+      accumulator[record.type] = (accumulator[record.type] ?? 0) + 1;
+      return accumulator;
+    },
+    {},
+  );
 
   const topSymptoms: SymptomFrequency[] = selectTopSymptoms(
-    Object.entries(symptomFrequency).map(([label, count]) => ({ label, count })),
+    Object.entries(symptomFrequency).map(([label, count]) => ({
+      label,
+      count,
+    })),
     props.maxTypes,
   );
 
@@ -46,7 +49,7 @@ const dashboard = computed(() => {
 });
 
 const maxCount = computed(() => {
-  const counts = dashboard.value.topSymptoms.map(item => item.count);
+  const counts = dashboard.value.topSymptoms.map((item) => item.count);
 
   return counts.length ? Math.max(...counts) : 1;
 });
@@ -93,10 +96,7 @@ function barWidth(count: number) {
       </div>
     </div>
 
-    <div
-      v-else
-      class="health-dashboard-symptoms-empty"
-    >
+    <div v-else class="health-dashboard-symptoms-empty">
       No symptom entries for the selected period.
     </div>
   </article>

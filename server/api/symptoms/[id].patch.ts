@@ -1,16 +1,23 @@
 import { getRouterParam, readBody } from 'h3';
-import { getRequestActor } from '../../utils/auth';
-import { healthDb } from '../../utils/prisma';
-import { updateSymptomEntryNote } from '../../utils/health-records';
+import { symptomsRepository } from '#server/repositories/symptomsRepository';
+
+const devUserId = 'dev-user';
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id');
+
+  if (!id) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Missing symptom id',
+    });
+  }
+
   const body = await readBody(event);
 
-  return updateSymptomEntryNote(
-    healthDb,
-    await getRequestActor(event),
-    id,
-    body,
-  );
+  await symptomsRepository.update(id, devUserId, body);
+
+  return {
+    success: true,
+  };
 });

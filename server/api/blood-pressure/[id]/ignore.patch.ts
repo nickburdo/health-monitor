@@ -1,16 +1,26 @@
 import { getRouterParam, readBody } from 'h3';
-import { getRequestActor } from '../../../utils/auth';
-import { healthDb } from '../../../utils/prisma';
-import { setBloodPressureMeasurementIgnore } from '../../../utils/health-records';
+import { bloodPressureRepository } from '#server/repositories/bloodPressureRepository';
+
+const devUserId = 'dev-user';
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id');
+
+  if (!id) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Missing blood pressure measurement id',
+    });
+  }
+
   const body = await readBody(event);
 
-  return setBloodPressureMeasurementIgnore(
-    healthDb,
-    await getRequestActor(event),
-    id,
-    body,
-  );
+  await bloodPressureRepository.update(id, devUserId, {
+    ...body,
+    ignore: true,
+  });
+
+  return {
+    success: true,
+  };
 });

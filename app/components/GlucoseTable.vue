@@ -67,7 +67,9 @@ function glucoseSummary(item: GlucoseMeasurement) {
     {
       label: 'Reading',
       value: formatValueParts(item).value,
-      helper: formatValueParts(item).unit ? formatValueParts(item).unit : undefined,
+      helper: formatValueParts(item).unit
+        ? formatValueParts(item).unit
+        : undefined,
     },
   ];
 }
@@ -77,7 +79,7 @@ function displayNote(item: GlucoseMeasurement) {
     return item.reason ?? '—';
   }
 
-  return item.note ?? '—';
+  return item.notes ?? '—';
 }
 </script>
 
@@ -85,9 +87,7 @@ function displayNote(item: GlucoseMeasurement) {
   <article class="health-panel health-table-panel">
     <div class="health-table-header">
       <div>
-        <h2 class="health-section-title">
-          Glucose history
-        </h2>
+        <h2 class="health-section-title">Glucose history</h2>
       </div>
     </div>
 
@@ -96,7 +96,9 @@ function displayNote(item: GlucoseMeasurement) {
         <thead>
           <tr>
             <th>
-              <span class="health-table-head-date health-table-head-date-measurement">
+              <span
+                class="health-table-head-date health-table-head-date-measurement"
+              >
                 <span class="health-table-head-date-full">Date Time</span>
                 <span class="health-table-head-date-short">DATE</span>
               </span>
@@ -108,10 +110,7 @@ function displayNote(item: GlucoseMeasurement) {
               </span>
             </th>
             <th>NOTES</th>
-            <th
-              class="health-table-action-head"
-              aria-label="Action"
-            >
+            <th class="health-table-action-head" aria-label="Action">
               <span class="sr-only">Action</span>
             </th>
           </tr>
@@ -134,14 +133,20 @@ function displayNote(item: GlucoseMeasurement) {
                   {{ typeEmoji(item) }}
                 </span>
                 <span class="health-table-date-text">
-                  <span class="health-table-date-main">{{ formatWhenParts(item.measuredAt).date }}</span>
-                  <span class="health-table-date-sub">{{ formatWhenParts(item.measuredAt).time }}</span>
+                  <span class="health-table-date-main">{{
+                    formatWhenParts(item.measuredAt).date
+                  }}</span>
+                  <span class="health-table-date-sub">{{
+                    formatWhenParts(item.measuredAt).time
+                  }}</span>
                 </span>
               </span>
             </td>
             <td class="health-table-cell-value">
               <span class="health-table-value">
-                <span class="health-table-value-main">{{ formatValueParts(item).value }}</span>
+                <span class="health-table-value-main">{{
+                  formatValueParts(item).value
+                }}</span>
                 <span
                   v-if="formatValueParts(item).unit"
                   class="health-table-value-sub"

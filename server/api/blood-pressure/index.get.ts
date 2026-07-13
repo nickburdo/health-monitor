@@ -1,12 +1,7 @@
-import { healthDb } from '../../utils/prisma';
-import { getRequestActor } from '../../utils/auth';
-import { readDateRangeQuery } from '../../utils/date-range';
-import { listBloodPressureMeasurements } from '../../utils/health-records';
+import { bloodPressureRepository } from '#server/repositories/bloodPressureRepository';
+
+const devUserId = 'dev-user';
 
 export default defineEventHandler(async (event) => {
-  return listBloodPressureMeasurements(
-    healthDb,
-    await getRequestActor(event),
-    readDateRangeQuery(event),
-  );
+  return bloodPressureRepository.list(devUserId);
 });

@@ -6,7 +6,7 @@ import DashboardSymptomsPanel from '~/components/DashboardSymptomsPanel.vue';
 import type { BloodPressureMeasurement } from '~/types/blood-pressure';
 import type { DashboardData } from '~/types/dashboard';
 import type { GlucoseMeasurement } from '~/types/glucose';
-import type { SymptomMeasurement } from '~/types/symptom';
+import type { SymptomEntry } from '~/types/symptom';
 import type { WeightMeasurement } from '~/types/weight';
 import {
   formatBloodPressureAxisValue,
@@ -34,13 +34,17 @@ const emptyDashboardData: DashboardData = {
   weight: [],
 };
 
-const dashboardKey = computed(() => `dashboard-data-${query.value.dateFrom}-${query.value.dateTo}`);
+const dashboardKey = computed(
+  () => `dashboard-data-${query.value.dateFrom}-${query.value.dateTo}`,
+);
 const { data, refresh } = await useAsyncData(dashboardKey, async () => {
   const [glucose, bloodPressure, weight, symptoms] = await Promise.all([
     requestFetch<GlucoseMeasurement[]>('/api/glucose', { query: query.value }),
-    requestFetch<BloodPressureMeasurement[]>('/api/blood-pressure', { query: query.value }),
+    requestFetch<BloodPressureMeasurement[]>('/api/blood-pressure', {
+      query: query.value,
+    }),
     requestFetch<WeightMeasurement[]>('/api/weight', { query: query.value }),
-    requestFetch<SymptomMeasurement[]>('/api/symptoms', { query: query.value }),
+    requestFetch<SymptomEntry[]>('/api/symptoms', { query: query.value }),
   ]);
 
   return { bloodPressure, glucose, symptoms, weight };
@@ -59,7 +63,12 @@ const periodHeadlineSuffix = computed(() => {
     const from = value.dateFrom ? new Date(value.dateFrom) : null;
     const to = value.dateTo ? new Date(value.dateTo) : null;
 
-    if (from && to && !Number.isNaN(from.getTime()) && !Number.isNaN(to.getTime())) {
+    if (
+      from &&
+      to &&
+      !Number.isNaN(from.getTime()) &&
+      !Number.isNaN(to.getTime())
+    ) {
       const format = (date: Date) => {
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -90,7 +99,8 @@ useHead({
 
 useSeoMeta({
   title: 'Health Monitor',
-  description: 'Summary of glucose, blood pressure, weight, and symptoms for the selected period.',
+  description:
+    'Summary of glucose, blood pressure, weight, and symptoms for the selected period.',
 });
 </script>
 
@@ -98,13 +108,9 @@ useSeoMeta({
   <HealthShell>
     <section class="health-hero">
       <div class="health-panel health-hero-main">
-        <div class="health-eyebrow">
-          Dashboard · summary first
-        </div>
+        <div class="health-eyebrow">Dashboard · summary first</div>
         <h1 class="health-title health-dashboard-title">
-          <span class="health-dashboard-title-prefix">
-            Health summary
-          </span>
+          <span class="health-dashboard-title-prefix"> Health summary </span>
           <span class="health-dashboard-title-period">
             {{ periodHeadlineSuffix }}
           </span>
@@ -126,7 +132,9 @@ useSeoMeta({
     <section class="health-dashboard-chart-grid">
       <HealthLineChart
         class="health-dashboard-chart"
-        v-bind="{ ariaLabel: 'Glucose chart with fasting and after meal lines' }"
+        v-bind="{
+          ariaLabel: 'Glucose chart with fasting and after meal lines',
+        }"
         title="Glucose"
         :items="data?.glucose ?? []"
         :series="glucoseChartSeries"
@@ -136,7 +144,9 @@ useSeoMeta({
 
       <HealthLineChart
         class="health-dashboard-chart"
-        v-bind="{ ariaLabel: 'Blood pressure chart with systolic and diastolic lines' }"
+        v-bind="{
+          ariaLabel: 'Blood pressure chart with systolic and diastolic lines',
+        }"
         title="Blood pressure"
         :items="data?.bloodPressure ?? []"
         :series="bloodPressureChartSeries"

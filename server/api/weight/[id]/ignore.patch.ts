@@ -1,16 +1,23 @@
 import { getRouterParam, readBody } from 'h3';
-import { getRequestActor } from '../../../utils/auth';
-import { healthDb } from '../../../utils/prisma';
-import { setWeightMeasurementIgnore } from '../../../utils/health-records';
+import { weightRepository } from '#server/repositories/weightRepository';
+
+const devUserId = 'dev-user';
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id');
+
+  if (!id) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Missing weight measurement id',
+    });
+  }
+
   const body = await readBody(event);
 
-  return setWeightMeasurementIgnore(
-    healthDb,
-    await getRequestActor(event),
-    id,
-    body,
-  );
+  await weightRepository.update(id, devUserId, { ...body, ignore: true });
+
+  return {
+    success: true,
+  };
 });

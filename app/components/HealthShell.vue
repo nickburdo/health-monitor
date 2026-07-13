@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useFirebaseAuth } from '~/composables/useFirebaseAuth';
+
 const route = useRoute();
 const supabase = useSupabaseClient();
 const user = useSupabaseUser();
@@ -6,6 +8,7 @@ const toast = useToast();
 
 const quickEntryOpen = ref(false);
 const authModalOpen = ref(false);
+const { logout, isAuthenticated, isLoading } = useFirebaseAuth();
 
 const navigation = [
   { label: 'Dashboard', path: '/', icon: 'i-lucide-layout-dashboard' },
@@ -53,12 +56,7 @@ function errorMessage(error: unknown) {
 
 async function signOut() {
   try {
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
-      throw error;
-    }
-
+    await logout();
     await refreshNuxtData();
 
     toast.add({
@@ -79,36 +77,26 @@ async function signOut() {
   <div class="health-app">
     <header class="health-header">
       <div class="health-header-inner">
-        <NuxtLink
-          to="/"
-          class="health-brand"
-          @dblclick.prevent="openAuthModal"
-        >
+        <NuxtLink to="/" class="health-brand" @dblclick.prevent="openAuthModal">
           <span class="health-mark">HM</span>
           <span>Health Monitor</span>
         </NuxtLink>
 
-        <nav
-          class="health-nav"
-          aria-label="Main navigation"
-        >
+        <nav class="health-nav" aria-label="Main navigation">
           <NuxtLink
             v-for="item in navigation"
             :key="item.path"
             :to="item.path"
             :data-active="isActive(item.path)"
           >
-            <UIcon
-              :name="item.icon"
-              class="nav-icon nav-icon-large"
-            />
+            <UIcon :name="item.icon" class="nav-icon nav-icon-large" />
             <span>{{ item.label }}</span>
           </NuxtLink>
         </nav>
 
         <div class="health-actions">
           <button
-            v-if="user"
+            v-if="isAuthenticated"
             type="button"
             class="health-button health-button-secondary health-button-small"
             @click="signOut"
@@ -135,15 +123,9 @@ async function signOut() {
       @close="quickEntryOpen = false"
     />
 
-    <HealthAuthModal
-      :open="authModalOpen"
-      @close="closeAuthModal"
-    />
+    <HealthAuthModal :open="authModalOpen" @close="closeAuthModal" />
 
-    <footer
-      class="health-footer"
-      aria-label="Mobile navigation"
-    >
+    <footer class="health-footer" aria-label="Mobile navigation">
       <div class="health-footer-inner">
         <NuxtLink
           v-for="item in navigation"
@@ -151,10 +133,7 @@ async function signOut() {
           :to="item.path"
           :data-active="isActive(item.path)"
         >
-          <UIcon
-            :name="item.icon"
-            class="nav-icon"
-          />
+          <UIcon :name="item.icon" class="nav-icon" />
         </NuxtLink>
       </div>
     </footer>

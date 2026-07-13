@@ -1,10 +1,13 @@
 import { readBody } from 'h3';
-import { getRequestActor } from '../../utils/auth';
-import { healthDb } from '../../utils/prisma';
-import { createSymptomEntry } from '../../utils/health-records';
+import { symptomsRepository } from '#server/repositories/symptomsRepository';
+
+const devUserId = 'dev-user';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
 
-  return createSymptomEntry(healthDb, await getRequestActor(event), body);
+  return symptomsRepository.create({
+    ...body,
+    userId: devUserId,
+  });
 });

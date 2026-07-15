@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { formatWhen, formatWhenParts } from '~/utils/date-format';
+import { setWeightMeasurementIgnore } from '~/lib/db/repositories/weightRepository';
 
 type WeightRow = {
   id: string;
@@ -12,6 +13,7 @@ type WeightRow = {
 
 const props = defineProps<{
   items: WeightRow[];
+  onUpdated: () => void;
 }>();
 
 function formatValueParts(item: WeightRow) {
@@ -115,11 +117,11 @@ function displayNote(item: WeightRow) {
             <td class="health-table-action-cell">
               <MeasurementIgnoreControls
                 :item="item"
-                endpoint="/api/weight"
-                refresh-key="weight-page"
+                :set-ignore="setWeightMeasurementIgnore"
                 entity-label="weight"
                 :summary="weightSummary(item)"
                 reason-placeholder="For example: an inaccurate weigh-in after a heavy meal"
+                @updated="props.onUpdated"
               />
             </td>
           </tr>

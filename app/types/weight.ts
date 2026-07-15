@@ -5,4 +5,11 @@ export type WeightMeasurement = {
   ignore: boolean;
   note: string | null;
   reason: string | null;
+  createdAt: string;
+};
+
+export type CreateWeightMeasurementInput = {
+  measuredAt: string;
+  value: number;
+  note?: string;
 };

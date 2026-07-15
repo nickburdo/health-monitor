@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { SYMPTOM_OPTIONS } from '~/constants/symptom-options';
+import { createGlucoseMeasurement } from '~/lib/db/repositories/glucoseRepository';
+import { createBloodPressureMeasurement } from '~/lib/db/repositories/bloodPressureRepository';
+import { createWeightMeasurement } from '~/lib/db/repositories/weightRepository';
+import { createSymptomEntry } from '~/lib/db/repositories/symptomRepository';
 
 type EntryType = 'glucose' | 'bloodPressure' | 'weight' | 'symptom';
 
@@ -9,6 +13,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   close: [];
+  entryCreated: [];
 }>();
 
 const toast = useToast();
@@ -104,11 +109,6 @@ function toIsoDateTime(value: string) {
 }
 
 function errorMessage(error: unknown) {
-  if (typeof error === 'object' && error !== null && 'data' in error) {
-    const data = (error as { data?: { statusMessage?: string; message?: string } }).data;
-    return data?.statusMessage ?? data?.message ?? 'Could not save the entry';
-  }
-
   if (error instanceof Error && error.message) {
     return error.message;
   }
@@ -137,14 +137,11 @@ async function submit() {
         return;
       }
 
-      await $fetch('/api/glucose', {
-        method: 'POST',
-        body: {
-          measuredAt: toIsoDateTime(form.glucose.measuredAt),
-          fastingValue,
-          afterMealValue,
-          note: form.glucose.note || undefined,
-        },
+      await createGlucoseMeasurement({
+        measuredAt: toIsoDateTime(form.glucose.measuredAt),
+        fastingValue,
+        afterMealValue,
+        note: form.glucose.note || undefined,
       });
     }
 
@@ -162,15 +159,12 @@ async function submit() {
         return;
       }
 
-      await $fetch('/api/blood-pressure', {
-        method: 'POST',
-        body: {
-          measuredAt: toIsoDateTime(form.bloodPressure.measuredAt),
-          systolic,
-          diastolic,
-          pulse,
-          note: form.bloodPressure.note || undefined,
-        },
+      await createBloodPressureMeasurement({
+        measuredAt: toIsoDateTime(form.bloodPressure.measuredAt),
+        systolic,
+        diastolic,
+        pulse,
+        note: form.bloodPressure.note || undefined,
       });
     }
 
@@ -186,27 +180,21 @@ async function submit() {
         return;
       }
 
-      await $fetch('/api/weight', {
-        method: 'POST',
-        body: {
-          measuredAt: toIsoDateTime(form.weight.measuredAt),
-          value,
-          note: form.weight.note || undefined,
-        },
+      await createWeightMeasurement({
+        measuredAt: toIsoDateTime(form.weight.measuredAt),
+        value,
+        note: form.weight.note || undefined,
       });
     }
 
     if (activeType.value === 'symptom') {
       const intensity = parseOptionalNumber(form.symptom.intensity);
 
-      await $fetch('/api/symptoms', {
-        method: 'POST',
-        body: {
-          happenedAt: toIsoDateTime(form.symptom.happenedAt),
-          type: form.symptom.type,
-          intensity,
-          note: form.symptom.note || undefined,
-        },
+      await createSymptomEntry({
+        happenedAt: toIsoDateTime(form.symptom.happenedAt),
+        type: form.symptom.type,
+        intensity,
+        note: form.symptom.note || undefined,
       });
     }
 
@@ -216,7 +204,7 @@ async function submit() {
     });
 
     resetForm(activeType.value);
-    await refreshNuxtData();
+    emit('entryCreated');
     closeModal();
   } catch (error) {
     toast.add({

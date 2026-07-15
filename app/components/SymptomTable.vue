@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { formatWhenParts } from '~/utils/date-format';
+import { updateSymptomEntryNote } from '~/lib/db/repositories/symptomRepository';
 
 type SymptomRow = {
   id: string;
@@ -11,6 +12,7 @@ type SymptomRow = {
 
 const props = defineProps<{
   items: SymptomRow[];
+  onUpdated: () => void;
 }>();
 
 const toast = useToast();
@@ -40,11 +42,6 @@ function normalizeNote(value: unknown) {
 }
 
 function errorMessage(error: unknown) {
-  if (typeof error === 'object' && error !== null && 'data' in error) {
-    const data = (error as { data?: { statusMessage?: string; message?: string } }).data;
-    return data?.statusMessage ?? data?.message ?? 'Could not update the note';
-  }
-
   if (error instanceof Error && error.message) {
     return error.message;
   }
@@ -60,11 +57,8 @@ async function saveNote(item: SymptomRow) {
   try {
     savingId.value = item.id;
 
-    await $fetch(`/api/symptoms/${item.id}`, {
-      method: 'PATCH',
-      body: {
-        note: normalizeNote(draftNote.value),
-      },
+    await updateSymptomEntryNote(item.id, {
+      note: normalizeNote(draftNote.value),
     });
 
     toast.add({
@@ -73,7 +67,7 @@ async function saveNote(item: SymptomRow) {
     });
 
     cancelEditing();
-    await refreshNuxtData('symptoms-page');
+    props.onUpdated();
   } catch (error) {
     toast.add({
       title: 'Update failed',

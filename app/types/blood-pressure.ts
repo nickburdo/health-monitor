@@ -7,4 +7,13 @@ export type BloodPressureMeasurement = {
   ignore: boolean;
   note: string | null;
   reason: string | null;
+  createdAt: string;
+};
+
+export type CreateBloodPressureMeasurementInput = {
+  measuredAt: string;
+  systolic?: number;
+  diastolic?: number;
+  pulse?: number;
+  note?: string;
 };

@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { formatWhen, formatWhenParts } from '~/utils/date-format';
 
-type ChartRow = Record<string, number | string | boolean | null | undefined> & {
+type ChartRow = Record<
+  string,
+  number | string | boolean | null | undefined
+> & {
   measuredAt: string;
   ignore: boolean;
 };
@@ -47,7 +50,10 @@ const chartRows = computed(() =>
   props.items
     .filter(item => !item.ignore)
     .slice()
-    .sort((left, right) => new Date(left.measuredAt).getTime() - new Date(right.measuredAt).getTime())
+    .sort(
+      (left, right) =>
+        new Date(left.measuredAt).getTime() - new Date(right.measuredAt).getTime(),
+    )
     .map(item => ({
       item,
       dateLabel: formatWhenParts(item.measuredAt).date,
@@ -179,7 +185,8 @@ function buildPath(points: ChartPoint[]) {
 
 const chartTicks = computed(() => {
   const { min, max } = valueBounds.value;
-  const formatTick = props.yAxisFormatter ?? ((value: number) => String(Math.round(value)));
+  const formatTick
+    = props.yAxisFormatter ?? ((value: number) => String(Math.round(value)));
 
   return [0, 0.25, 0.5, 0.75, 1].map((step) => {
     const value = max - (max - min) * step;

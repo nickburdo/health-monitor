@@ -6,4 +6,12 @@ export type GlucoseMeasurement = {
   ignore: boolean;
   note: string | null;
   reason: string | null;
+  createdAt: string;
+};
+
+export type CreateGlucoseMeasurementInput = {
+  measuredAt: string;
+  fastingValue?: number;
+  afterMealValue?: number;
+  note?: string;
 };

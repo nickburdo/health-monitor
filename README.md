@@ -1,6 +1,6 @@
 # Health Monitor
 
-Personal health tracking app built with Nuxt 4, Nuxt UI, Prisma, and SQLite.
+Personal health tracking app built with Nuxt 4 and Nuxt UI. The app is local-first: all data (glucose, blood pressure, weight, symptoms) is stored client-side in IndexedDB via Dexie.js, mirroring the shape documented in `prisma/schema.prisma`. There is no backend, no database server, and no authentication — everything lives in the browser.
 
 ## Setup
 
@@ -18,26 +18,27 @@ Start the app on `http://localhost:3030`:
 npm run dev
 ```
 
-## Prisma Studio
+On first run, if the local database is empty, the app seeds itself from `public/data/demo.json`.
 
-Open Prisma Studio on port `5555`:
+## Demo Data
+
+`public/data/demo.json` is generated from `scripts/generate-demo-data.mjs`. To regenerate it:
 
 ```bash
-npm run prisma:studio -- --port 5555
+npm run demo:generate
 ```
 
-Then open `http://127.0.0.1:5555` in the browser.
+## Data Export / Import
 
-## Prisma
+- Export or import the whole database as JSON from the dashboard.
+- Export any single entity as CSV from its own page.
 
-Generate the client:
-
-```bash
-npm run prisma:generate
-```
-
-Create and apply a migration:
+## Other Scripts
 
 ```bash
-npm run prisma:migrate -- --name init
+npm run typecheck
+npm run lint
+npm run format
+npm run test
+npm run build
 ```

@@ -1,17 +1,36 @@
 <script setup lang="ts">
 import type { BloodPressureMeasurement } from '~/types/blood-pressure';
+import { listBloodPressureMeasurements } from '~/lib/db/repositories/bloodPressureRepository';
+import { downloadCsv, toCsv } from '~/lib/db/csv';
 import {
-  bloodPressureChartSeries,
   formatBloodPressureAxisValue,
   formatBloodPressureValue,
+  bloodPressureChartSeries,
 } from '~/utils/health-line-chart/blood-pressure';
 
-const { periodFilters, data } = await useMeasurementListPage<BloodPressureMeasurement>({
-  key: 'blood-pressure-page',
-  endpoint: '/api/blood-pressure',
-});
+const { periodFilters, data, refresh }
+  = await useMeasurementList<BloodPressureMeasurement>(
+    listBloodPressureMeasurements,
+  );
 
-useHead({ title: 'Blood Pressure · Health Monitor' });
+function exportCsv() {
+  const csvContent = toCsv(data.value, [
+    'measuredAt',
+    'systolic',
+    'diastolic',
+    'pulse',
+    'ignore',
+    'note',
+    'reason',
+  ]);
+
+  downloadCsv(
+    `blood-pressure-${new Date().toISOString().slice(0, 10)}.csv`,
+    csvContent,
+  );
+}
+
+useHead({ title: 'Blood pressure · Health Monitor' });
 </script>
 
 <template>
@@ -22,6 +41,13 @@ useHead({ title: 'Blood Pressure · Health Monitor' });
     >
       <template #filter>
         <PeriodFilter v-model="periodFilters" />
+        <button
+          type="button"
+          class="health-button health-button-secondary health-button-small"
+          @click="exportCsv"
+        >
+          Export CSV
+        </button>
       </template>
       <HealthLineChart
         v-bind="{ ariaLabel: 'Blood pressure chart with systolic and diastolic lines' }"
@@ -32,6 +58,7 @@ useHead({ title: 'Blood Pressure · Health Monitor' });
       />
       <BloodPressureTable
         :items="data ?? []"
+        :on-updated="refresh"
       />
     </MeasurementPageShell>
   </HealthShell>

@@ -6,6 +6,10 @@ datasource db {
   provider = "postgresql"
 }
 
+// NOTE: as of Step 1 (local-first IndexedDB migration), this schema is no
+// longer connected to a live database, generator, or client. It documents
+// the shape that app/lib/db/schema.ts (Dexie) mirrors in the browser.
+
 model GlucoseMeasurement {
   id         String   @id @default(cuid())
   measuredAt DateTime
@@ -19,10 +23,7 @@ model GlucoseMeasurement {
 
   createdAt DateTime @default(now())
 
-  isDemo Boolean @default(false)
-
   @@index([measuredAt])
-  @@map("health_monitor_glucose_measurement")
 }
 
 model BloodPressureMeasurement {
@@ -39,10 +40,7 @@ model BloodPressureMeasurement {
 
   createdAt DateTime @default(now())
 
-  isDemo Boolean @default(false)
-
   @@index([measuredAt])
-  @@map("health_monitor_blood_pressure_measurement")
 }
 
 model WeightMeasurement {
@@ -57,10 +55,7 @@ model WeightMeasurement {
 
   createdAt DateTime @default(now())
 
-  isDemo Boolean @default(false)
-
   @@index([measuredAt])
-  @@map("health_monitor_weight_measurement")
 }
 
 model SymptomEntry {
@@ -74,9 +69,6 @@ model SymptomEntry {
 
   createdAt DateTime @default(now())
 
-  isDemo Boolean @default(false)
-
   @@index([happenedAt])
   @@index([type])
-  @@map("health_monitor_symptom_entry")
 }

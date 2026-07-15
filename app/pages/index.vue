@@ -3,11 +3,12 @@ import DashboardLatestEntries from '~/components/DashboardLatestEntries.vue';
 import DashboardMetricsGrid from '~/components/DashboardMetricsGrid.vue';
 import DashboardSummaryPanel from '~/components/DashboardSummaryPanel.vue';
 import DashboardSymptomsPanel from '~/components/DashboardSymptomsPanel.vue';
-import type { BloodPressureMeasurement } from '~/types/blood-pressure';
+import DashboardDataActions from '~/components/DashboardDataActions.vue';
 import type { DashboardData } from '~/types/dashboard';
-import type { GlucoseMeasurement } from '~/types/glucose';
-import type { SymptomMeasurement } from '~/types/symptom';
-import type { WeightMeasurement } from '~/types/weight';
+import { listGlucoseMeasurements } from '~/lib/db/repositories/glucoseRepository';
+import { listBloodPressureMeasurements } from '~/lib/db/repositories/bloodPressureRepository';
+import { listWeightMeasurements } from '~/lib/db/repositories/weightRepository';
+import { listSymptomEntries } from '~/lib/db/repositories/symptomRepository';
 import {
   formatBloodPressureAxisValue,
   formatBloodPressureValue,
@@ -26,7 +27,6 @@ import {
 import { usePeriodFilter } from '~/composables/usePeriodFilter';
 
 const { periodFilters, query } = usePeriodFilter();
-const requestFetch = useRequestFetch();
 const emptyDashboardData: DashboardData = {
   bloodPressure: [],
   glucose: [],
@@ -34,21 +34,21 @@ const emptyDashboardData: DashboardData = {
   weight: [],
 };
 
-const dashboardKey = computed(() => `dashboard-data-${query.value.dateFrom}-${query.value.dateTo}`);
-const { data, refresh } = await useAsyncData(dashboardKey, async () => {
+const data = ref<DashboardData>(emptyDashboardData);
+
+async function refresh() {
   const [glucose, bloodPressure, weight, symptoms] = await Promise.all([
-    requestFetch<GlucoseMeasurement[]>('/api/glucose', { query: query.value }),
-    requestFetch<BloodPressureMeasurement[]>('/api/blood-pressure', { query: query.value }),
-    requestFetch<WeightMeasurement[]>('/api/weight', { query: query.value }),
-    requestFetch<SymptomMeasurement[]>('/api/symptoms', { query: query.value }),
+    listGlucoseMeasurements(query.value),
+    listBloodPressureMeasurements(query.value),
+    listWeightMeasurements(query.value),
+    listSymptomEntries(query.value),
   ]);
 
-  return { bloodPressure, glucose, symptoms, weight };
-});
+  data.value = { bloodPressure, glucose, symptoms, weight };
+}
 
-watch(query, () => {
-  refresh();
-});
+watch(query, refresh);
+await refresh();
 
 const dashboardData = computed(() => data.value ?? emptyDashboardData);
 
@@ -59,7 +59,12 @@ const periodHeadlineSuffix = computed(() => {
     const from = value.dateFrom ? new Date(value.dateFrom) : null;
     const to = value.dateTo ? new Date(value.dateTo) : null;
 
-    if (from && to && !Number.isNaN(from.getTime()) && !Number.isNaN(to.getTime())) {
+    if (
+      from
+      && to
+      && !Number.isNaN(from.getTime())
+      && !Number.isNaN(to.getTime())
+    ) {
       const format = (date: Date) => {
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -90,7 +95,8 @@ useHead({
 
 useSeoMeta({
   title: 'Health Monitor',
-  description: 'Summary of glucose, blood pressure, weight, and symptoms for the selected period.',
+  description:
+    'Summary of glucose, blood pressure, weight, and symptoms for the selected period.',
 });
 </script>
 
@@ -102,9 +108,7 @@ useSeoMeta({
           Dashboard · summary first
         </div>
         <h1 class="health-title health-dashboard-title">
-          <span class="health-dashboard-title-prefix">
-            Health summary
-          </span>
+          <span class="health-dashboard-title-prefix"> Health summary </span>
           <span class="health-dashboard-title-period">
             {{ periodHeadlineSuffix }}
           </span>
@@ -119,6 +123,7 @@ useSeoMeta({
       </div>
 
       <DashboardSummaryPanel :data="dashboardData" />
+      <DashboardDataActions @imported="refresh" />
     </section>
 
     <DashboardMetricsGrid :data="dashboardData" />
@@ -126,7 +131,9 @@ useSeoMeta({
     <section class="health-dashboard-chart-grid">
       <HealthLineChart
         class="health-dashboard-chart"
-        v-bind="{ ariaLabel: 'Glucose chart with fasting and after meal lines' }"
+        v-bind="{
+          ariaLabel: 'Glucose chart with fasting and after meal lines',
+        }"
         title="Glucose"
         :items="data?.glucose ?? []"
         :series="glucoseChartSeries"
@@ -136,7 +143,9 @@ useSeoMeta({
 
       <HealthLineChart
         class="health-dashboard-chart"
-        v-bind="{ ariaLabel: 'Blood pressure chart with systolic and diastolic lines' }"
+        v-bind="{
+          ariaLabel: 'Blood pressure chart with systolic and diastolic lines',
+        }"
         title="Blood pressure"
         :items="data?.bloodPressure ?? []"
         :series="bloodPressureChartSeries"

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { formatWhen, formatWhenParts } from '~/utils/date-format';
+import { setGlucoseMeasurementIgnore } from '~/lib/db/repositories/glucoseRepository';
 import type { GlucoseMeasurement } from '~/types/glucose';
 
 const props = defineProps<{
   items: GlucoseMeasurement[];
+  onUpdated: () => void;
 }>();
 
 function glucoseToMmol(value: number | null) {
@@ -67,7 +69,9 @@ function glucoseSummary(item: GlucoseMeasurement) {
     {
       label: 'Reading',
       value: formatValueParts(item).value,
-      helper: formatValueParts(item).unit ? formatValueParts(item).unit : undefined,
+      helper: formatValueParts(item).unit
+        ? formatValueParts(item).unit
+        : undefined,
     },
   ];
 }
@@ -96,7 +100,9 @@ function displayNote(item: GlucoseMeasurement) {
         <thead>
           <tr>
             <th>
-              <span class="health-table-head-date health-table-head-date-measurement">
+              <span
+                class="health-table-head-date health-table-head-date-measurement"
+              >
                 <span class="health-table-head-date-full">Date Time</span>
                 <span class="health-table-head-date-short">DATE</span>
               </span>
@@ -134,14 +140,20 @@ function displayNote(item: GlucoseMeasurement) {
                   {{ typeEmoji(item) }}
                 </span>
                 <span class="health-table-date-text">
-                  <span class="health-table-date-main">{{ formatWhenParts(item.measuredAt).date }}</span>
-                  <span class="health-table-date-sub">{{ formatWhenParts(item.measuredAt).time }}</span>
+                  <span class="health-table-date-main">{{
+                    formatWhenParts(item.measuredAt).date
+                  }}</span>
+                  <span class="health-table-date-sub">{{
+                    formatWhenParts(item.measuredAt).time
+                  }}</span>
                 </span>
               </span>
             </td>
             <td class="health-table-cell-value">
               <span class="health-table-value">
-                <span class="health-table-value-main">{{ formatValueParts(item).value }}</span>
+                <span class="health-table-value-main">{{
+                  formatValueParts(item).value
+                }}</span>
                 <span
                   v-if="formatValueParts(item).unit"
                   class="health-table-value-sub"
@@ -156,11 +168,11 @@ function displayNote(item: GlucoseMeasurement) {
             <td class="health-table-action-cell">
               <MeasurementIgnoreControls
                 :item="item"
-                endpoint="/api/glucose"
-                refresh-key="glucose-page"
+                :set-ignore="setGlucoseMeasurementIgnore"
                 entity-label="glucose"
                 :summary="glucoseSummary(item)"
                 reason-placeholder="For example: a suspiciously high reading after a heavy dinner"
+                @updated="props.onUpdated"
               />
             </td>
           </tr>

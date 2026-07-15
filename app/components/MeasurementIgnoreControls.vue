@@ -5,17 +5,22 @@ type SummaryLine = {
   helper?: string;
 };
 
+import type { IgnoreInput } from '~/types';
+
 const props = defineProps<{
   item: {
     id: string;
     ignore: boolean;
   };
-  endpoint: string;
-  refreshKey: string;
+  setIgnore: (id: string, input: IgnoreInput) => Promise<void>;
   entityLabel: string;
   summary: SummaryLine[];
   ignoreLead?: string;
   reasonPlaceholder?: string;
+}>();
+
+const emit = defineEmits<{
+  updated: [];
 }>();
 
 const toast = useToast();
@@ -38,11 +43,6 @@ function closeIgnoreDialog() {
 }
 
 function errorMessage(error: unknown) {
-  if (typeof error === 'object' && error !== null && 'data' in error) {
-    const data = (error as { data?: { statusMessage?: string; message?: string } }).data;
-    return data?.statusMessage ?? data?.message ?? 'Could not change the status';
-  }
-
   if (error instanceof Error && error.message) {
     return error.message;
   }
@@ -61,12 +61,9 @@ async function ignoreSelected() {
   try {
     savingId.value = props.item.id;
 
-    await $fetch(`${props.endpoint}/${props.item.id}/ignore`, {
-      method: 'PATCH',
-      body: {
-        ignore: true,
-        reason: normalizedReason,
-      },
+    await props.setIgnore(props.item.id, {
+      ignore: true,
+      reason: normalizedReason,
     });
 
     toast.add({
@@ -75,7 +72,7 @@ async function ignoreSelected() {
     });
 
     closeIgnoreDialog();
-    await refreshNuxtData(props.refreshKey);
+    emit('updated');
   } catch (error) {
     errorText.value = errorMessage(error);
   } finally {
@@ -87,19 +84,14 @@ async function restoreSelected() {
   try {
     savingId.value = props.item.id;
 
-    await $fetch(`${props.endpoint}/${props.item.id}/ignore`, {
-      method: 'PATCH',
-      body: {
-        ignore: false,
-      },
-    });
+    await props.setIgnore(props.item.id, { ignore: false });
 
     toast.add({
       title: 'Entry restored',
       description: 'The ignored status was removed without confirmation.',
     });
 
-    await refreshNuxtData(props.refreshKey);
+    emit('updated');
   } catch (error) {
     toast.add({
       title: 'Restore failed',

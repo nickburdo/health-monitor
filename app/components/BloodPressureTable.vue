@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { formatWhen, formatWhenParts } from '~/utils/date-format';
+import { setBloodPressureMeasurementIgnore } from '~/lib/db/repositories/bloodPressureRepository';
 
 type BloodPressureRow = {
   id: string;
@@ -14,6 +15,7 @@ type BloodPressureRow = {
 
 const props = defineProps<{
   items: BloodPressureRow[];
+  onUpdated: () => void;
 }>();
 
 function formatValueParts(item: BloodPressureRow) {
@@ -119,11 +121,11 @@ function displayNote(item: BloodPressureRow) {
             <td class="health-table-action-cell">
               <MeasurementIgnoreControls
                 :item="item"
-                endpoint="/api/blood-pressure"
-                refresh-key="blood-pressure-page"
+                :set-ignore="setBloodPressureMeasurementIgnore"
                 entity-label="blood pressure"
                 :summary="bloodPressureSummary(item)"
                 reason-placeholder="For example: the cuff was positioned incorrectly"
+                @updated="props.onUpdated"
               />
             </td>
           </tr>

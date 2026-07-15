@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { formatWhen, formatWhenParts } from '~/utils/date-format';
+import { setGlucoseMeasurementIgnore } from '~/lib/db/repositories/glucoseRepository';
 import type { GlucoseMeasurement } from '~/types/glucose';
 
 const props = defineProps<{
   items: GlucoseMeasurement[];
+  onUpdated: () => void;
 }>();
 
 function glucoseToMmol(value: number | null) {
@@ -79,7 +81,7 @@ function displayNote(item: GlucoseMeasurement) {
     return item.reason ?? '—';
   }
 
-  return item.notes ?? '—';
+  return item.note ?? '—';
 }
 </script>
 
@@ -161,11 +163,11 @@ function displayNote(item: GlucoseMeasurement) {
             <td class="health-table-action-cell">
               <MeasurementIgnoreControls
                 :item="item"
-                endpoint="/api/glucose"
-                refresh-key="glucose-page"
+                :set-ignore="setGlucoseMeasurementIgnore"
                 entity-label="glucose"
                 :summary="glucoseSummary(item)"
                 reason-placeholder="For example: a suspiciously high reading after a heavy dinner"
+                @updated="props.onUpdated"
               />
             </td>
           </tr>

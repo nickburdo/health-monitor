@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { formatWhen, formatWhenParts } from '~/utils/date-format';
-import type { Timestamp } from 'firebase/firestore';
 
 type ChartRow = Record<
   string,
-  number | string | boolean | Timestamp | null | undefined
+  number | string | boolean | null | undefined
 > & {
-  measuredAt: Timestamp;
+  measuredAt: string;
   ignore: boolean;
 };
 
@@ -53,13 +52,12 @@ const chartRows = computed(() =>
     .slice()
     .sort(
       (left, right) =>
-        new Date(left.measuredAt as unknown as string).getTime() -
-        new Date(right.measuredAt as unknown as string).getTime(),
+        new Date(left.measuredAt).getTime() - new Date(right.measuredAt).getTime(),
     )
     .map((item) => ({
       item,
-      dateLabel: formatWhenParts(item.measuredAt as unknown as string).date,
-      tooltipDate: formatWhen(item.measuredAt as unknown as string),
+      dateLabel: formatWhenParts(item.measuredAt).date,
+      tooltipDate: formatWhen(item.measuredAt),
     })),
 );
 

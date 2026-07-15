@@ -3,11 +3,12 @@ import DashboardLatestEntries from '~/components/DashboardLatestEntries.vue';
 import DashboardMetricsGrid from '~/components/DashboardMetricsGrid.vue';
 import DashboardSummaryPanel from '~/components/DashboardSummaryPanel.vue';
 import DashboardSymptomsPanel from '~/components/DashboardSymptomsPanel.vue';
-import type { BloodPressureMeasurement } from '~/types/blood-pressure';
+import DashboardDataActions from '~/components/DashboardDataActions.vue';
 import type { DashboardData } from '~/types/dashboard';
-import type { GlucoseMeasurement } from '~/types/glucose';
-import type { SymptomEntry } from '~/types/symptom';
-import type { WeightMeasurement } from '~/types/weight';
+import { listGlucoseMeasurements } from '~/lib/db/repositories/glucoseRepository';
+import { listBloodPressureMeasurements } from '~/lib/db/repositories/bloodPressureRepository';
+import { listWeightMeasurements } from '~/lib/db/repositories/weightRepository';
+import { listSymptomEntries } from '~/lib/db/repositories/symptomRepository';
 import {
   formatBloodPressureAxisValue,
   formatBloodPressureValue,
@@ -26,7 +27,6 @@ import {
 import { usePeriodFilter } from '~/composables/usePeriodFilter';
 
 const { periodFilters, query } = usePeriodFilter();
-const requestFetch = useRequestFetch();
 const emptyDashboardData: DashboardData = {
   bloodPressure: [],
   glucose: [],
@@ -34,25 +34,21 @@ const emptyDashboardData: DashboardData = {
   weight: [],
 };
 
-const dashboardKey = computed(
-  () => `dashboard-data-${query.value.dateFrom}-${query.value.dateTo}`,
-);
-const { data, refresh } = await useAsyncData(dashboardKey, async () => {
+const data = ref<DashboardData>(emptyDashboardData);
+
+async function refresh() {
   const [glucose, bloodPressure, weight, symptoms] = await Promise.all([
-    requestFetch<GlucoseMeasurement[]>('/api/glucose', { query: query.value }),
-    requestFetch<BloodPressureMeasurement[]>('/api/blood-pressure', {
-      query: query.value,
-    }),
-    requestFetch<WeightMeasurement[]>('/api/weight', { query: query.value }),
-    requestFetch<SymptomEntry[]>('/api/symptoms', { query: query.value }),
+    listGlucoseMeasurements(query.value),
+    listBloodPressureMeasurements(query.value),
+    listWeightMeasurements(query.value),
+    listSymptomEntries(query.value),
   ]);
 
-  return { bloodPressure, glucose, symptoms, weight };
-});
+  data.value = { bloodPressure, glucose, symptoms, weight };
+}
 
-watch(query, () => {
-  refresh();
-});
+watch(query, refresh);
+await refresh();
 
 const dashboardData = computed(() => data.value ?? emptyDashboardData);
 
@@ -125,6 +121,7 @@ useSeoMeta({
       </div>
 
       <DashboardSummaryPanel :data="dashboardData" />
+      <DashboardDataActions @imported="refresh" />
     </section>
 
     <DashboardMetricsGrid :data="dashboardData" />

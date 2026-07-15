@@ -16,8 +16,8 @@ export type HealthMonitorExport = {
 };
 
 export async function exportHealthMonitorData(): Promise<HealthMonitorExport> {
-  const [glucoseMeasurement, bloodPressureMeasurement, weightMeasurement, symptomEntry] =
-    await Promise.all([
+  const [glucoseMeasurement, bloodPressureMeasurement, weightMeasurement, symptomEntry]
+    = await Promise.all([
       healthDb.glucoseMeasurement.toArray(),
       healthDb.bloodPressureMeasurement.toArray(),
       healthDb.weightMeasurement.toArray(),

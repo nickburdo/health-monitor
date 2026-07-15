@@ -49,7 +49,7 @@ const dashboard = computed(() => {
 });
 
 const maxCount = computed(() => {
-  const counts = dashboard.value.topSymptoms.map((item) => item.count);
+  const counts = dashboard.value.topSymptoms.map(item => item.count);
 
   return counts.length ? Math.max(...counts) : 1;
 });
@@ -96,7 +96,10 @@ function barWidth(count: number) {
       </div>
     </div>
 
-    <div v-else class="health-dashboard-symptoms-empty">
+    <div
+      v-else
+      class="health-dashboard-symptoms-empty"
+    >
       No symptom entries for the selected period.
     </div>
   </article>

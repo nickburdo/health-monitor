@@ -89,7 +89,9 @@ function displayNote(item: GlucoseMeasurement) {
   <article class="health-panel health-table-panel">
     <div class="health-table-header">
       <div>
-        <h2 class="health-section-title">Glucose history</h2>
+        <h2 class="health-section-title">
+          Glucose history
+        </h2>
       </div>
     </div>
 
@@ -112,7 +114,10 @@ function displayNote(item: GlucoseMeasurement) {
               </span>
             </th>
             <th>NOTES</th>
-            <th class="health-table-action-head" aria-label="Action">
+            <th
+              class="health-table-action-head"
+              aria-label="Action"
+            >
               <span class="sr-only">Action</span>
             </th>
           </tr>

@@ -48,13 +48,13 @@ const activePoint = ref<ChartPoint | null>(null);
 
 const chartRows = computed(() =>
   props.items
-    .filter((item) => !item.ignore)
+    .filter(item => !item.ignore)
     .slice()
     .sort(
       (left, right) =>
         new Date(left.measuredAt).getTime() - new Date(right.measuredAt).getTime(),
     )
-    .map((item) => ({
+    .map(item => ({
       item,
       dateLabel: formatWhenParts(item.measuredAt).date,
       tooltipDate: formatWhen(item.measuredAt),
@@ -167,7 +167,7 @@ function buildPoints(series: ChartSeries) {
 }
 
 const seriesPoints = computed(() =>
-  props.series.map((series) => ({
+  props.series.map(series => ({
     meta: series,
     points: buildPoints(series),
   })),
@@ -185,8 +185,8 @@ function buildPath(points: ChartPoint[]) {
 
 const chartTicks = computed(() => {
   const { min, max } = valueBounds.value;
-  const formatTick =
-    props.yAxisFormatter ?? ((value: number) => String(Math.round(value)));
+  const formatTick
+    = props.yAxisFormatter ?? ((value: number) => String(Math.round(value)));
 
   return [0, 0.25, 0.5, 0.75, 1].map((step) => {
     const value = max - (max - min) * step;
@@ -199,7 +199,7 @@ const chartTicks = computed(() => {
 });
 
 const hasData = computed(() =>
-  seriesPoints.value.some((entry) => entry.points.length > 0),
+  seriesPoints.value.some(entry => entry.points.length > 0),
 );
 
 const chartTitle = computed(() => {
@@ -246,7 +246,10 @@ function clearPoint() {
 <template>
   <article class="health-panel health-chart health-line-chart">
     <header class="health-line-chart-header">
-      <div v-if="title" class="health-line-chart-copy">
+      <div
+        v-if="title"
+        class="health-line-chart-copy"
+      >
         <h2 class="health-section-title">
           {{ title }}
         </h2>
@@ -268,7 +271,11 @@ function clearPoint() {
       </div>
     </header>
 
-    <div v-if="hasData" class="health-line-chart-body" @mouseleave="clearPoint">
+    <div
+      v-if="hasData"
+      class="health-line-chart-body"
+      @mouseleave="clearPoint"
+    >
       <div
         v-if="activePoint"
         class="health-line-chart-tooltip"
@@ -286,7 +293,10 @@ function clearPoint() {
         :aria-label="ariaLabel"
         preserveAspectRatio="none"
       >
-        <g v-for="tick in chartTicks" :key="`grid-${tick.label}-${tick.y}`">
+        <g
+          v-for="tick in chartTicks"
+          :key="`grid-${tick.label}-${tick.y}`"
+        >
           <line
             class="health-line-chart-grid-line"
             :x1="chartPadding"
@@ -303,7 +313,10 @@ function clearPoint() {
           </text>
         </g>
 
-        <g v-for="entry in seriesPoints" :key="entry.meta.key">
+        <g
+          v-for="entry in seriesPoints"
+          :key="entry.meta.key"
+        >
           <path
             class="health-line-chart-line"
             :class="{ dashed: false }"
@@ -312,7 +325,10 @@ function clearPoint() {
           />
         </g>
 
-        <g v-for="entry in seriesPoints" :key="`points-${entry.meta.key}`">
+        <g
+          v-for="entry in seriesPoints"
+          :key="`points-${entry.meta.key}`"
+        >
           <circle
             v-for="point in entry.points"
             :key="`${entry.meta.key}-${point.rowIndex}-${point.value}`"
@@ -336,7 +352,10 @@ function clearPoint() {
       </div>
     </div>
 
-    <div v-else class="health-line-chart-empty">
+    <div
+      v-else
+      class="health-line-chart-empty"
+    >
       {{ emptyLabel ?? 'No active data available to build the chart.' }}
     </div>
   </article>

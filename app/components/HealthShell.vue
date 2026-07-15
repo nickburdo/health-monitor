@@ -18,26 +18,34 @@ function isActive(path: string) {
 
   return route.path === path;
 }
-
 </script>
 
 <template>
   <div class="health-app">
     <header class="health-header">
       <div class="health-header-inner">
-        <NuxtLink to="/" class="health-brand">
+        <NuxtLink
+          to="/"
+          class="health-brand"
+        >
           <span class="health-mark">HM</span>
           <span>Health Monitor</span>
         </NuxtLink>
 
-        <nav class="health-nav" aria-label="Main navigation">
+        <nav
+          class="health-nav"
+          aria-label="Main navigation"
+        >
           <NuxtLink
             v-for="item in navigation"
             :key="item.path"
             :to="item.path"
             :data-active="isActive(item.path)"
           >
-            <UIcon :name="item.icon" class="nav-icon nav-icon-large" />
+            <UIcon
+              :name="item.icon"
+              class="nav-icon nav-icon-large"
+            />
             <span>{{ item.label }}</span>
           </NuxtLink>
         </nav>
@@ -64,7 +72,10 @@ function isActive(path: string) {
       @entry-created="() => reloadNuxtApp({ persistState: false, path: route.path })"
     />
 
-    <footer class="health-footer" aria-label="Mobile navigation">
+    <footer
+      class="health-footer"
+      aria-label="Mobile navigation"
+    >
       <div class="health-footer-inner">
         <NuxtLink
           v-for="item in navigation"
@@ -72,7 +83,10 @@ function isActive(path: string) {
           :to="item.path"
           :data-active="isActive(item.path)"
         >
-          <UIcon :name="item.icon" class="nav-icon" />
+          <UIcon
+            :name="item.icon"
+            class="nav-icon"
+          />
         </NuxtLink>
       </div>
     </footer>

@@ -25,7 +25,7 @@ export async function listWeightMeasurements(
   const all = await healthDb.weightMeasurement.toArray();
 
   return all
-    .filter((item) => withinRange(item.measuredAt, range))
+    .filter(item => withinRange(item.measuredAt, range))
     .sort((a, b) => b.measuredAt.localeCompare(a.measuredAt));
 }
 

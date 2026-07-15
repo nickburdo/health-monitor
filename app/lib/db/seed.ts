@@ -36,19 +36,19 @@ function resolveDate(daysAgo: number): string {
 }
 
 export async function seedDemoDataIfEmpty(): Promise<void> {
-  const [glucoseCount, bloodPressureCount, weightCount, symptomCount] =
-    await Promise.all([
+  const [glucoseCount, bloodPressureCount, weightCount, symptomCount]
+    = await Promise.all([
       healthDb.glucoseMeasurement.count(),
       healthDb.bloodPressureMeasurement.count(),
       healthDb.weightMeasurement.count(),
       healthDb.symptomEntry.count(),
     ]);
 
-  const isEmpty =
-    glucoseCount === 0 &&
-    bloodPressureCount === 0 &&
-    weightCount === 0 &&
-    symptomCount === 0;
+  const isEmpty
+    = glucoseCount === 0
+      && bloodPressureCount === 0
+      && weightCount === 0
+      && symptomCount === 0;
 
   if (!isEmpty) {
     return;
@@ -58,7 +58,7 @@ export async function seedDemoDataIfEmpty(): Promise<void> {
   const createdAt = new Date().toISOString();
 
   const glucoseRecords: GlucoseMeasurement[] = demoData.glucoseMeasurement.map(
-    (entry) => ({
+    entry => ({
       id: crypto.randomUUID(),
       measuredAt: resolveDate(entry.daysAgo),
       fastingValue: entry.fastingValue ?? null,
@@ -70,8 +70,8 @@ export async function seedDemoDataIfEmpty(): Promise<void> {
     }),
   );
 
-  const bloodPressureRecords: BloodPressureMeasurement[] =
-    demoData.bloodPressureMeasurement.map((entry) => ({
+  const bloodPressureRecords: BloodPressureMeasurement[]
+    = demoData.bloodPressureMeasurement.map(entry => ({
       id: crypto.randomUUID(),
       measuredAt: resolveDate(entry.daysAgo),
       systolic: entry.systolic ?? null,
@@ -84,7 +84,7 @@ export async function seedDemoDataIfEmpty(): Promise<void> {
     }));
 
   const weightRecords: WeightMeasurement[] = demoData.weightMeasurement.map(
-    (entry) => ({
+    entry => ({
       id: crypto.randomUUID(),
       measuredAt: resolveDate(entry.daysAgo),
       value: entry.value,
@@ -95,7 +95,7 @@ export async function seedDemoDataIfEmpty(): Promise<void> {
     }),
   );
 
-  const symptomRecords: SymptomEntry[] = demoData.symptomEntry.map((entry) => ({
+  const symptomRecords: SymptomEntry[] = demoData.symptomEntry.map(entry => ({
     id: crypto.randomUUID(),
     happenedAt: resolveDate(entry.daysAgo),
     type: entry.type,

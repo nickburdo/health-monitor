@@ -60,10 +60,10 @@ const periodHeadlineSuffix = computed(() => {
     const to = value.dateTo ? new Date(value.dateTo) : null;
 
     if (
-      from &&
-      to &&
-      !Number.isNaN(from.getTime()) &&
-      !Number.isNaN(to.getTime())
+      from
+      && to
+      && !Number.isNaN(from.getTime())
+      && !Number.isNaN(to.getTime())
     ) {
       const format = (date: Date) => {
         const day = String(date.getDate()).padStart(2, '0');
@@ -104,7 +104,9 @@ useSeoMeta({
   <HealthShell>
     <section class="health-hero">
       <div class="health-panel health-hero-main">
-        <div class="health-eyebrow">Dashboard · summary first</div>
+        <div class="health-eyebrow">
+          Dashboard · summary first
+        </div>
         <h1 class="health-title health-dashboard-title">
           <span class="health-dashboard-title-prefix"> Health summary </span>
           <span class="health-dashboard-title-period">

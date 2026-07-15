@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import type { IgnoreInput } from '~/types';
+
 type SummaryLine = {
   label: string;
   value: string;
   helper?: string;
 };
-
-import type { IgnoreInput } from '~/types';
 
 const props = defineProps<{
   item: {

@@ -25,7 +25,7 @@ export async function listSymptomEntries(
   const all = await healthDb.symptomEntry.toArray();
 
   return all
-    .filter((item) => withinRange(item.happenedAt, range))
+    .filter(item => withinRange(item.happenedAt, range))
     .sort((a, b) => b.happenedAt.localeCompare(a.happenedAt));
 }
 

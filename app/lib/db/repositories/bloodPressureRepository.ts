@@ -29,7 +29,7 @@ export async function listBloodPressureMeasurements(
   const all = await healthDb.bloodPressureMeasurement.toArray();
 
   return all
-    .filter((item) => withinRange(item.measuredAt, range))
+    .filter(item => withinRange(item.measuredAt, range))
     .sort((a, b) => b.measuredAt.localeCompare(a.measuredAt));
 }
 
@@ -42,9 +42,9 @@ export async function createBloodPressureMeasurement(
   const note = parseOptionalString(input.note);
 
   if (
-    systolic === undefined &&
-    diastolic === undefined &&
-    pulse === undefined
+    systolic === undefined
+    && diastolic === undefined
+    && pulse === undefined
   ) {
     throw new Error('systolic, diastolic or pulse is required');
   }

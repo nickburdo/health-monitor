@@ -8,8 +8,8 @@ import {
   bloodPressureChartSeries,
 } from '~/utils/health-line-chart/blood-pressure';
 
-const { periodFilters, data, refresh } =
-  await useMeasurementList<BloodPressureMeasurement>(
+const { periodFilters, data, refresh }
+  = await useMeasurementList<BloodPressureMeasurement>(
     listBloodPressureMeasurements,
   );
 

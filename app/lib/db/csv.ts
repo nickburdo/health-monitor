@@ -17,8 +17,8 @@ export function toCsv<T extends Record<string, unknown>>(
   columns: Array<keyof T & string>,
 ): string {
   const header = columns.join(',');
-  const lines = rows.map((row) =>
-    columns.map((column) => csvEscape(row[column])).join(','),
+  const lines = rows.map(row =>
+    columns.map(column => csvEscape(row[column])).join(','),
   );
 
   return [header, ...lines].join('\n');

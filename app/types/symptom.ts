@@ -1,16 +1,21 @@
-import type { GeneralType } from '~/types/index';
+import type { SymptomOption } from '~/constants/symptom-options';
 
-export type SymptomEntry = GeneralType & {
+export type SymptomEntry = {
+  id: string;
   happenedAt: string;
-  type: string;
+  type: SymptomOption;
   intensity: number | null;
+  note: string | null;
+  createdAt: string;
 };
 
-export type CreateSymptomEntryContext = Omit<
-  SymptomEntry,
-  'id' | 'createdAt' | 'updatedAt'
->;
+export type CreateSymptomEntryInput = {
+  happenedAt: string;
+  type: SymptomOption;
+  intensity?: number;
+  note?: string;
+};
 
-export type UpdateSymptomEntryContext = Partial<
-  Omit<CreateSymptomEntryContext, 'userId'>
->;
+export type UpdateSymptomEntryNoteInput = {
+  note: string | null;
+};

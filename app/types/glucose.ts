@@ -1,15 +1,17 @@
-import type { GeneralMeasurementType } from '~/types/index';
-
-export type GlucoseMeasurement = GeneralMeasurementType & {
+export type GlucoseMeasurement = {
+  id: string;
+  measuredAt: string;
   fastingValue: number | null;
   afterMealValue: number | null;
+  ignore: boolean;
+  note: string | null;
+  reason: string | null;
+  createdAt: string;
 };
 
-export type CreateGlucoseMeasurementContext = Omit<
-  GlucoseMeasurement,
-  'id' | 'createdAt' | 'updatedAt'
->;
-
-export type UpdateGlucoseMeasurementContext = Partial<
-  Omit<CreateGlucoseMeasurementContext, 'userId'>
->;
+export type CreateGlucoseMeasurementInput = {
+  measuredAt: string;
+  fastingValue?: number;
+  afterMealValue?: number;
+  note?: string;
+};

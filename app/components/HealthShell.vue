@@ -1,14 +1,7 @@
 <script setup lang="ts">
-import { useFirebaseAuth } from '~/composables/useFirebaseAuth';
-
 const route = useRoute();
-const supabase = useSupabaseClient();
-const user = useSupabaseUser();
-const toast = useToast();
 
 const quickEntryOpen = ref(false);
-const authModalOpen = ref(false);
-const { logout, isAuthenticated, isLoading } = useFirebaseAuth();
 
 const navigation = [
   { label: 'Dashboard', path: '/', icon: 'i-lucide-layout-dashboard' },
@@ -26,58 +19,13 @@ function isActive(path: string) {
   return route.path === path;
 }
 
-function openAuthModal() {
-  if (user.value) {
-    return;
-  }
-
-  authModalOpen.value = true;
-}
-
-function closeAuthModal() {
-  authModalOpen.value = false;
-}
-
-function errorMessage(error: unknown) {
-  if (typeof error === 'object' && error !== null && 'message' in error) {
-    const message = (error as { message?: unknown }).message;
-
-    if (typeof message === 'string' && message.trim().length > 0) {
-      return message;
-    }
-  }
-
-  if (error instanceof Error && error.message) {
-    return error.message;
-  }
-
-  return 'Could not sign out';
-}
-
-async function signOut() {
-  try {
-    await logout();
-    await refreshNuxtData();
-
-    toast.add({
-      title: 'Signed out',
-      description: 'The app returned to guest mode.',
-    });
-  } catch (error) {
-    toast.add({
-      title: 'Sign out failed',
-      description: errorMessage(error),
-      color: 'error',
-    });
-  }
-}
 </script>
 
 <template>
   <div class="health-app">
     <header class="health-header">
       <div class="health-header-inner">
-        <NuxtLink to="/" class="health-brand" @dblclick.prevent="openAuthModal">
+        <NuxtLink to="/" class="health-brand">
           <span class="health-mark">HM</span>
           <span>Health Monitor</span>
         </NuxtLink>
@@ -96,14 +44,6 @@ async function signOut() {
 
         <div class="health-actions">
           <button
-            v-if="isAuthenticated"
-            type="button"
-            class="health-button health-button-secondary health-button-small"
-            @click="signOut"
-          >
-            Sign Out
-          </button>
-          <button
             type="button"
             class="health-button"
             @click="quickEntryOpen = true"
@@ -121,9 +61,8 @@ async function signOut() {
     <HealthQuickEntryModal
       :open="quickEntryOpen"
       @close="quickEntryOpen = false"
+      @entry-created="() => reloadNuxtApp({ persistState: false, path: route.path })"
     />
-
-    <HealthAuthModal :open="authModalOpen" @close="closeAuthModal" />
 
     <footer class="health-footer" aria-label="Mobile navigation">
       <div class="health-footer-inner">

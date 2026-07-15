@@ -2237,6 +2237,8 @@ git commit -m "Wire the dashboard to the local repositories, add JSON export/imp
 
 **Файлы:**
 - Изменить: `app/components/HealthShell.vue`
+- Удалить: `app/components/HealthAuthModal.vue`
+- Удалить: `app/pages/auth/callback.vue` (обнаружено при выполнении Задачи 22: оба файла становятся полностью осиротелыми уже здесь — `HealthAuthModal.vue` теряет своего единственного вызывающего в этом же шаге, `auth/callback.vue` был осиротелым ещё с Задачи 13. Изначально план откладывал их удаление до Phase G/Задачи 24, но это делало условие Задачи 22 («никаких ошибок typecheck нигде в `app/`») недостижимым до Phase G. По решению пользователя удаление перенесено сюда; функциональное удаление остального бэкенда (server/*, зависимости Supabase/Firebase/Prisma) по-прежнему происходит только в Phase G.)
 
 **Интерфейсы:**
 - Использует: emit `entryCreated` из `HealthQuickEntryModal.vue` (Задача 19).
@@ -2486,14 +2488,13 @@ git commit -m "Remove the server API, repositories, and their tests"
 - Удалить: `app/composables/useApiFetch.ts`
 - Удалить: `app/composables/useFirebaseAuth.ts`
 - Удалить: `app/lib/firebase.client.ts`
-- Удалить: `app/components/HealthAuthModal.vue`
-- Удалить: `app/pages/auth/callback.vue` (обнаружено при выполнении Задачи 13: страница callback для Supabase/Firebase авторизации, которой нет смысла без auth; ломает typecheck сразу после отключения модуля `@nuxtjs/supabase` в Задаче 13, но по решению пользователя удаляется здесь, в Phase G, а не раньше)
+
+(`app/components/HealthAuthModal.vue` и `app/pages/auth/callback.vue` были удалены раньше, в Задаче 21, чтобы Задача 22 могла достичь чистого typecheck до этой фазы — см. примечание там.)
 
 - [ ] **Шаг 1: Удалить файлы**
 
 ```bash
-git rm app/composables/useApiFetch.ts app/composables/useFirebaseAuth.ts app/lib/firebase.client.ts app/components/HealthAuthModal.vue
-git rm -r app/pages/auth
+git rm app/composables/useApiFetch.ts app/composables/useFirebaseAuth.ts app/lib/firebase.client.ts
 ```
 
 - [ ] **Шаг 2: Проверка**

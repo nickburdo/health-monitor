@@ -164,14 +164,14 @@ function barWidth(count: number) {
   overflow: hidden;
   height: 18px;
   border-radius: 999px;
-  background: rgba(59, 130, 246, 0.12);
+  background: var(--symptoms-track);
 }
 
 .health-dashboard-symptoms-fill {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #3b82f6, #60a5fa);
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.24);
+  background: linear-gradient(90deg, var(--symptoms-fill-from), var(--symptoms-fill-to));
+  box-shadow: var(--shadow-symptoms-fill);
 }
 
 .health-dashboard-symptoms-empty {
@@ -181,7 +181,7 @@ function barWidth(count: number) {
   border-radius: 22px;
   border: 1px dashed var(--border);
   color: var(--muted);
-  background: rgba(255, 250, 243, 0.58);
+  background: var(--empty-bg);
   text-align: center;
   padding: 24px;
 }

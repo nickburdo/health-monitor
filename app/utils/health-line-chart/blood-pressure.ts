@@ -2,13 +2,13 @@ export const bloodPressureChartSeries = [
   {
     key: 'systolic',
     label: 'Systolic',
-    color: '#3b82f6',
+    color: 'var(--chart-pressure-systolic)',
     valueFormatter: (value: number) => `${Math.round(value)} mmHg`,
   },
   {
     key: 'diastolic',
     label: 'Diastolic',
-    color: '#1d4ed8',
+    color: 'var(--chart-pressure-diastolic)',
     valueFormatter: (value: number) => `${Math.round(value)} mmHg`,
   },
 ] as const;

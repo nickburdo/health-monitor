@@ -2,7 +2,7 @@ export const weightChartSeries = [
   {
     key: 'value',
     label: 'Weight',
-    color: '#22c55e',
+    color: 'var(--chart-weight)',
     valueFormatter: (value: number) => `${value.toFixed(1)} kg`,
   },
 ] as const;

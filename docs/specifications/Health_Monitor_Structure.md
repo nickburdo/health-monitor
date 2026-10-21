@@ -12,17 +12,16 @@
 
 ## Стек
 
-- Nuxt 4
+- Nuxt 4 (только клиент, `ssr: false`; сервера и авторизации нет)
 - Vue 3
 - TypeScript
-- Pinia
-- Nuxt UI
-- Tailwind CSS
-- SQLite
-- Prisma
-- Nuxt ECharts
-- linter
-- prettier
+- Nuxt UI v4 (`@nuxtjs/color-mode` для светлой и тёмной темы)
+- Tailwind CSS 4
+- IndexedDB через Dexie.js — все данные хранятся в браузере
+- графики — собственный SVG-компонент `HealthLineChart`, без сторонней библиотеки
+- ESLint
+- Prettier
+- хостинг — Cloudflare Pages (статическая сборка)
 
 ## Базовые продуктовые решения
 
@@ -158,124 +157,108 @@ Symptoms → Violet
 - в активных элементах меню.
 
 
-## Рекомендуемая структура проекта
+## Структура проекта
 
 ```txt
 health-monitor/
   app/
     app.vue
+    app.config.ts
+
+    assets/css/
+      main.css                  # стили .health-*, CSS-токены светлой и тёмной темы
 
     pages/
-      index.vue
+      index.vue                 # dashboard
       glucose.vue
       blood-pressure.vue
       weight.vue
       symptoms.vue
-      settings.vue
 
     components/
-      layout/
-        AppHeader.vue
-        AppSidebar.vue
+      HealthShell.vue           # хэдер, меню, футер, модалка быстрого ввода
+      ThemeToggle.vue
+      HealthQuickEntryModal.vue
+      PeriodFilter.vue
+      HealthPageHeaderWithFilter.vue
+      MeasurementPageShell.vue
+      MeasurementIgnoreControls.vue
+      GlucoseTable.vue
+      BloodPressureTable.vue
+      WeightTable.vue
+      SymptomTable.vue
+      HealthLineChart.vue       # общий SVG-график
+      HealthTrendBars.vue
+      HealthMetricCard.vue
+      HealthEntryList.vue
+      DashboardSummaryPanel.vue
+      DashboardMetricsGrid.vue
+      DashboardSymptomsPanel.vue
+      DashboardLatestEntries.vue
+      DashboardDataActions.vue  # экспорт/импорт JSON
 
-      quick-entry/
-        QuickEntryButton.vue
-        QuickEntryModal.vue
-        GlucoseForm.vue
-        BloodPressureForm.vue
-        WeightForm.vue
-        SymptomForm.vue
+    composables/
+      usePeriodFilter.ts
+      useMeasurementList.ts
 
-      symptoms/
-        SymptomSelect.vue
-        symptom-options.ts
+    constants/
+      symptom-options.ts
 
-      dashboard/
-        DashboardCards.vue
-        DashboardSymptomsPanel.vue
-        LatestMeasurements.vue
-        PeriodSelector.vue
+    lib/db/
+      schema.ts                 # база IndexedDB (Dexie)
+      repositories/
+        glucoseRepository.ts
+        bloodPressureRepository.ts
+        weightRepository.ts
+        symptomRepository.ts
+      validation.ts
+      seed.ts                   # заполнение демо-данными при пустой базе
+      export-import.ts          # экспорт/импорт всей базы в JSON
+      csv.ts                    # экспорт CSV по сущности
 
-      tables/
-        GlucoseTable.vue
-        BloodPressureTable.vue
-        WeightTable.vue
-        SymptomsTable.vue
-
-      charts/
-        HealthLineChart.vue
-        GlucoseChart.vue
-        BloodPressureChart.vue
-        WeightChart.vue
-        SymptomsFrequencyChart.vue
-
-      ui/
-        IgnoreBadge.vue
-        EmptyState.vue
-
-    stores/
-      period.ts
-      quick-entry.ts
+    plugins/
+      seed-demo-data.client.ts
 
     types/
-      health.ts
+      index.ts
+      glucose.ts
+      blood-pressure.ts
+      weight.ts
+      symptom.ts
+      dashboard.ts
 
     utils/
-      dates.ts
-      formatters.ts
+      date-format.ts
       health-line-chart/
         blood-pressure.ts
         glucose.ts
         weight.ts
 
-  server/
-    api/
-      glucose/
-        index.get.ts
-        index.post.ts
-        [id]/ignore.patch.ts
+  public/data/
+    demo.json                   # демо-данные
 
-      blood-pressure/
-        index.get.ts
-        index.post.ts
-        [id]/ignore.patch.ts
+  scripts/
+    generate-demo-data.mjs
 
-      weight/
-        index.get.ts
-        index.post.ts
-        [id]/ignore.patch.ts
-
-      symptoms/
-        index.get.ts
-        index.post.ts
-        [id].patch.ts
-
-    utils/
-      prisma.ts
-      date-range.ts
-
-  prisma/
-    schema.prisma
-    dev.db
-
-  .env
   nuxt.config.ts
   package.json
 ```
+
+Сервера (`server/`), API и базы данных на сервере нет: все данные хранятся в IndexedDB браузера.
 
 ## Main Layout
 
 ### Header
 
 - слева: лого (белые HM в кружке цвета primary) и название Health Monitor
-- по центру: меню - пункты в ряд с иконками (экран 768 и более), активный пункт выделен
-- справа: кнопка открытия модально окна ввода данных
+- по центру: меню - пункты в ряд с иконками, активный пункт выделен; на экране 1000 и менее показываются только иконки, на экране 640 и менее меню в хэдере скрыто
+- справа: переключатель светлой/тёмной темы (`ThemeToggle`) и кнопка открытия модального окна ввода данных
 
 ### Main
 
 ### Footer
 
-только для мобильных! (экран меньше 768) - меню в виде иконок в ряд
+только для мобильных! (экран 640 и менее) - меню в виде иконок в ряд
 
 ## Основные страницы
 
@@ -315,9 +298,9 @@ health-monitor/
 ##### Поведение
 
 - `Игнорировать` открывает confirm dialog;
-- в confirm dialog обязательно вводится `note`;
-- после подтверждения отправляется `PATCH /api/glucose/:id/ignore` с `ignore: true` и `note`;
-- `Восстановить` открывает confirm dialog, требует `note` и отправляет `PATCH /api/glucose/:id/ignore` с `ignore: false` и `note`;
+- в confirm dialog обязательно вводится причина (`reason`);
+- после подтверждения запись глюкозы обновляется в IndexedDB через `setGlucoseMeasurementIgnore` с `ignore: true` и `reason`;
+- `Восстановить` срабатывает сразу, без подтверждения: `ignore` сбрасывается в `false`, `reason` очищается;
 - строки с `ignore=true` визуально приглушаются.
 
 #### График глюкозы
@@ -355,9 +338,9 @@ health-monitor/
 ##### Поведение
 
 - `Игнорировать` открывает confirm dialog;
-- в confirm dialog обязательно вводится `note`;
-- после подтверждения отправляется `PATCH /api/weight/:id/ignore` с `ignore: true` и `note`;
-- `Восстановить` открывает confirm dialog, требует `note` и отправляет `PATCH /api/weight/:id/ignore` с `ignore: false` и `note`;
+- в confirm dialog обязательно вводится причина (`reason`);
+- после подтверждения запись давления обновляется в IndexedDB через `setBloodPressureMeasurementIgnore` с `ignore: true` и `reason`;
+- `Восстановить` срабатывает сразу, без подтверждения: `ignore` сбрасывается в `false`, `reason` очищается;
 - строки с `ignore=true` визуально приглушаются.
 
 
@@ -381,9 +364,9 @@ health-monitor/
 ##### Поведение
 
 - `Игнорировать` открывает confirm dialog;
-- в confirm dialog обязательно вводится `note`;
-- после подтверждения отправляется `PATCH /api/blood-pressure/:id/ignore` с `ignore: true` и `note`;
-- `Восстановить` открывает confirm dialog, требует `note` и отправляет `PATCH /api/blood-pressure/:id/ignore` с `ignore: false` и `note`;
+- в confirm dialog обязательно вводится причина (`reason`);
+- после подтверждения запись веса обновляется в IndexedDB через `setWeightMeasurementIgnore` с `ignore: true` и `reason`;
+- `Восстановить` срабатывает сразу, без подтверждения: `ignore` сбрасывается в `false`, `reason` очищается;
 - строки с `ignore=true` визуально приглушаются.
 
 
@@ -479,90 +462,89 @@ health-monitor/
 
 По умолчанию выбрано "3 месяца"
 
-## Pinia stores
+## Состояние интерфейса
 
-### `stores/period.ts`
+Pinia не используется: состояние хранится локально в компонентах и composables.
 
-Хранит выбранный период.
+### Период
 
-```ts
-type Period = '1m' | '3m' | '6m' | 'ytd' | 'custom'
-```
-
-Состояние:
+`app/composables/usePeriodFilter.ts` — `usePeriodFilter()` создаёт на странице `ref` с выбранным периодом (по умолчанию `'3m'`) и вычисляемый `query` с `dateFrom` / `dateTo` для загрузки данных.
 
 ```ts
-{
-  period: Period
-  dateFrom?: Date
-  dateTo?: Date
+type PeriodPreset = '3m' | '6m' | 'ytd' | 'custom'
+
+type PeriodFilterValue = {
+  preset: PeriodPreset
+  dateFrom?: string | null // ISO
+  dateTo?: string | null // ISO
 }
 ```
 
-### `stores/quick-entry.ts`
+### Быстрый ввод
 
-Хранит состояние модального окна быстрого ввода.
-
-```ts
-{
-  isOpen: boolean
-  activeTab: 'glucose' | 'bloodPressure' | 'weight' | 'symptom'
-}
-```
+- открытие модалки — локальный `ref` `quickEntryOpen` в `HealthShell.vue`;
+- активная вкладка — локальный `ref` `activeType` в `HealthQuickEntryModal.vue` (`'glucose' | 'bloodPressure' | 'weight' | 'symptom'`).
 
 ## Общие TypeScript-типы
 
-Файл:
+Файлы:
 
 ```txt
-app/types/health.ts
+app/types/index.ts
+app/types/glucose.ts
+app/types/blood-pressure.ts
+app/types/weight.ts
+app/types/symptom.ts
+app/types/dashboard.ts
 ```
 
+Эти типы одновременно описывают записи таблиц IndexedDB (`app/lib/db/schema.ts`).
+
 ```ts
-export type Period = '1m' | '3m' | '6m' | 'ytd' | 'custom'
+export type IgnoreInput = {
+  ignore: boolean
+  reason?: string
+}
 
-export type QuickEntryTab =
-  | 'glucose'
-  | 'bloodPressure'
-  | 'weight'
-  | 'symptom'
-
-export interface GlucoseMeasurement {
+export type GlucoseMeasurement = {
   id: string
   measuredAt: string
-  fastingValue?: number | null
-  afterMealValue?: number | null
+  fastingValue: number | null
+  afterMealValue: number | null
   ignore: boolean
-  note?: string | null
+  note: string | null
+  reason: string | null
   createdAt: string
 }
 
-export interface BloodPressureMeasurement {
+export type BloodPressureMeasurement = {
   id: string
   measuredAt: string
-  systolic?: number | null
-  diastolic?: number | null
-  pulse?: number | null
+  systolic: number | null
+  diastolic: number | null
+  pulse: number | null
   ignore: boolean
-  note?: string | null
+  note: string | null
+  reason: string | null
   createdAt: string
 }
 
-export interface WeightMeasurement {
+export type WeightMeasurement = {
   id: string
   measuredAt: string
-  value?: number | null
+  value: number | null
   ignore: boolean
-  note?: string | null
+  note: string | null
+  reason: string | null
   createdAt: string
 }
 
-export interface SymptomEntry {
+export type SymptomEntry = {
   id: string
   happenedAt: string
-  type: string
-  intensity?: number | null
-  note?: string | null
+  type: SymptomOption // из app/constants/symptom-options.ts
+  intensity: number | null
+  note: string | null
   createdAt: string
 }
 ```
@@ -571,7 +553,6 @@ export interface SymptomEntry {
 
 Нужные периоды:
 
-- последний месяц;
 - последние 3 месяца;
 - последние полгода;
 - с начала года;
@@ -580,22 +561,14 @@ export interface SymptomEntry {
 Файл:
 
 ```txt
-app/utils/dates.ts
+app/composables/usePeriodFilter.ts
 ```
 
-Примерная функция:
+- `createPresetPeriodFilters(preset)` — считает `dateFrom` / `dateTo` для `'3m'`, `'6m'` и `'ytd'` (`dateTo` — конец текущего дня, `dateFrom` — начало дня);
+- `startOfDayIso` / `endOfDayIso` — границы дня в ISO;
+- `formatPeriodShortDate`, `toDateInputValue` — форматирование дат для кнопок и полей custom-диапазона.
 
-```ts
-export function getDateRange(period: Period) {
-  const now = new Date()
-
-  // TODO:
-  // 1m — минус 1 месяц
-  // 3m — минус 3 месяца
-  // 6m — минус 6 месяцев
-  // ytd — с 1 января текущего года
-}
-```
+Форматирование дат в таблицах и списках — `app/utils/date-format.ts`.
 
 ## MVP-функциональность
 
@@ -603,13 +576,12 @@ export function getDateRange(period: Period) {
 
 - создать проект Nuxt;
 - подключить Nuxt UI;
-- подключить Prisma и SQLite;
-- создать Prisma schema;
-- сделать миграцию;
-- сделать API для добавления данных;
-- сделать API для получения данных;
-- сделать API для ignore / restore для глюкозы, давления и веса;
-- сделать API для редактирования note у симптомов;
+- хранить данные в IndexedDB через Dexie.js (`app/lib/db/`);
+- заполнять пустую базу демо-данными;
+- сделать репозитории для добавления и получения данных;
+- сделать ignore / restore для глюкозы, давления и веса;
+- сделать редактирование note у симптомов;
+- сделать экспорт/импорт всей базы в JSON и экспорт CSV по сущности;
 - сделать быстрый ввод через модалку;
 - сделать таблицы;
 - сделать графики;
@@ -617,10 +589,9 @@ export function getDateRange(period: Period) {
 
 ### Не входит в MVP
 
-- авторизация;
-- редактирование данных;
+- авторизация (данные хранятся локально в браузере);
+- редактирование данных (кроме note у симптомов);
 - удаление данных;
-- экспорт CSV;
 - импорт CSV;
 - напоминания;
 - мобильное приложение;

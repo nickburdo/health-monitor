@@ -1,6 +1,6 @@
 ---
 name: browser-checker
-description: Checks the running Health Monitor app in a real browser (computed styles, layout at several widths, light/dark theme, console errors) and reports findings without changing code. Use after UI changes when the user asks for a browser check.
+description: Checks the running Health Monitor app in a real browser (computed styles, layout at several widths, light/dark theme, console errors) and reports findings without changing code. Use after UI changes, from the finish-task skill or when the user asks for a browser check.
 tools: Read, Grep, Glob, Bash, mcp__playwright__*
 disallowedTools: mcp__playwright__browser_run_code_unsafe, mcp__playwright__browser_take_screenshot
 model: sonnet

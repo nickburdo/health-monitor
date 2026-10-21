@@ -63,4 +63,3 @@ Styling is custom `.health-*` classes in `app/assets/css/main.css`; Nuxt UI comp
 - Messages to the user go through `useToast()`, not `alert`.
 - Spec: `docs/specifications/Health_Monitor_Structure.md`; stage plan with a done-log: `docs/specifications/Health_Monitor_plan.md`; backlog: `docs/specifications/Health_Monitor_BACKLOG.md`.
 - Implementation plans, one per task, live in `docs/plans/` (roadmap in `docs/plans/next-update.md`).
-- `README.md` still says the data shape mirrors `prisma/schema.prisma`; that file no longer exists.

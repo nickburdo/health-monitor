@@ -2,7 +2,7 @@
 
 > **Статус:** ✅ Одобрен пользователем 2026-10-21.
 >
-> **Для агентов-исполнителей:** используйте superpowers:executing-plans для выполнения плана задача за задачей. Шаги используют синтаксис чекбоксов (`- [ ]`). **Без TDD**: автоматические тесты не пишутся, если явно не попросили. Не проверяйте UI-изменения в настоящем браузере, если пользователь явно не попросил — вместо этого опишите, что должен проверить разработчик вручную.
+> **Для агентов-исполнителей:** используйте superpowers:executing-plans для выполнения плана задача за задачей. Шаги используют синтаксис чекбоксов (`- [x]`). **Без TDD**: автоматические тесты не пишутся, если явно не попросили. Не проверяйте UI-изменения в настоящем браузере, если пользователь явно не попросил — вместо этого опишите, что должен проверить разработчик вручную.
 >
 > **Контрольная точка после каждой задачи (обязательно):** после выполнения задачи остановиться, кратко отчитаться и ждать явного подтверждения пользователя, прежде чем начинать следующую.
 
@@ -48,49 +48,49 @@
 
 ### Задача 0: Ветка и документация
 
-- [ ] Создать ветку `feature/dark-theme` от актуального `main`.
-- [ ] Создать этот файл плана.
-- [ ] Добавить пункт в `docs/plans/next-update.md`.
+- [x] Создать ветку `feature/dark-theme` от актуального `main`.
+- [x] Создать этот файл плана.
+- [x] Добавить пункт в `docs/plans/next-update.md`.
 
 ### Задача 1: Токенизация светлой темы (без визуальных изменений)
 
 **Файлы:** Изменить: `app/assets/css/main.css`
 
-- [ ] Добавить новые токены в `:root` и заменить ими жёсткие `white` / `rgba()`: шапка, навигация, кнопки, панели, `pill`, `input` / `textarea`, модалка, тренды, таблицы, футер, сводки.
-- [ ] Добавить `color-scheme: light` в `:root`.
-- [ ] Проверка: `npm run typecheck`, `npm run lint`, `npm run build`.
+- [x] Добавить новые токены в `:root` и заменить ими жёсткие `white` / `rgba()`: шапка, навигация, кнопки, панели, `pill`, `input` / `textarea`, модалка, тренды, таблицы, футер, сводки.
+- [x] Добавить `color-scheme: light` в `:root`.
+- [x] Проверка: `npm run typecheck`, `npm run lint`, `npm run build`.
 
 ### Задача 2: Токенизация компонентов и графиков
 
 **Файлы:** Изменить: `app/components/HealthLineChart.vue`, `app/components/DashboardSymptomsPanel.vue`, `app/utils/health-line-chart/glucose.ts`, `app/utils/health-line-chart/blood-pressure.ts`, `app/utils/health-line-chart/weight.ts`, `app/assets/css/main.css`
 
-- [ ] `HealthLineChart.vue`: сетка, фон и тень тултипа, пустое состояние — на токены; цвета серий — через `:style`.
-- [ ] `DashboardSymptomsPanel.vue`: трек, градиент бара, тень, пустое состояние — на токены.
-- [ ] `*.ts` графиков: hex → `var(--chart-…)`, токены `--chart-*` добавить в `:root`.
-- [ ] Проверка: `npm run typecheck`, `npm run lint`, `npm run build`.
+- [x] `HealthLineChart.vue`: сетка, фон и тень тултипа, пустое состояние — на токены; цвета серий — через `:style`.
+- [x] `DashboardSymptomsPanel.vue`: трек, градиент бара, тень, пустое состояние — на токены.
+- [x] `*.ts` графиков: hex → `var(--chart-…)`, токены `--chart-*` добавить в `:root`.
+- [x] Проверка: `npm run typecheck`, `npm run lint`, `npm run build`.
 
 ### Задача 3: Палитра тёмной темы
 
 **Файлы:** Изменить: `app/assets/css/main.css`
 
-- [ ] Добавить блок `:root.dark` с `color-scheme: dark` и тёмными значениями всех токенов (см. таблицу выше).
-- [ ] Проверка: `npm run typecheck`, `npm run lint`, `npm run build`.
+- [x] Добавить блок `:root.dark` с `color-scheme: dark` и тёмными значениями всех токенов (см. таблицу выше).
+- [x] Проверка: `npm run typecheck`, `npm run lint`, `npm run build`.
 
 ### Задача 4: Переключатель в шапке
 
 **Файлы:** Создать: `app/components/ThemeToggle.vue`. Изменить: `app/components/HealthShell.vue`, `app/assets/css/main.css`
 
-- [ ] Создать `ThemeToggle.vue`: кнопка с иконкой, `aria-label` и `title` меняются по теме («Switch to dark theme» / «Switch to light theme»).
-- [ ] Вставить переключатель в `.health-actions` перед «+ Add entry» в `HealthShell.vue`; он остаётся видимым на ширине ≤640px.
-- [ ] Добавить стиль `.health-icon-button`.
-- [ ] Проверка: `npm run typecheck`, `npm run lint`, `npm run build`.
+- [x] Создать `ThemeToggle.vue`: кнопка с иконкой, `aria-label` и `title` меняются по теме («Switch to dark theme» / «Switch to light theme»).
+- [x] Вставить переключатель в `.health-actions` перед «+ Add entry» в `HealthShell.vue`; он остаётся видимым на ширине ≤640px.
+- [x] Добавить стиль `.health-icon-button`.
+- [x] Проверка: `npm run typecheck`, `npm run lint`, `npm run build`.
 
 ### Задача 5: Документация по итогам
 
 **Файлы:** Изменить: `docs/specifications/Health_Monitor_plan.md`, `docs/specifications/Health_Monitor_BACKLOG.md`, `docs/plans/next-update.md`
 
-- [ ] Отметить фичу в `Health_Monitor_plan.md` и кратко описать сделанное.
-- [ ] В бэклоге отметить выполненную часть пункта «Переключение светлой и тёмной темы» (режим `system` как отдельная опция и переключатель в настройках не сделаны).
+- [x] Отметить фичу в `Health_Monitor_plan.md` и кратко описать сделанное.
+- [x] В бэклоге отметить выполненную часть пункта «Переключение светлой и тёмной темы» (режим `system` как отдельная опция и переключатель в настройках не сделаны).
 
 ## Ручная проверка (делает разработчик)
 

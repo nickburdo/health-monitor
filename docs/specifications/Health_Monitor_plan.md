@@ -140,3 +140,4 @@
 - [x] glucose, blood pressure, and symptoms APIs now use the same actor resolution and server-side demo/private separation as weight.
 - [x] auth modal now supports Google OAuth and `/auth/callback` completes the session exchange before redirecting back to `/`.
 - [x] the app UI is now fully translated to English, including the dashboard, measurement pages, modals, filters, and toast copy.
+- [x] dark theme: all UI colors (including chart series and the symptoms panel) now come from CSS tokens in `main.css`, a warm graphite palette overrides them in `:root.dark`, and a sun/moon `ThemeToggle` in the header switches light/dark via `useColorMode` (first visit follows the OS, the choice is saved in localStorage). Plan: `docs/plans/dark-theme-plan.md`.

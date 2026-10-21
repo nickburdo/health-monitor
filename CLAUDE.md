@@ -7,7 +7,7 @@ Health Monitor is a personal web app for tracking glucose, blood pressure, weigh
 ## Working rules
 
 - Write user questions and work reports in Russian.
-- After implementing a feature, mark it in `docs/specifications/Health_Monitor_plan.md` right away and briefly describe what was done in the matching section.
+- Start tasks with the `start-task` skill and close them with `finish-task`.
 
 ## Commands
 
@@ -36,10 +36,10 @@ Static site on Cloudflare Pages, project `health-monitor-new`, connected to the 
 
 ### Data layer (`app/lib/db/`)
 
-- `schema.ts` defines the Dexie database `health-monitor` with four tables: `glucoseMeasurement`, `bloodPressureMeasurement`, `weightMeasurement`, `symptomEntry`. Record types live in `app/types/*.ts` and double as table row types. Changing indexes requires a new `this.version(n)`.
+- `schema.ts` defines the Dexie database `health-monitor` with four data tables: `glucoseMeasurement`, `bloodPressureMeasurement`, `weightMeasurement`, `symptomEntry`, plus a `meta` key-value table (`version(2)`). Record types live in `app/types/*.ts` and double as table row types. Changing indexes requires a new `this.version(n)`.
 - `repositories/*Repository.ts` are the only way pages and components touch the DB: `list*` (loads the table and filters by an ISO `dateFrom`/`dateTo` range in memory), `create*` (IDs via `crypto.randomUUID()`), and `set*Ignore` for measurements / note updates for symptoms.
 - Input parsing and the ignore rule live in `validation.ts`: ignoring a measurement requires a `reason`; restoring clears it.
-- `seed.ts` + `app/plugins/seed-demo-data.client.ts`: on startup, if all tables are empty, seed from `public/data/demo.json`. Demo dates are stored as `daysAgo` offsets and resolved at seed time.
+- `seed.ts` + `app/plugins/seed-demo-data.client.ts`: auto-seed from `public/data/demo.json` runs only on the very first open, guarded by the `demoSeeded` flag in `meta`; it only adds records and never clears. `seed.ts` also provides `replaceWithDemoData` and `clearHealthMonitorData` for the dashboard's Load demo data / Clear database buttons (both set the flag, so a cleared DB stays empty after reload). Demo dates are stored as `daysAgo` offsets and resolved at seed time.
 - `export-import.ts`: whole-DB JSON export/import (import is replace-all inside a transaction, format `version: 1`). `csv.ts`: per-entity CSV export from each entity page.
 
 ### Pages and data flow

@@ -105,9 +105,9 @@
   - symptoms через отдельную frequency-панель;
 - [x] фильтры периода.
 - [x] кнопки «Load demo data» и «Clear database» рядом с экспортом/импортом JSON.
-  - справа в строке `DashboardDataActions`, с `window.confirm` и toast;
-  - замена на демо и очистка работают в одной транзакции (`replaceWithDemoData`, `clearHealthMonitorData` в `seed.ts`);
-  - автосид только при первом открытии: флаг `demoSeeded` в новой таблице `meta` (схема `version(2)`).
+  - справа в строке `DashboardDataActions`, с `window.confirm` и toast; общий флаг `busy` блокирует Import JSON, Load demo data и Clear database, пока идёт любая из этих операций;
+  - замена на демо и очистка работают в одной транзакции (`replaceWithDemoData`, `clearHealthMonitorData` в `seed.ts`); очистка в той же транзакции ставит флаг `demoSeeded`, поэтому база остаётся пустой после перезагрузки;
+  - автосид только при первом открытии: флаг `demoSeeded` в новой таблице `meta` (схема `version(2)`); автосид повторно проверяет флаг и пустоту таблиц внутри транзакции и только добавляет записи, без `clear()`.
 
 ### Этап 9. Полировка
 

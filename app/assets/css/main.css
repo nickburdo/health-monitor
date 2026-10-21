@@ -36,6 +36,43 @@
   --symptoms: #c4b5fd;
   --danger-soft: #fee2e2;
   --danger: #dc2626;
+  --primary-light: #fb923c;
+  --on-primary: white;
+  --control-bg: white;
+  --body-glow-left: rgba(255, 237, 213, 0.95);
+  --body-glow-right: rgba(219, 234, 254, 0.75);
+  --header-bg: rgba(255, 247, 237, 0.78);
+  --header-border: rgba(243, 223, 207, 0.7);
+  --nav-bg: rgba(255, 255, 255, 0.78);
+  --panel-bg: rgba(255, 255, 255, 0.86);
+  --panel-soft-from: rgba(255, 237, 213, 0.92);
+  --panel-soft-to: rgba(255, 255, 255, 0.9);
+  --metric-bg: rgba(255, 255, 255, 0.88);
+  --trend-from: rgba(255, 250, 243, 0.8);
+  --trend-to: rgba(255, 237, 213, 0.45);
+  --bar-end: #fdba74;
+  --overlay: rgba(47, 42, 38, 0.46);
+  --modal-border: rgba(243, 223, 207, 0.9);
+  --modal-glow: rgba(255, 237, 213, 0.72);
+  --modal-bg: rgba(255, 255, 255, 0.97);
+  --input-inset: rgba(255, 255, 255, 0.8);
+  --focus-ring: rgba(249, 115, 22, 0.22);
+  --focus-border: rgba(249, 115, 22, 0.4);
+  --summary-bg: rgba(255, 250, 243, 0.8);
+  --summary-row-bg: rgba(255, 250, 243, 0.74);
+  --ignored-row-bg: rgba(255, 250, 243, 0.54);
+  --ignored-text: rgba(129, 115, 106, 0.82);
+  --ignored-note: rgba(129, 115, 106, 0.74);
+  --footer-bg: rgba(255, 255, 255, 0.9);
+  --shadow-header: 0 12px 34px rgba(124, 45, 18, 0.06);
+  --shadow-nav: 0 8px 30px rgba(124, 45, 18, 0.06);
+  --shadow-mark: 0 10px 30px rgba(249, 115, 22, 0.32);
+  --shadow-button: 0 14px 30px rgba(249, 115, 22, 0.28);
+  --shadow-button-hover: 0 16px 34px rgba(249, 115, 22, 0.34);
+  --shadow-tab: 0 12px 28px rgba(249, 115, 22, 0.12);
+  --shadow-modal: 0 24px 80px rgba(47, 42, 38, 0.22);
+  --shadow-footer: 0 16px 40px rgba(124, 45, 18, 0.16);
+  color-scheme: light;
   --radius-xl: 28px;
   --radius-lg: 20px;
   --radius-md: 16px;
@@ -61,8 +98,8 @@ body {
   color: var(--text);
   overflow-x: clip;
   background:
-    radial-gradient(circle at top left, rgba(255, 237, 213, 0.95), transparent 34%),
-    radial-gradient(circle at top right, rgba(219, 234, 254, 0.75), transparent 28%),
+    radial-gradient(circle at top left, var(--body-glow-left), transparent 34%),
+    radial-gradient(circle at top right, var(--body-glow-right), transparent 28%),
     var(--bg);
 }
 
@@ -97,10 +134,10 @@ select {
   margin: 0;
   padding: 0;
   backdrop-filter: blur(18px);
-  background: rgba(255, 247, 237, 0.78);
-  border-bottom: 1px solid rgba(243, 223, 207, 0.7);
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--header-border);
   border-radius: 0;
-  box-shadow: 0 12px 34px rgba(124, 45, 18, 0.06);
+  box-shadow: var(--shadow-header);
 }
 
 .health-header-inner {
@@ -130,9 +167,9 @@ select {
   width: 44px;
   height: 44px;
   border-radius: 999px;
-  color: white;
-  background: linear-gradient(135deg, var(--primary), #fb923c);
-  box-shadow: 0 10px 30px rgba(249, 115, 22, 0.32);
+  color: var(--on-primary);
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  box-shadow: var(--shadow-mark);
   font-size: 16px;
 }
 
@@ -152,8 +189,8 @@ select {
   justify-self: center;
   border: 1px solid var(--border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.78);
-  box-shadow: 0 8px 30px rgba(124, 45, 18, 0.06);
+  background: var(--nav-bg);
+  box-shadow: var(--shadow-nav);
 }
 
 .health-nav a {
@@ -199,9 +236,9 @@ select {
   border-radius: 999px;
   padding: 12px 18px;
   background: var(--primary);
-  color: white;
+  color: var(--on-primary);
   font-weight: 850;
-  box-shadow: 0 14px 30px rgba(249, 115, 22, 0.28);
+  box-shadow: var(--shadow-button);
   cursor: pointer;
   transition:
     transform 180ms ease,
@@ -211,7 +248,7 @@ select {
 
 .health-button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 16px 34px rgba(249, 115, 22, 0.34);
+  box-shadow: var(--shadow-button-hover);
 }
 
 .health-button:active {
@@ -228,13 +265,13 @@ select {
 .health-panel {
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  background: rgba(255, 255, 255, 0.86);
+  background: var(--panel-bg);
   box-shadow: var(--shadow);
 }
 
 .health-panel-soft {
   background:
-    linear-gradient(150deg, rgba(255, 237, 213, 0.92), rgba(255, 255, 255, 0.9)),
+    linear-gradient(150deg, var(--panel-soft-from), var(--panel-soft-to)),
     var(--surface);
 }
 
@@ -350,7 +387,7 @@ select {
 .health-pill[data-active='true'] {
   border-color: transparent;
   background: var(--primary);
-  color: white;
+  color: var(--on-primary);
 }
 
 .health-input-sample {
@@ -363,7 +400,7 @@ select {
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 13px 14px;
-  background: white;
+  background: var(--control-bg);
   color: var(--muted);
   font-size: 14px;
 }
@@ -393,7 +430,7 @@ select {
   padding: 20px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.88);
+  background: var(--metric-bg);
   box-shadow: var(--shadow-soft);
 }
 
@@ -466,7 +503,7 @@ select {
   margin-top: 10px;
   padding: 18px;
   border-radius: 22px;
-  background: linear-gradient(180deg, rgba(255, 250, 243, 0.8), rgba(255, 237, 213, 0.45));
+  background: linear-gradient(180deg, var(--trend-from), var(--trend-to));
   border: 1px solid var(--border);
 }
 
@@ -474,7 +511,7 @@ select {
   flex: 1;
   min-height: 40px;
   border-radius: 999px 999px 10px 10px;
-  background: linear-gradient(180deg, var(--primary), #fdba74);
+  background: linear-gradient(180deg, var(--primary), var(--bar-end));
   opacity: 0.92;
 }
 
@@ -536,7 +573,7 @@ select {
   display: grid;
   place-items: center;
   padding: 24px;
-  background: rgba(47, 42, 38, 0.46);
+  background: var(--overlay);
   backdrop-filter: blur(10px);
 }
 
@@ -545,12 +582,12 @@ select {
   max-height: min(88vh, 920px);
   overflow: auto;
   padding: 24px;
-  border: 1px solid rgba(243, 223, 207, 0.9);
+  border: 1px solid var(--modal-border);
   border-radius: 32px;
   background:
-    radial-gradient(circle at top right, rgba(255, 237, 213, 0.72), transparent 30%),
-    rgba(255, 255, 255, 0.97);
-  box-shadow: 0 24px 80px rgba(47, 42, 38, 0.22);
+    radial-gradient(circle at top right, var(--modal-glow), transparent 30%),
+    var(--modal-bg);
+  box-shadow: var(--shadow-modal);
 }
 
 .health-modal-header {
@@ -579,7 +616,7 @@ select {
   height: 42px;
   border: 1px solid var(--border);
   border-radius: 999px;
-  background: white;
+  background: var(--control-bg);
   color: var(--muted);
   font-size: 24px;
   line-height: 1;
@@ -620,7 +657,7 @@ select {
 .health-modal-tab[data-active='true'] {
   border-color: transparent;
   background: var(--primary-soft);
-  box-shadow: 0 12px 28px rgba(249, 115, 22, 0.12);
+  box-shadow: var(--shadow-tab);
 }
 
 .health-modal-body {
@@ -659,16 +696,16 @@ select {
   border: 1px solid var(--border);
   border-radius: 18px;
   padding: 13px 14px;
-  background: white;
+  background: var(--control-bg);
   color: var(--text);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  box-shadow: inset 0 1px 0 var(--input-inset);
 }
 
 .health-input:focus,
 .health-textarea:focus {
-  outline: 2px solid rgba(249, 115, 22, 0.22);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 1px;
-  border-color: rgba(249, 115, 22, 0.4);
+  border-color: var(--focus-border);
 }
 
 .health-textarea {
@@ -730,7 +767,7 @@ select {
 }
 
 .health-button-secondary {
-  background: white;
+  background: var(--control-bg);
   color: var(--text);
   box-shadow: none;
   border: 1px solid var(--border);
@@ -753,7 +790,7 @@ select {
   padding: 14px 16px;
   border: 1px solid var(--border);
   border-radius: 20px;
-  background: rgba(255, 250, 243, 0.8);
+  background: var(--summary-bg);
 }
 
 .health-modal-summary p {
@@ -1010,15 +1047,15 @@ select {
 }
 
 .health-table-row[data-ignored='true'] {
-  background: rgba(255, 250, 243, 0.54);
+  background: var(--ignored-row-bg);
 }
 
 .health-table-row[data-ignored='true'] td {
-  color: rgba(129, 115, 106, 0.82);
+  color: var(--ignored-text);
 }
 
 .health-table-row[data-ignored='true'] .health-table-note {
-  color: rgba(129, 115, 106, 0.74);
+  color: var(--ignored-note);
 }
 
 .health-table-textarea {
@@ -1027,15 +1064,15 @@ select {
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 12px 14px;
-  background: white;
+  background: var(--control-bg);
   color: var(--text);
   resize: vertical;
 }
 
 .health-table-textarea:focus {
-  outline: 2px solid rgba(249, 115, 22, 0.22);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 1px;
-  border-color: rgba(249, 115, 22, 0.4);
+  border-color: var(--focus-border);
 }
 
 .health-table-textarea-mobile-edit {
@@ -1190,7 +1227,7 @@ select {
   padding: 14px 16px;
   border: 1px solid var(--border);
   border-radius: 18px;
-  background: rgba(255, 250, 243, 0.74);
+  background: var(--summary-row-bg);
 }
 
 .health-dashboard-summary-row-wide {
@@ -1255,9 +1292,9 @@ select {
   border-left: 0;
   border-right: 0;
   border-bottom: 0;
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--footer-bg);
   backdrop-filter: blur(18px);
-  box-shadow: 0 16px 40px rgba(124, 45, 18, 0.16);
+  box-shadow: var(--shadow-footer);
 }
 
 .health-footer-inner {

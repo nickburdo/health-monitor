@@ -10,6 +10,7 @@ type ChartRow = Record<
 };
 
 type ChartSeries = {
+  // Any CSS color, usually a theme token such as var(--chart-weight); not guaranteed to be hex
   color: string;
   key: string;
   label: string;
@@ -321,7 +322,7 @@ function clearPoint() {
             class="health-line-chart-line"
             :class="{ dashed: false }"
             :d="buildPath(entry.points)"
-            :stroke="entry.meta.color"
+            :style="{ stroke: entry.meta.color }"
           />
         </g>
 
@@ -336,8 +337,7 @@ function clearPoint() {
             :cx="point.x"
             :cy="point.y"
             :r="pointRadius"
-            :fill="point.color"
-            :stroke="point.color"
+            :style="{ fill: point.color, stroke: point.color }"
             tabindex="0"
             :aria-label="point.ariaLabel"
             @mouseenter="showPoint(point)"
@@ -421,8 +421,8 @@ function clearPoint() {
   padding: 10px 12px;
   border: 1px solid var(--border);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 18px 40px rgba(124, 45, 18, 0.16);
+  background: var(--tooltip-bg);
+  box-shadow: var(--shadow-tooltip);
   transform: translate(-50%, -115%);
   pointer-events: none;
   display: grid;
@@ -447,7 +447,7 @@ function clearPoint() {
 }
 
 .health-line-chart-grid-line {
-  stroke: rgba(243, 223, 207, 0.95);
+  stroke: var(--chart-grid);
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
 }
@@ -497,7 +497,7 @@ function clearPoint() {
   border: 1px dashed var(--border);
   border-radius: 22px;
   color: var(--muted);
-  background: rgba(255, 250, 243, 0.58);
+  background: var(--empty-bg);
   text-align: center;
   padding: 24px;
 }

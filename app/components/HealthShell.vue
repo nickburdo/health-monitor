@@ -41,16 +41,19 @@ function isActive(path: string) {
             :key="item.path"
             :to="item.path"
             :data-active="isActive(item.path)"
+            :aria-label="item.label"
+            :title="item.label"
           >
             <UIcon
               :name="item.icon"
               class="nav-icon nav-icon-large"
             />
-            <span>{{ item.label }}</span>
+            <span class="health-nav-label">{{ item.label }}</span>
           </NuxtLink>
         </nav>
 
         <div class="health-actions">
+          <ThemeToggle />
           <button
             type="button"
             class="health-button"

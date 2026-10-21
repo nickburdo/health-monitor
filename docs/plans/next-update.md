@@ -15,3 +15,4 @@
 ## Step 2:
 
 1. Сделать PWA.
+2. [x] Тёмная тема и переключатель светлой/тёмной темы в шапке. План: [`docs/plans/dark-theme-plan.md`](../plans/dark-theme-plan.md).

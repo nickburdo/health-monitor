@@ -17,8 +17,6 @@ logs
 .DS_Store
 .fleet
 .idea
-AGENTS.md
-AGENTS.md
 
 # Local env files
 .env

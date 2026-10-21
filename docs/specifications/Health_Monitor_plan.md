@@ -104,6 +104,10 @@
   - glucose, pressure и weight через общий `HealthLineChart`;
   - symptoms через отдельную frequency-панель;
 - [x] фильтры периода.
+- [x] кнопки «Load demo data» и «Clear database» рядом с экспортом/импортом JSON.
+  - справа в строке `DashboardDataActions`, с `window.confirm` и toast;
+  - замена на демо и очистка работают в одной транзакции (`replaceWithDemoData`, `clearHealthMonitorData` в `seed.ts`);
+  - автосид только при первом открытии: флаг `demoSeeded` в новой таблице `meta` (схема `version(2)`).
 
 ### Этап 9. Полировка
 

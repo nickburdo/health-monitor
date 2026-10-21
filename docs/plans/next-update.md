@@ -16,3 +16,4 @@
 
 1. Сделать PWA.
 2. [x] Тёмная тема и переключатель светлой/тёмной темы в шапке. План: [`docs/plans/dark-theme-plan.md`](../plans/dark-theme-plan.md).
+3. [x] Кнопки «Load demo data» и «Clear database» на дашборде рядом с экспортом/импортом JSON. План: [`docs/plans/demo-data-actions-plan.md`](../plans/demo-data-actions-plan.md).

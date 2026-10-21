@@ -1312,6 +1312,20 @@ select {
   margin-top: 26px;
 }
 
+.health-dashboard-data-actions {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.health-dashboard-data-actions-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .health-dashboard-summary {
   display: flex;
   flex-direction: column;

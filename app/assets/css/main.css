@@ -1434,6 +1434,13 @@ select {
   }
 }
 
+/* Icons only, so the nav still fits next to the brand and the header actions */
+@media (max-width: 1000px) {
+  .health-nav-label {
+    display: none;
+  }
+}
+
 @media (max-width: 900px) {
   .health-header-inner {
     grid-template-columns: auto minmax(0, 1fr) auto;
@@ -1470,11 +1477,6 @@ select {
   .health-nav a {
     padding: 9px 11px;
     font-size: 13px;
-  }
-
-  /* Icons only, so the nav still fits next to the header actions */
-  .health-nav-label {
-    display: none;
   }
 
   .health-button {

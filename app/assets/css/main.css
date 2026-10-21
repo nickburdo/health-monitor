@@ -23,7 +23,7 @@
   --surface-soft: #fffaf3;
   --surface-strong: #fff4e8;
   --primary: #f97316;
-  --primary-dark: #ea580c;
+  --primary-strong: #ea580c;
   --primary-soft: #ffedd5;
   --text: #2f2a26;
   --muted: #81736a;
@@ -72,7 +72,7 @@
   --shadow-tab: 0 12px 28px rgba(249, 115, 22, 0.12);
   --shadow-modal: 0 24px 80px rgba(47, 42, 38, 0.22);
   --shadow-footer: 0 16px 40px rgba(124, 45, 18, 0.16);
-  --chart-glucose-fasting: #fb923c;
+  --chart-glucose-fasting: var(--glucose);
   --chart-glucose-after-meal: #ea580c;
   --chart-pressure-systolic: #3b82f6;
   --chart-pressure-diastolic: #1d4ed8;
@@ -85,7 +85,6 @@
   --symptoms-fill-from: #3b82f6;
   --symptoms-fill-to: #60a5fa;
   --shadow-symptoms-fill: 0 6px 16px rgba(59, 130, 246, 0.24);
-  color-scheme: light;
   --radius-xl: 28px;
   --radius-lg: 20px;
   --radius-md: 16px;
@@ -99,7 +98,7 @@
   --surface-soft: #2f2a27;
   --surface-strong: #352f2b;
   --primary: #fb923c;
-  --primary-dark: #fdba74;
+  --primary-strong: #fdba74;
   --primary-soft: #3a2516;
   --text: #f3ece6;
   --muted: #a8998e;
@@ -107,9 +106,6 @@
   --shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   --shadow-soft: 0 12px 36px rgba(0, 0, 0, 0.22);
   --glucose: #fdba74;
-  --pressure: #93c5fd;
-  --weight: #86efac;
-  --symptoms: #c4b5fd;
   --danger-soft: #3f1d1d;
   --danger: #f87171;
   --primary-light: #fdba74;
@@ -126,7 +122,6 @@
   --metric-bg: rgba(47, 42, 39, 0.88);
   --trend-from: rgba(47, 42, 39, 0.8);
   --trend-to: rgba(58, 37, 22, 0.45);
-  --bar-end: #fdba74;
   --overlay: rgba(0, 0, 0, 0.6);
   --modal-border: rgba(61, 53, 48, 0.9);
   --modal-glow: rgba(251, 146, 60, 0.1);
@@ -148,11 +143,10 @@
   --shadow-tab: 0 12px 28px rgba(251, 146, 60, 0.08);
   --shadow-modal: 0 24px 80px rgba(0, 0, 0, 0.5);
   --shadow-footer: 0 16px 40px rgba(0, 0, 0, 0.4);
-  --chart-glucose-fasting: #fdba74;
   --chart-glucose-after-meal: #fb923c;
-  --chart-pressure-systolic: #93c5fd;
+  --chart-pressure-systolic: var(--pressure);
   --chart-pressure-diastolic: #60a5fa;
-  --chart-weight: #86efac;
+  --chart-weight: var(--weight);
   --chart-grid: rgba(61, 53, 48, 0.95);
   --tooltip-bg: rgba(47, 42, 39, 0.98);
   --shadow-tooltip: 0 18px 40px rgba(0, 0, 0, 0.4);
@@ -301,7 +295,7 @@ select {
 }
 
 .health-nav a[data-active='true'] {
-  color: var(--primary-dark);
+  color: var(--primary-strong);
   background: var(--primary-soft);
 }
 
@@ -341,18 +335,23 @@ select {
   opacity: 0.96;
 }
 
+/* Shared base for round bordered icon buttons */
+.health-icon-button,
+.health-modal-close {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
 .health-icon-button {
   display: inline-grid;
   place-items: center;
   flex: 0 0 auto;
   width: 44px;
   height: 44px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
   background: var(--nav-bg);
-  color: var(--muted);
   box-shadow: var(--shadow-nav);
-  cursor: pointer;
   transition:
     transform 180ms ease,
     color 180ms ease;
@@ -364,7 +363,7 @@ select {
 }
 
 .health-icon-button:focus-visible {
-  outline: 2px solid var(--focus-ring);
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
 
@@ -409,7 +408,7 @@ select {
   padding: 8px 12px;
   border-radius: 999px;
   background: var(--primary-soft);
-  color: var(--primary-dark);
+  color: var(--primary-strong);
   font-size: 13px;
   font-weight: 850;
 }
@@ -668,7 +667,7 @@ select {
   padding: 7px 10px;
   border-radius: 999px;
   background: var(--primary-soft);
-  color: var(--primary-dark);
+  color: var(--primary-strong);
   font-weight: 850;
   font-size: 12px;
 }
@@ -726,13 +725,9 @@ select {
 .health-modal-close {
   width: 42px;
   height: 42px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
   background: var(--control-bg);
-  color: var(--muted);
   font-size: 24px;
   line-height: 1;
-  cursor: pointer;
 }
 
 .health-modal-switcher {
@@ -1429,7 +1424,7 @@ select {
 }
 
 .health-footer a[data-active='true'] {
-  color: var(--primary-dark);
+  color: var(--primary-strong);
   background: var(--primary-soft);
 }
 
@@ -1475,6 +1470,11 @@ select {
   .health-nav a {
     padding: 9px 11px;
     font-size: 13px;
+  }
+
+  /* Icons only, so the nav still fits next to the header actions */
+  .health-nav-label {
+    display: none;
   }
 
   .health-button {

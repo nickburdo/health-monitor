@@ -10,6 +10,7 @@ type ChartRow = Record<
 };
 
 type ChartSeries = {
+  // Any CSS color, usually a theme token such as var(--chart-weight); not guaranteed to be hex
   color: string;
   key: string;
   label: string;

@@ -75,7 +75,7 @@ function isActive(path: string) {
       @entry-created="() => reloadNuxtApp({ persistState: false, path: route.path })"
     />
 
-    <footer
+    <nav
       class="health-footer"
       aria-label="Mobile navigation"
     >
@@ -85,14 +85,17 @@ function isActive(path: string) {
           :key="item.path"
           :to="item.path"
           :data-active="isActive(item.path)"
+          :aria-label="item.label"
+          :title="item.label"
         >
           <UIcon
             :name="item.icon"
             class="nav-icon"
+            aria-hidden="true"
           />
         </NuxtLink>
       </div>
-    </footer>
+    </nav>
   </div>
 </template>
 

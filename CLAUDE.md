@@ -61,5 +61,6 @@ Styling is custom `.health-*` classes in `app/assets/css/main.css`; Nuxt UI comp
 
 - The UI copy is English; project documentation in `docs/` is Russian.
 - Messages to the user go through `useToast()`, not `alert`.
+- Confirmations go through `await useConfirm().confirm({...})` (rendered once by `ConfirmDialog` in `HealthShell`), not `window.confirm`.
 - Spec: `docs/specifications/Health_Monitor_Structure.md`; stage plan with a done-log: `docs/specifications/Health_Monitor_plan.md`; backlog: `docs/specifications/Health_Monitor_BACKLOG.md`.
 - Implementation plans, one per task, live in `docs/plans/` (roadmap in `docs/plans/next-update.md`).

@@ -105,7 +105,7 @@
   - symptoms через отдельную frequency-панель;
 - [x] фильтры периода.
 - [x] кнопки «Load demo data» и «Clear database» рядом с экспортом/импортом JSON.
-  - справа в строке `DashboardDataActions`, с `window.confirm` и toast; общий флаг `busy` блокирует Import JSON, Load demo data и Clear database, пока идёт любая из этих операций;
+  - справа в строке `DashboardDataActions`, с диалогом подтверждения `useConfirm` и toast; общий флаг `busy` блокирует Import JSON, Load demo data и Clear database, пока идёт любая из этих операций;
   - замена на демо и очистка работают в одной транзакции (`replaceWithDemoData`, `clearHealthMonitorData` в `seed.ts`); очистка в той же транзакции ставит флаг `demoSeeded`, поэтому база остаётся пустой после перезагрузки;
   - автосид только при первом открытии: флаг `demoSeeded` в новой таблице `meta` (схема `version(2)`); автосид повторно проверяет флаг и пустоту таблиц внутри транзакции и только добавляет записи, без `clear()`.
 
@@ -146,3 +146,8 @@
 - [x] the app UI is now fully translated to English, including the dashboard, measurement pages, modals, filters, and toast copy.
 - [x] dark theme: all UI colors (including chart series and the symptoms panel) now come from CSS tokens in `main.css`, a warm graphite palette overrides them in `:root.dark`, and a sun/moon `ThemeToggle` in the header switches light/dark via `useColorMode` (first visit follows the OS, the choice is saved in localStorage). Plan: `docs/plans/dark-theme-plan.md`.
 - [x] mobile footer navigation accessibility: the footer is now a `<nav>` landmark, its icon-only links get `aria-label`/`title` with the section name, and the icons are `aria-hidden`; an empty `@media (max-width: 768px)` block was removed from `main.css`.
+- [x] собственный диалог подтверждения (`ConfirmDialog` + `useConfirm`) вместо `window.confirm` для Import JSON, Load demo data и Clear database. План: `docs/plans/confirm-dialog-plan.md`.
+  - `useConfirm().confirm({ title, message, confirmLabel, danger })` возвращает `Promise<boolean>`; состояние в `useState`, новый вызов при открытом диалоге отменяет предыдущий;
+  - `ConfirmDialog` монтируется в `HealthShell`, собран на классах `.health-modal*` с узким вариантом `.health-modal-compact` (480px); Escape, клик по фону и крестик = Cancel; при открытии фокус на Cancel, после закрытия возвращается на кнопку-открыватель; при уходе со страницы открытый диалог отменяется;
+  - красная кнопка `.health-button-danger` на токенах `--danger` / `--on-danger` (обе темы); `.health-modal-buttons` прижаты вправо через `margin-left: auto`;
+  - правило «подтверждения через `useConfirm`, не `window.confirm`» добавлено в `CLAUDE.md`; focus trap для всех модалок вынесен в бэклог.

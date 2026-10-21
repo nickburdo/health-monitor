@@ -75,6 +75,8 @@ function isActive(path: string) {
       @entry-created="() => reloadNuxtApp({ persistState: false, path: route.path })"
     />
 
+    <ConfirmDialog />
+
     <nav
       class="health-footer"
       aria-label="Mobile navigation"

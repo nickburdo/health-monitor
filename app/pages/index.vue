@@ -123,7 +123,7 @@ useSeoMeta({
       </div>
 
       <DashboardSummaryPanel :data="dashboardData" />
-      <DashboardDataActions @imported="refresh" />
+      <DashboardDataActions @changed="refresh" />
     </section>
 
     <DashboardMetricsGrid :data="dashboardData" />

@@ -36,6 +36,7 @@
   --symptoms: #c4b5fd;
   --danger-soft: #fee2e2;
   --danger: #dc2626;
+  --on-danger: #ffffff;
   --primary-light: #fb923c;
   --on-primary: white;
   --control-bg: white;
@@ -108,6 +109,7 @@
   --glucose: #fdba74;
   --danger-soft: #3f1d1d;
   --danger: #f87171;
+  --on-danger: #1f1111;
   --primary-light: #fdba74;
   --on-primary: #1c1917;
   --control-bg: #2a2522;
@@ -841,6 +843,7 @@ select {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-left: auto;
 }
 
 .health-auth-divider {
@@ -883,6 +886,17 @@ select {
 .health-button-small {
   padding: 9px 12px;
   font-size: 13px;
+}
+
+.health-button-danger,
+.health-button-danger:hover {
+  background: var(--danger);
+  color: var(--on-danger);
+  box-shadow: none;
+}
+
+.health-modal-compact {
+  width: min(480px, 100%);
 }
 
 .health-button:disabled {

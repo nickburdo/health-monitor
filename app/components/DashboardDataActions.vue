@@ -11,6 +11,7 @@ const emit = defineEmits<{
 }>();
 
 const toast = useToast();
+const { confirm } = useConfirm();
 const fileInput = ref<HTMLInputElement | null>(null);
 const importing = ref(false);
 // Shared lock: import, demo load and clear all replace the whole database.
@@ -33,9 +34,12 @@ async function handleFileChange(event: Event) {
     return;
   }
 
-  const confirmed = window.confirm(
-    'Importing will replace all local data with the contents of this file. Continue?',
-  );
+  const confirmed = await confirm({
+    title: 'Import data',
+    message: 'Importing will replace all local data with the contents of this file.',
+    confirmLabel: 'Replace data',
+    danger: true,
+  });
 
   if (!confirmed) {
     input.value = '';
@@ -67,9 +71,12 @@ async function handleFileChange(event: Event) {
 }
 
 async function loadDemoData() {
-  const confirmed = window.confirm(
-    'Loading demo data will replace all local data. Continue?',
-  );
+  const confirmed = await confirm({
+    title: 'Load demo data',
+    message: 'Loading demo data will replace all local data.',
+    confirmLabel: 'Load demo data',
+    danger: true,
+  });
 
   if (!confirmed) {
     return;
@@ -94,9 +101,12 @@ async function loadDemoData() {
 }
 
 async function clearData() {
-  const confirmed = window.confirm(
-    'This will permanently delete all local data. Continue?',
-  );
+  const confirmed = await confirm({
+    title: 'Clear database',
+    message: 'This will permanently delete all local data.',
+    confirmLabel: 'Delete all data',
+    danger: true,
+  });
 
   if (!confirmed) {
     return;

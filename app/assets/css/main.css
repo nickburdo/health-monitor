@@ -91,6 +91,78 @@
   --radius-md: 16px;
 }
 
+/* Dark theme: warm graphite palette, applied by @nuxtjs/color-mode via the .dark class on <html> */
+:root.dark {
+  color-scheme: dark;
+  --bg: #1c1917;
+  --surface: #262220;
+  --surface-soft: #2f2a27;
+  --surface-strong: #352f2b;
+  --primary: #fb923c;
+  --primary-dark: #fdba74;
+  --primary-soft: #3a2516;
+  --text: #f3ece6;
+  --muted: #a8998e;
+  --border: #3d3530;
+  --shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  --shadow-soft: 0 12px 36px rgba(0, 0, 0, 0.22);
+  --glucose: #fdba74;
+  --pressure: #93c5fd;
+  --weight: #86efac;
+  --symptoms: #c4b5fd;
+  --danger-soft: #3f1d1d;
+  --danger: #f87171;
+  --primary-light: #fdba74;
+  --on-primary: #1c1917;
+  --control-bg: #2a2522;
+  --body-glow-left: rgba(251, 146, 60, 0.1);
+  --body-glow-right: rgba(147, 197, 253, 0.06);
+  --header-bg: rgba(28, 25, 23, 0.78);
+  --header-border: rgba(61, 53, 48, 0.7);
+  --nav-bg: rgba(38, 34, 32, 0.78);
+  --panel-bg: rgba(38, 34, 32, 0.86);
+  --panel-soft-from: rgba(58, 37, 22, 0.7);
+  --panel-soft-to: rgba(38, 34, 32, 0.9);
+  --metric-bg: rgba(47, 42, 39, 0.88);
+  --trend-from: rgba(47, 42, 39, 0.8);
+  --trend-to: rgba(58, 37, 22, 0.45);
+  --bar-end: #fdba74;
+  --overlay: rgba(0, 0, 0, 0.6);
+  --modal-border: rgba(61, 53, 48, 0.9);
+  --modal-glow: rgba(251, 146, 60, 0.1);
+  --modal-bg: rgba(38, 34, 32, 0.98);
+  --input-inset: rgba(255, 255, 255, 0.03);
+  --focus-ring: rgba(251, 146, 60, 0.28);
+  --focus-border: rgba(251, 146, 60, 0.55);
+  --summary-bg: rgba(47, 42, 39, 0.8);
+  --summary-row-bg: rgba(47, 42, 39, 0.74);
+  --ignored-row-bg: rgba(47, 42, 39, 0.45);
+  --ignored-text: rgba(168, 153, 142, 0.82);
+  --ignored-note: rgba(168, 153, 142, 0.7);
+  --footer-bg: rgba(28, 25, 23, 0.92);
+  --shadow-header: 0 12px 34px rgba(0, 0, 0, 0.25);
+  --shadow-nav: 0 8px 30px rgba(0, 0, 0, 0.2);
+  --shadow-mark: 0 10px 30px rgba(251, 146, 60, 0.22);
+  --shadow-button: 0 14px 30px rgba(251, 146, 60, 0.18);
+  --shadow-button-hover: 0 16px 34px rgba(251, 146, 60, 0.24);
+  --shadow-tab: 0 12px 28px rgba(251, 146, 60, 0.08);
+  --shadow-modal: 0 24px 80px rgba(0, 0, 0, 0.5);
+  --shadow-footer: 0 16px 40px rgba(0, 0, 0, 0.4);
+  --chart-glucose-fasting: #fdba74;
+  --chart-glucose-after-meal: #fb923c;
+  --chart-pressure-systolic: #93c5fd;
+  --chart-pressure-diastolic: #60a5fa;
+  --chart-weight: #86efac;
+  --chart-grid: rgba(61, 53, 48, 0.95);
+  --tooltip-bg: rgba(47, 42, 39, 0.98);
+  --shadow-tooltip: 0 18px 40px rgba(0, 0, 0, 0.4);
+  --empty-bg: rgba(47, 42, 39, 0.5);
+  --symptoms-track: rgba(147, 197, 253, 0.12);
+  --symptoms-fill-from: #60a5fa;
+  --symptoms-fill-to: #93c5fd;
+  --shadow-symptoms-fill: 0 6px 16px rgba(96, 165, 250, 0.18);
+}
+
 * {
   box-sizing: border-box;
 }

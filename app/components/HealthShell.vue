@@ -51,6 +51,7 @@ function isActive(path: string) {
         </nav>
 
         <div class="health-actions">
+          <ThemeToggle />
           <button
             type="button"
             class="health-button"

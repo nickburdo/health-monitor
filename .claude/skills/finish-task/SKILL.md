@@ -13,7 +13,7 @@ Run this once, after every task of the approved plan is implemented (not after e
    - fixes are a plan revision: add them to the plan as a new task (for chore / docs without a plan file, list them in the chat);
    - before fixing, save the list of findings being fixed and the files each fix touches, and copy those files to the scratchpad as a snapshot; then implement the fixes;
    - rerun lint and typecheck, and rerun the browser check if the fixes touch UI;
-   - review the fixes: the `code-review` skill at level `low` in a `general-purpose` subagent, with the same rules as in step 2, scoped to the saved list of fixes and diffed against the snapshot. This review runs once: report its findings the same way (fix now, backlog or reject). Fixes made for them still get lint, typecheck and, if they touch UI, the browser check; only the review is not repeated. Name them in the report;
+   - review the fixes: a `low`-level review by hand in a `general-purpose` subagent, with the same rules as in step 2, scoped to the saved list of fixes: `git diff --no-index` of each file against its snapshot (the `code-review` skill reviews the whole branch diff and cannot be scoped to a snapshot). This review runs once: report its findings the same way (fix now, backlog or reject). Fixes made for them still get lint, typecheck and, if they touch UI, the browser check; only the review is not repeated. Name them in the report;
    - add backlog items to `docs/specifications/Health_Monitor_BACKLOG.md`;
    - continue with step 4.
 4. **feat / fix only** (chore / docs have no done-log items; skip to step 6):

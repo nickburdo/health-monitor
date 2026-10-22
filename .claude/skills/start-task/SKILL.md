@@ -18,6 +18,7 @@ When the user asks for new work:
      - add an unchecked item to the chosen stage in `docs/specifications/Health_Monitor_plan.md`.
    - **chore / docs:** write a short plan in the chat (steps, files, what is not covered), ending with finish-task: code review and, if UI is touched, a browser check with the scenarios to cover. Create no plan files. Exception: if the implementation is postponed to another session, save the plan to `docs/plans/<short-name>-plan.md` from [plan-template.md](plan-template.md), without items in `next-update.md` and `Health_Monitor_plan.md`: delete the template lines about these two files (in Задача 0 and in the final task). If an approved chat plan is postponed later, save it to the file at that moment, with its approval status.
    - Every task that changes `CLAUDE.md` or `docs/` has a `**Зачем:**` line with one sentence on why the change is needed.
+   - Every risky task (app logic, data, hooks, or other risky changes) is marked `**Остановка:** да`, in chat plans too; execution stops after it for the user's confirmation.
 6. Report to the user in Russian and stop. List any open proposals that need an explicit answer.
 7. After the user approves, set the plan status to `✅ Одобрен пользователем <YYYY-MM-DD>` (plans saved to a file only).
 

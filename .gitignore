@@ -29,3 +29,6 @@ prisma/dev.db-journal
 
 # Playwright MCP browser check artifacts
 .playwright-mcp/
+
+# Claude Code personal settings
+.claude/settings.local.json

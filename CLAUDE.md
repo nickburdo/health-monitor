@@ -8,6 +8,7 @@ Health Monitor is a personal web app for tracking glucose, blood pressure, weigh
 
 - Write user questions and work reports in Russian.
 - Start tasks with the `start-task` skill and close them with `finish-task`.
+- A `PreToolUse` hook (`.claude/hooks/block-edits-on-main.mjs`, registered in `.claude/settings.json`) blocks Edit/Write/NotebookEdit on project files while the branch is `main`; files outside the project and git-ignored files are allowed. For an urgent edit on `main`, ask the user before temporarily removing the hook from `.claude/settings.json`, and restore it right after.
 
 ## Commands
 

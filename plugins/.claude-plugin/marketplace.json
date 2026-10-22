@@ -1,0 +1,11 @@
+{
+  "name": "health-monitor-practice",
+  "owner": { "name": "Mykola Burdo" },
+  "plugins": [
+    {
+      "name": "hello-plugin",
+      "source": "./hello-plugin",
+      "description": "Practice plugin: a single skill that summarizes the current git state."
+    }
+  ]
+}

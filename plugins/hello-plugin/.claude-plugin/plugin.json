@@ -1,0 +1,5 @@
+{
+  "name": "hello-plugin",
+  "description": "Practice plugin: a single skill that summarizes the current git state.",
+  "version": "0.1.0"
+}

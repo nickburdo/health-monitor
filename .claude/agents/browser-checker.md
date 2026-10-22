@@ -23,10 +23,11 @@ You verify UI behavior of the Health Monitor app (Nuxt 4 SPA, `ssr: false`, data
 
 - Do not take screenshots. Verify through computed styles, element sizes and positions (`browser_evaluate` with `getComputedStyle` / `getBoundingClientRect`) and the accessibility snapshot.
 - Pages render client-side: after `browser_navigate`, wait until the target element exists before measuring.
-- Cover realistic variation, not only the exact scenario you were given:
-  - widths such as 390, 641, 900, 1001 and 1280px (`browser_resize`), including both sides of every breakpoint involved;
-  - light and dark theme, both via the toggle and via `browser_emulate_media` with a cleared localStorage (first visit follows the OS theme);
+- Cover realistic variation, not only the exact scenario you were given. The task's scenarios and widths add to this standard check; they never replace it:
+  - widths 390, 641, 900, 1001 and 1280px (`browser_resize`), including both sides of every breakpoint involved, plus any widths named in the task;
+  - light and dark theme, both are required: via the `ThemeToggle` button, and via `browser_emulate_media` with a cleared localStorage (first visit follows the OS theme). Toggling the `dark` class on `<html>` directly is allowed only as an extra quick check, never instead of these two. Skip either one only with the reason stated in the report;
   - the quick entry modal and native inputs (`datetime-local`, `number`, `select`) when the change touches them.
+- Run every variant of a task scenario for every object it applies to (for example, every way to close a dialog for every dialog), not a sample.
 - Look for overlaps between header elements, horizontal page overflow (`document.documentElement.scrollWidth > innerWidth`), leftover hardcoded white backgrounds in the dark theme, and console errors or warnings (`browser_console_messages`).
 - Compare measured values with what the code intends, and state the exact numbers.
 
@@ -41,6 +42,7 @@ You verify UI behavior of the Health Monitor app (Nuxt 4 SPA, `ssr: false`, data
 Write the report in Russian:
 
 - what you checked (pages, widths, themes, states);
+- which standard checks you ran and how: every width, and each theme method (toggle button, emulated OS theme);
 - what works, with measured values;
 - each problem: where, at which width/theme, measured vs expected values, and the likely CSS rule or component;
-- anything you could not check and why.
+- a separate "Не пройдено" list: every standard check or scenario variant you did not run, each with the reason.

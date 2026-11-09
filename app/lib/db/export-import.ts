@@ -1,11 +1,13 @@
+import { normalizeGlucoseMeasurement } from '~/lib/db/glucose-units';
 import { healthDb } from '~/lib/db/schema';
 import type { BloodPressureMeasurement } from '~/types/blood-pressure';
 import type { GlucoseMeasurement } from '~/types/glucose';
 import type { SymptomEntry } from '~/types/symptom';
 import type { WeightMeasurement } from '~/types/weight';
 
+// Version 1 files may hold glucose in mg/dL; version 2 files are always mmol/L
 export type HealthMonitorExport = {
-  version: 1;
+  version: 1 | 2;
   exportedAt: string;
   data: {
     glucoseMeasurement: GlucoseMeasurement[];
@@ -25,7 +27,7 @@ export async function exportHealthMonitorData(): Promise<HealthMonitorExport> {
     ]);
 
   return {
-    version: 1,
+    version: 2,
     exportedAt: new Date().toISOString(),
     data: { glucoseMeasurement, bloodPressureMeasurement, weightMeasurement, symptomEntry },
   };
@@ -49,9 +51,13 @@ export async function importHealthMonitorData(file: File): Promise<void> {
   const text = await file.text();
   const parsed = JSON.parse(text) as HealthMonitorExport;
 
-  if (parsed.version !== 1 || !parsed.data) {
+  if ((parsed.version !== 1 && parsed.version !== 2) || !parsed.data) {
     throw new Error('Unsupported export file format');
   }
+
+  const glucoseMeasurement = parsed.version === 1
+    ? parsed.data.glucoseMeasurement.map(normalizeGlucoseMeasurement)
+    : parsed.data.glucoseMeasurement;
 
   await healthDb.transaction(
     'rw',
@@ -70,7 +76,7 @@ export async function importHealthMonitorData(file: File): Promise<void> {
       ]);
 
       await Promise.all([
-        healthDb.glucoseMeasurement.bulkAdd(parsed.data.glucoseMeasurement),
+        healthDb.glucoseMeasurement.bulkAdd(glucoseMeasurement),
         healthDb.bloodPressureMeasurement.bulkAdd(parsed.data.bloodPressureMeasurement),
         healthDb.weightMeasurement.bulkAdd(parsed.data.weightMeasurement),
         healthDb.symptomEntry.bulkAdd(parsed.data.symptomEntry),

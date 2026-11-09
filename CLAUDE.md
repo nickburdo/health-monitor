@@ -47,10 +47,11 @@ Static site on Cloudflare Pages, project `health-monitor-new`, connected to the 
 ### Data layer (`app/lib/db/`)
 
 - `schema.ts` defines the Dexie database `health-monitor` with four data tables: `glucoseMeasurement`, `bloodPressureMeasurement`, `weightMeasurement`, `symptomEntry`, plus a `meta` key-value table (`version(2)`). Record types live in `app/types/*.ts` and double as table row types.
+- Glucose is stored and shown in mmol/L exactly as entered; never convert it for display. `glucose-units.ts` holds the only conversion: values `> 30` are treated as legacy mg/dL and divided by 18 (rounded to 0.1). It runs in the `version(3)` upgrade (no index changes) and on import of `version: 1` JSON files. Quick entry rejects glucose above `MAX_GLUCOSE_MMOL_L` (30).
 - `repositories/*Repository.ts` provide per-entity access: `list*` (loads the table and filters by an ISO `dateFrom`/`dateTo` range in memory), `create*` (IDs via `crypto.randomUUID()`), and `set*Ignore` for measurements / note updates for symptoms.
 - Input parsing and the ignore rule live in `validation.ts`: ignoring a measurement requires a `reason`; restoring clears it.
 - `seed.ts` + `app/plugins/seed-demo-data.client.ts`: auto-seed from `public/data/demo.json` runs only on the very first open, guarded by the `demoSeeded` flag in `meta`; it only adds records and never clears. `seed.ts` also provides `replaceWithDemoData` and `clearHealthMonitorData` for the dashboard's Load demo data / Clear database buttons (both set the flag, so a cleared DB stays empty after reload). Demo dates are stored as `daysAgo` offsets and resolved at seed time.
-- `export-import.ts`: whole-DB JSON export/import (import is replace-all inside a transaction, format `version: 1`). `csv.ts`: per-entity CSV export from each entity page.
+- `export-import.ts`: whole-DB JSON export/import (import is replace-all inside a transaction; export writes `version: 2`, import accepts `1` and `2`). `csv.ts`: per-entity CSV export from each entity page.
 
 ### Pages and data flow
 

@@ -18,3 +18,4 @@
 2. [x] Тёмная тема и переключатель светлой/тёмной темы в шапке. План: [`docs/plans/dark-theme-plan.md`](../plans/dark-theme-plan.md).
 3. [x] Кнопки «Load demo data» и «Clear database» на дашборде рядом с экспортом/импортом JSON. План: [`docs/plans/demo-data-actions-plan.md`](../plans/demo-data-actions-plan.md).
 4. [x] Собственный диалог подтверждения в стиле приложения вместо `window.confirm`. План: [`docs/plans/confirm-dialog-plan.md`](../plans/confirm-dialog-plan.md).
+5. [x] Глюкоза в mmol/L без пересчётов: убрать деление на 18, перевести старые данные из mg/dL в mmol/L. План: [`docs/plans/glucose-mmol-units-plan.md`](../plans/glucose-mmol-units-plan.md).

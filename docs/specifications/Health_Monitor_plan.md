@@ -116,6 +116,11 @@
 - обработка ошибок;
 - уведомления;
 - адаптивность;
+- [x] глюкоза хранится и показывается в mmol/L без деления на 18; старые записи в mg/dL переводятся миграцией `version(3)` и при импорте JSON (план: `docs/plans/glucose-mmol-units-plan.md`).
+  - единственный перевод — `app/lib/db/glucose-units.ts`: значение `> 30` считается mg/dL, делится на 18 и округляется до 0.1; миграция Dexie `version(3)` без смены индексов применяет его к уже сохранённым записям;
+  - экспорт JSON пишет `version: 2`; импорт принимает `1` и `2`, перевод из mg/dL только для `version: 1`, поэтому реальные значения выше 30 mmol/L не портятся при экспорте/импорте;
+  - быстрый ввод не сохраняет глюкозу выше 30 и показывает toast «Glucose must be in mmol/L» (без `max` у полей, чтобы нативная валидация не перехватывала отправку);
+  - демо-данные (`scripts/generate-demo-data.mjs`, `public/data/demo.json`) переведены в mmol/L.
 - [x] quick entry и note-поля теперь нормализуют значения до trim, поэтому создание записи не падает на нестроковом вводе.
 - [x] ignore dialogs for glucose, blood pressure, and weight now require reason and send PATCH with `ignore: true`.
 - [x] restore actions for glucose, blood pressure, and weight now run without confirmation and send PATCH with `ignore: false`.

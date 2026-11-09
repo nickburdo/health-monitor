@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { SYMPTOM_OPTIONS } from '~/constants/symptom-options';
-import { MAX_GLUCOSE_MMOL_L } from '~/lib/db/glucose-units';
-import { createGlucoseMeasurement } from '~/lib/db/repositories/glucoseRepository';
-import { createBloodPressureMeasurement } from '~/lib/db/repositories/bloodPressureRepository';
-import { createWeightMeasurement } from '~/lib/db/repositories/weightRepository';
-import { createSymptomEntry } from '~/lib/db/repositories/symptomRepository';
+import { MAX_GLUCOSE_MMOL_L } from '~/constants/glucose';
+import { apiErrorDescription } from '~/lib/api/client';
+import { createGlucoseMeasurement } from '~/lib/api/glucose';
+import { createBloodPressureMeasurement } from '~/lib/api/blood-pressure';
+import { createWeightMeasurement } from '~/lib/api/weight';
+import { createSymptomEntry } from '~/lib/api/symptoms';
 
 type EntryType = 'glucose' | 'bloodPressure' | 'weight' | 'symptom';
 
@@ -105,16 +106,18 @@ function parseOptionalNumber(value: unknown) {
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
+function isWholeNumberInRange(value: number | undefined, min: number, max = Number.MAX_SAFE_INTEGER): value is number {
+  return value !== undefined && Number.isInteger(value) && value >= min && value <= max;
+}
+
 function toIsoDateTime(value: string) {
   return new Date(value).toISOString();
 }
 
-function errorMessage(error: unknown) {
-  if (error instanceof Error && error.message) {
-    return error.message;
-  }
-
-  return 'Could not save the entry';
+// The API rejects empty notes: send a trimmed note or nothing.
+function optionalNote(value: unknown) {
+  const trimmed = String(value ?? '').trim();
+  return trimmed.length > 0 ? trimmed : undefined;
 }
 
 async function submit() {
@@ -138,6 +141,15 @@ async function submit() {
         return;
       }
 
+      if (fastingValue !== undefined && afterMealValue !== undefined) {
+        toast.add({
+          title: 'Enter only one glucose value',
+          description: 'A reading is either fasting or after meal.',
+          color: 'error',
+        });
+        return;
+      }
+
       if ([fastingValue, afterMealValue].some(value => value !== undefined && value > MAX_GLUCOSE_MMOL_L)) {
         toast.add({
           title: 'Glucose must be in mmol/L',
@@ -151,7 +163,7 @@ async function submit() {
         measuredAt: toIsoDateTime(form.glucose.measuredAt),
         fastingValue,
         afterMealValue,
-        note: form.glucose.note || undefined,
+        note: optionalNote(form.glucose.note),
       });
     }
 
@@ -160,10 +172,14 @@ async function submit() {
       const diastolic = parseOptionalNumber(form.bloodPressure.diastolic);
       const pulse = parseOptionalNumber(form.bloodPressure.pulse);
 
-      if (systolic === undefined && diastolic === undefined && pulse === undefined) {
+      if (
+        !isWholeNumberInRange(systolic, 1)
+        || !isWholeNumberInRange(diastolic, 1)
+        || !isWholeNumberInRange(pulse, 1)
+      ) {
         toast.add({
-          title: 'At least one value is required',
-          description: 'Enter blood pressure or pulse.',
+          title: 'Enter systolic, diastolic and pulse',
+          description: 'All three are required as whole numbers.',
           color: 'error',
         });
         return;
@@ -174,7 +190,7 @@ async function submit() {
         systolic,
         diastolic,
         pulse,
-        note: form.bloodPressure.note || undefined,
+        note: optionalNote(form.bloodPressure.note),
       });
     }
 
@@ -193,18 +209,26 @@ async function submit() {
       await createWeightMeasurement({
         measuredAt: toIsoDateTime(form.weight.measuredAt),
         value,
-        note: form.weight.note || undefined,
+        note: optionalNote(form.weight.note),
       });
     }
 
     if (activeType.value === 'symptom') {
       const intensity = parseOptionalNumber(form.symptom.intensity);
 
+      if (!isWholeNumberInRange(intensity, 1, 10)) {
+        toast.add({
+          title: 'Intensity must be a whole number from 1 to 10',
+          color: 'error',
+        });
+        return;
+      }
+
       await createSymptomEntry({
         happenedAt: toIsoDateTime(form.symptom.happenedAt),
         type: form.symptom.type,
         intensity,
-        note: form.symptom.note || undefined,
+        note: optionalNote(form.symptom.note),
       });
     }
 
@@ -217,11 +241,18 @@ async function submit() {
     emit('entryCreated');
     closeModal();
   } catch (error) {
-    toast.add({
-      title: 'Save failed',
-      description: errorMessage(error),
-      color: 'error',
-    });
+    const message = apiErrorDescription(error, 'Could not save the entry');
+
+    if (message === null) {
+      // The client already opened the guest prompt or reset the session.
+      closeModal();
+    } else {
+      toast.add({
+        title: 'Save failed',
+        description: message,
+        color: 'error',
+      });
+    }
   } finally {
     saving.value = false;
   }

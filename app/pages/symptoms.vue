@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import DashboardSymptomsPanel from '~/components/DashboardSymptomsPanel.vue';
 import type { SymptomEntry } from '~/types/symptom';
-import { listSymptomEntries } from '~/lib/db/repositories/symptomRepository';
-import { downloadCsv, toCsv } from '~/lib/db/csv';
+import { listSymptomEntries } from '~/lib/api/symptoms';
+import { downloadCsv, toCsv } from '~/utils/csv';
 
 const { periodFilters, data, refresh } = await useMeasurementList<SymptomEntry>(
   listSymptomEntries,

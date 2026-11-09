@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { formatWhen, formatWhenParts } from '~/utils/date-format';
-import { setGlucoseMeasurementIgnore } from '~/lib/db/repositories/glucoseRepository';
+import { setGlucoseMeasurementIgnore } from '~/lib/api/glucose';
 import type { GlucoseMeasurement } from '~/types/glucose';
 
 const props = defineProps<{
@@ -73,11 +73,11 @@ function glucoseSummary(item: GlucoseMeasurement) {
 }
 
 function displayNote(item: GlucoseMeasurement) {
-  if (item.ignore) {
-    return item.reason ?? '—';
+  if (item.ignored) {
+    return item.reason || '—';
   }
 
-  return item.note ?? '—';
+  return item.note || '—';
 }
 </script>
 
@@ -123,7 +123,7 @@ function displayNote(item: GlucoseMeasurement) {
             v-for="item in props.items"
             :key="item.id"
             class="health-table-row"
-            :data-ignored="item.ignore"
+            :data-ignored="item.ignored"
           >
             <td class="health-table-cell-date health-table-cell-date-glucose">
               <span class="health-table-date">

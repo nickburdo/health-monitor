@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { formatWhenParts } from '~/utils/date-format';
-import { updateSymptomEntryNote } from '~/lib/db/repositories/symptomRepository';
+import { useAuth } from '~/composables/useAuth';
+import { apiErrorDescription } from '~/lib/api/client';
+import { updateSymptomEntryNote } from '~/lib/api/symptoms';
 
 type SymptomRow = {
   id: string;
@@ -16,6 +18,8 @@ const props = defineProps<{
 }>();
 
 const toast = useToast();
+// Guests read demo data only: the API refuses every write.
+const { isGuest } = useAuth();
 const editingId = ref<string | null>(null);
 const savingId = ref<string | null>(null);
 const draftNote = ref('');
@@ -36,17 +40,9 @@ function syncMobileEditLayout() {
   isMobileEditLayout.value = mobileEditMediaQuery?.matches ?? false;
 }
 
+// The API accepts only strings: an empty string clears the note.
 function normalizeNote(value: unknown) {
-  const trimmed = String(value ?? '').trim();
-  return trimmed.length > 0 ? trimmed : null;
-}
-
-function errorMessage(error: unknown) {
-  if (error instanceof Error && error.message) {
-    return error.message;
-  }
-
-  return 'Could not update the note';
+  return String(value ?? '').trim();
 }
 
 async function saveNote(item: SymptomRow) {
@@ -69,11 +65,17 @@ async function saveNote(item: SymptomRow) {
     cancelEditing();
     props.onUpdated();
   } catch (error) {
-    toast.add({
-      title: 'Update failed',
-      description: errorMessage(error),
-      color: 'error',
-    });
+    const message = apiErrorDescription(error, 'Could not update the note');
+
+    if (message === null) {
+      cancelEditing();
+    } else {
+      toast.add({
+        title: 'Update failed',
+        description: message,
+        color: 'error',
+      });
+    }
   } finally {
     savingId.value = null;
   }
@@ -205,7 +207,7 @@ onBeforeUnmount(() => {
                 </template>
                 <template v-else>
                   <span class="health-table-note">
-                    {{ item.note ?? '—' }}
+                    {{ item.note || '—' }}
                   </span>
                 </template>
               </td>
@@ -215,7 +217,9 @@ onBeforeUnmount(() => {
                     v-if="editingId !== item.id"
                     type="button"
                     class="health-button health-button-secondary health-button-small health-table-icon-button"
-                    title="Edit"
+                    :disabled="isGuest"
+                    :data-locked="isGuest || undefined"
+                    :title="isGuest ? 'Sign in to change entries' : 'Edit'"
                     aria-label="Edit"
                     @click="startEditing(item)"
                   >

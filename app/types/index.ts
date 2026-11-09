@@ -1,4 +1,5 @@
 export type IgnoreInput = {
-  ignore: boolean;
-  reason?: string;
+  ignored: boolean;
+  // Non-empty when ignoring, '' when restoring.
+  reason: string;
 };

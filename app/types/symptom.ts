@@ -4,18 +4,23 @@ export type SymptomEntry = {
   id: string;
   happenedAt: string;
   type: SymptomOption;
-  intensity: number | null;
+  intensity: number;
   note: string | null;
+  // Supported by the API; not shown in the UI yet.
+  ignored: boolean;
+  reason: string;
   createdAt: string;
+  updatedAt: string;
 };
 
 export type CreateSymptomEntryInput = {
   happenedAt: string;
   type: SymptomOption;
-  intensity?: number;
+  intensity: number;
   note?: string;
 };
 
 export type UpdateSymptomEntryNoteInput = {
-  note: string | null;
+  // An empty string clears the note: the API accepts only strings.
+  note: string;
 };

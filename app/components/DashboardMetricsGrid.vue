@@ -53,9 +53,9 @@ const dashboard = computed(() => {
   const weight = sortByDateDesc(props.data.weight, record => record.measuredAt);
   const symptoms = sortByDateDesc(props.data.symptoms, record => record.happenedAt);
 
-  const activeGlucose = glucose.filter(record => !record.ignore);
-  const activeBloodPressure = bloodPressure.filter(record => !record.ignore);
-  const activeWeight = weight.filter(record => !record.ignore);
+  const activeGlucose = glucose.filter(record => !record.ignored);
+  const activeBloodPressure = bloodPressure.filter(record => !record.ignored);
+  const activeWeight = weight.filter(record => !record.ignored);
 
   const glucoseValues = activeGlucose.flatMap((record) => {
     const values: number[] = [];

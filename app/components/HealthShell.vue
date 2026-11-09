@@ -1,7 +1,21 @@
 <script setup lang="ts">
+import { useAuth } from '~/composables/useAuth';
+import { logout } from '~/lib/api/auth';
+
 const route = useRoute();
+const { isGuest, user, guestPromptOpen, deleteAccountOpen, openAuthModal } = useAuth();
 
 const quickEntryOpen = ref(false);
+
+// Guests cannot write: Add entry explains that and offers sign-in instead.
+function openQuickEntry() {
+  if (isGuest.value) {
+    guestPromptOpen.value = true;
+    return;
+  }
+
+  quickEntryOpen.value = true;
+}
 
 const navigation = [
   { label: 'Dashboard', path: '/', icon: 'i-lucide-layout-dashboard' },
@@ -24,6 +38,50 @@ function isActive(path: string) {
 const currentPage = computed(
   () => navigation.find(item => isActive(item.path)) ?? fallbackPage,
 );
+
+// The user object may be missing when /auth/me failed on a network error.
+const accountLabel = computed(() => user.value?.username ?? 'Account');
+
+const accountItems = computed(() => [
+  [
+    {
+      label: `Signed in as ${accountLabel.value}`,
+      type: 'label' as const,
+      class: 'health-account-menu-label',
+    },
+  ],
+  [
+    {
+      label: 'Sign out',
+      icon: 'i-lucide-log-out',
+      class: 'health-nav-menu-item',
+      onSelect: logout,
+    },
+    {
+      label: 'Delete account',
+      icon: 'i-lucide-trash-2',
+      class: 'health-nav-menu-item health-account-menu-danger',
+      // Confirmation needs the username, so it stays disabled until /auth/me has loaded.
+      disabled: !user.value,
+      onSelect: () => {
+        deleteRequested = true;
+      },
+    },
+  ],
+]);
+
+// While open, the menu traps focus, and on close it moves focus back to its trigger.
+// So the delete dialog opens only after the menu has closed (closeAutoFocus fires after
+// its exit animation); cancelling the event lets the dialog keep focus on its input.
+let deleteRequested = false;
+
+function handleAccountMenuCloseAutoFocus(event: Event) {
+  if (deleteRequested) {
+    deleteRequested = false;
+    event.preventDefault();
+    deleteAccountOpen.value = true;
+  }
+}
 
 const navItems = computed(() =>
   navigation.map(item => ({
@@ -80,10 +138,44 @@ const navItems = computed(() =>
           <button
             type="button"
             class="health-button"
-            @click="quickEntryOpen = true"
+            @click="openQuickEntry"
           >
             + Add entry
           </button>
+
+          <button
+            v-if="isGuest"
+            type="button"
+            class="health-button health-button-secondary health-account-trigger"
+            @click="openAuthModal('signIn')"
+          >
+            <UIcon
+              name="i-lucide-log-in"
+              class="nav-icon"
+              aria-hidden="true"
+            />
+            <span class="health-account-trigger-label">Sign in</span>
+          </button>
+
+          <UDropdownMenu
+            v-else
+            :items="accountItems"
+            :content="{ align: 'end', sideOffset: 8, onCloseAutoFocus: handleAccountMenuCloseAutoFocus }"
+            :ui="{ content: 'health-nav-menu', itemLeadingIcon: 'health-nav-menu-icon' }"
+          >
+            <button
+              type="button"
+              class="health-button health-button-secondary health-account-trigger"
+              :aria-label="`Account menu for ${accountLabel}`"
+            >
+              <UIcon
+                name="i-lucide-user"
+                class="nav-icon"
+                aria-hidden="true"
+              />
+              <span class="health-account-trigger-label">{{ accountLabel }}</span>
+            </button>
+          </UDropdownMenu>
         </div>
       </div>
     </header>
@@ -99,6 +191,9 @@ const navItems = computed(() =>
     />
 
     <ConfirmDialog />
+    <AuthModal />
+    <GuestPrompt />
+    <DeleteAccountDialog />
 
     <nav
       class="health-footer"

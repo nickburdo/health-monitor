@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { formatWhen, formatWhenParts } from '~/utils/date-format';
-import { setWeightMeasurementIgnore } from '~/lib/db/repositories/weightRepository';
+import { setWeightMeasurementIgnore } from '~/lib/api/weight';
 
 type WeightRow = {
   id: string;
   measuredAt: string;
   value: number | null;
-  ignore: boolean;
+  ignored: boolean;
   note: string | null;
   reason: string | null;
 };
@@ -42,11 +42,11 @@ function weightSummary(item: WeightRow) {
 }
 
 function displayNote(item: WeightRow) {
-  if (item.ignore) {
-    return item.reason ?? '—';
+  if (item.ignored) {
+    return item.reason || '—';
   }
 
-  return item.note ?? '—';
+  return item.note || '—';
 }
 </script>
 
@@ -90,7 +90,7 @@ function displayNote(item: WeightRow) {
             v-for="item in props.items"
             :key="item.id"
             class="health-table-row"
-            :data-ignored="item.ignore"
+            :data-ignored="item.ignored"
           >
             <td class="health-table-cell-date">
               <span class="health-table-date">

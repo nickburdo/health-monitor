@@ -62,19 +62,19 @@ function buildLatestEntries(dataSet: DashboardData) {
     ...dataSet.glucose.map(record => ({
       title: 'Glucose',
       subtitle: `${formatWhen(record.measuredAt)} · ${formatGlucoseEntryValue(record)}`,
-      ignored: record.ignore,
+      ignored: record.ignored,
       timestamp: new Date(record.measuredAt).getTime(),
     })),
     ...dataSet.bloodPressure.map(record => ({
       title: 'Blood pressure',
       subtitle: `${formatWhen(record.measuredAt)} · ${formatBloodPressureEntryValue(record)}`,
-      ignored: record.ignore,
+      ignored: record.ignored,
       timestamp: new Date(record.measuredAt).getTime(),
     })),
     ...dataSet.weight.map(record => ({
       title: 'Weight',
       subtitle: `${formatWhen(record.measuredAt)} · ${record.value !== null ? formatWeightValue(record.value) : '—'}`,
-      ignored: record.ignore,
+      ignored: record.ignored,
       timestamp: new Date(record.measuredAt).getTime(),
     })),
     ...dataSet.symptoms.map(record => ({
@@ -92,9 +92,9 @@ const dashboard = computed(() => {
   const bloodPressure = sortByDateDesc(props.data.bloodPressure, record => record.measuredAt);
   const weight = sortByDateDesc(props.data.weight, record => record.measuredAt);
 
-  const activeGlucose = glucose.filter(record => !record.ignore);
-  const activeBloodPressure = bloodPressure.filter(record => !record.ignore);
-  const activeWeight = weight.filter(record => !record.ignore);
+  const activeGlucose = glucose.filter(record => !record.ignored);
+  const activeBloodPressure = bloodPressure.filter(record => !record.ignored);
+  const activeWeight = weight.filter(record => !record.ignored);
   const latestEntries = buildLatestEntries(props.data);
 
   return {

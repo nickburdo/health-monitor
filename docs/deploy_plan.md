@@ -1,6 +1,8 @@
 # Деплой на Cloudflare Pages
 
-Приложение — клиентский Nuxt SPA (`ssr: false`, без бэкенда, данные в IndexedDB браузера), поэтому хостится как статический сайт на Cloudflare Pages.
+Приложение — клиентский Nuxt SPA (`ssr: false`, без своего бэкенда; данные во внешнем Platform API), поэтому хостится как статический сайт на Cloudflare Pages.
+
+Вход через Google работает только с адресов из allowlist API (`https://health-monitor-new.pages.dev` и localhost); на превью веток (`<branch>.health-monitor-new.pages.dev`) работает только вход по логину и паролю.
 
 - **Основной сайт:** https://health-monitor-new.pages.dev/
 - **Проект в Cloudflare:** Workers & Pages → `health-monitor-new`

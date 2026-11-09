@@ -1,11 +1,12 @@
 export type WeightMeasurement = {
   id: string;
   measuredAt: string;
-  value: number | null;
-  ignore: boolean;
+  value: number;
   note: string | null;
-  reason: string | null;
+  ignored: boolean;
+  reason: string;
   createdAt: string;
+  updatedAt: string;
 };
 
 export type CreateWeightMeasurementInput = {

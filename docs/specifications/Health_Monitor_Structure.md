@@ -8,16 +8,17 @@
 - таблицы;
 - графики;
 - фильтры по датам;
-- отметка ошибочных значений через `ignore`.
+- отметка ошибочных значений через `ignored`;
+- вход по логину и паролю или через Google; гость видит демо-данные.
 
 ## Стек
 
-- Nuxt 4 (только клиент, `ssr: false`; сервера и авторизации нет)
+- Nuxt 4 (только клиент, `ssr: false`; своего сервера нет)
 - Vue 3
 - TypeScript
 - Nuxt UI v4 (`@nuxtjs/color-mode` для светлой и тёмной темы)
 - Tailwind CSS 4
-- IndexedDB через Dexie.js — все данные хранятся в браузере
+- данные и авторизация — внешний Platform API (`https://platform-api.nick-burdo.workers.dev`, проект `platform-api`); запросы через `$fetch.create` (ofetch)
 - графики — собственный SVG-компонент `HealthLineChart`, без сторонней библиотеки
 - ESLint
 - Prettier
@@ -36,7 +37,7 @@
 
 Переключения единиц измерения в интерфейсе в MVP нет.
 
-Глюкоза вводится, хранится и показывается в `ммоль/л` как есть, без пересчёта при отображении. Единственный перевод — `app/lib/db/glucose-units.ts`, только для старых данных в mg/dL: значение больше 30 (`MAX_GLUCOSE_MMOL_L`) считается mg/dL, делится на 18 и округляется до 0.1. Перевод выполняется миграцией базы `version(3)` и при импорте JSON-файлов `version: 1` (см. «Слой данных»). Быстрый ввод не сохраняет глюкозу больше 30 и показывает toast «Glucose must be in mmol/L».
+Глюкоза вводится, хранится и показывается в `ммоль/л` как есть, без пересчёта. Быстрый ввод не сохраняет глюкозу больше 30 (`MAX_GLUCOSE_MMOL_L` в `app/constants/glucose.ts`) и показывает toast «Glucose must be in mmol/L».
 
 ### Дата и время
 
@@ -178,10 +179,14 @@ health-monitor/
       blood-pressure.vue
       weight.vue
       symptoms.vue
+      auth/callback.vue         # возврат из Google Sign-In
 
     components/
-      HealthShell.vue           # хэдер, меню, футер, модалка быстрого ввода
+      HealthShell.vue           # хэдер, меню, вход/меню пользователя, футер, модалки
       ThemeToggle.vue
+      AuthModal.vue             # вход, регистрация, кнопка Google
+      GuestPrompt.vue           # призыв войти для гостя
+      DeleteAccountDialog.vue   # удаление аккаунта с вводом имени
       HealthQuickEntryModal.vue
       PeriodFilter.vue
       HealthPageHeaderWithFilter.vue
@@ -199,30 +204,27 @@ health-monitor/
       DashboardMetricsGrid.vue
       DashboardSymptomsPanel.vue
       DashboardLatestEntries.vue
-      DashboardDataActions.vue  # экспорт/импорт JSON
 
     composables/
       usePeriodFilter.ts
       useMeasurementList.ts
+      useAuth.ts                # токен, пользователь, открытие модалок входа
 
     constants/
       symptom-options.ts
+      glucose.ts                # MAX_GLUCOSE_MMOL_L
 
-    lib/db/
-      schema.ts                 # база IndexedDB (Dexie)
-      repositories/
-        glucoseRepository.ts
-        bloodPressureRepository.ts
-        weightRepository.ts
-        symptomRepository.ts
-      validation.ts
-      glucose-units.ts          # перевод старых значений глюкозы из mg/dL
-      seed.ts                   # заполнение демо-данными при пустой базе
-      export-import.ts          # экспорт/импорт всей базы в JSON
-      csv.ts                    # экспорт CSV по сущности
+    lib/api/
+      client.ts                 # $fetch.create: baseURL, токен, ApiError, обработка 401
+      auth.ts                   # login, register, me, logout, Google
+      glucose.ts
+      blood-pressure.ts
+      weight.ts
+      symptoms.ts
+      dashboard.ts
 
     plugins/
-      seed-demo-data.client.ts
+      auth.client.ts            # восстановление входа при старте
 
     types/
       index.ts
@@ -230,78 +232,98 @@ health-monitor/
       blood-pressure.ts
       weight.ts
       symptom.ts
-      meta.ts
       dashboard.ts
+      date-range.ts
+      auth.ts
 
     utils/
       date-format.ts
+      csv.ts                    # экспорт CSV по сущности
       health-line-chart/
         blood-pressure.ts
         glucose.ts
         weight.ts
 
-  public/data/
-    demo.json                   # демо-данные
-
-  scripts/
-    generate-demo-data.mjs
-
   nuxt.config.ts
   package.json
 ```
 
-Сервера (`server/`), API и базы данных на сервере нет: все данные хранятся в IndexedDB браузера.
+Своего сервера нет: данные хранятся во внешнем Platform API. Контракт API и правила для фронтенда — в проекте `platform-api`: `docs/api.md`, `docs/frontend-guide.md`, `docs/connecting-a-frontend.md`.
 
-## Слой данных
+## Работа с API
 
-Весь доступ к данным — в `app/lib/db/`. Вне этой папки `schema.ts` не импортируется: компоненты и страницы вызывают функции репозиториев (или `seed.ts` / `export-import.ts` для операций над всей базой).
+Весь обмен с API — в `app/lib/api/`. Компоненты и страницы вызывают функции модулей сущностей, `$fetch` напрямую не используют.
 
-### База (`schema.ts`)
+### Клиент (`client.ts`)
 
-Dexie-база `health-monitor`:
+- экземпляр `$fetch.create` с `baseURL` из `runtimeConfig.public.apiBase` (по умолчанию `https://platform-api.nick-burdo.workers.dev`, переопределяется переменной `NUXT_PUBLIC_API_BASE`, например `http://localhost:8787`; при `npm run generate` значение вшивается в сборку);
+- добавляет `Authorization: Bearer <token>`, если пользователь вошёл; на `POST /auth/register` и `POST /auth/login` заголовок не отправляется никогда (иначе протухший токен даст `401` вместо входа);
+- распаковывает обёртку `{ data }`;
+- ошибку ответа переводит в `ApiError { status, message, details }` (`details` — карта ошибок полей для `400`);
+- `401 Authentication required` (гость пытается записать) → открывается `GuestPrompt`;
+- `401 Invalid or expired token` → токен удаляется, приложение перезагружается гостем и показывает toast «Your session has expired. Sign in again.».
 
-- таблицы данных: `glucoseMeasurement`, `bloodPressureMeasurement`, `weightMeasurement` (индексы `id`, `measuredAt`), `symptomEntry` (`id`, `happenedAt`, `type`);
-- таблица `meta` (ключ–значение, ключ `key`), сейчас в ней только флаг `demoSeeded`.
+### Модули сущностей
 
-Типы записей лежат в `app/types/*.ts` и одновременно служат типами строк таблиц.
+`glucose.ts`, `blood-pressure.ts`, `weight.ts`, `symptoms.ts`:
 
-Версии схемы:
+- `list*` — `GET` с параметрами `date_from` / `date_to`. API принимает только календарные даты (`YYYY-MM-DD`) и считает их сутками по UTC, поэтому запрос шире на день с каждой стороны (локальные даты периода −1 / +1 день), а ответ фильтруется на клиенте по точным границам `dateFrom` / `dateTo` периода и сортируется от новых к старым (API отдаёт от старых к новым);
+- `create*` — `POST`; тело строгое: без пустых ключей, без `ignored`/`reason`, `note` — только непустая строка;
+- `set*MeasurementIgnore` — `PATCH` с `{ ignored: true, reason }` (причина обязательна) или `{ ignored: false, reason: '' }` (глюкоза, давление, вес);
+- `updateSymptomEntryNote` — `PATCH` с `note` (пустая заметка — `""`).
 
-- `version(1)` — четыре таблицы данных;
-- `version(2)` — таблица `meta`;
-- `version(3)` — без изменения индексов; миграция переводит старые значения глюкозы из mg/dL в ммоль/л (`glucose-units.ts`, см. «Единицы измерения»).
+`dashboard.ts` — `getDashboardData(range)`: один запрос `GET /dashboard` с тем же расширенным диапазоном, ответ фильтруется так же и переводится в `DashboardData`.
 
-Изменение индексов — только новой `this.version(n)`; существующие версии не правятся.
+Записи физически не удаляются: ошибочные помечаются `ignored`.
 
-### Репозитории (`repositories/*Repository.ts`)
+Ошибка загрузки списка (нет сети, 5xx) показывает toast «Could not load data», страница остаётся с пустыми данными.
 
-По одному на сущность:
+## Авторизация
 
-- `list*` — загружает таблицу и фильтрует по ISO-диапазону `dateFrom` / `dateTo` в памяти;
-- `create*` — создаёт запись, ID через `crypto.randomUUID()`;
-- `set*MeasurementIgnore` — игнорирование и восстановление измерений (глюкоза, давление, вес);
-- `updateSymptomEntryNote` — правка заметки у симптома.
+Три состояния посетителя (по `frontend-guide.md` API):
 
-Разбор ввода и правило игнорирования — в `validation.ts`: игнорирование требует `reason`, восстановление его очищает.
+- **гость** — без токена; API отдаёт демо-данные, любая запись отвергается `401 Authentication required`;
+- **пользователь** — с токеном; видит и меняет только свои данные, демо-данные не видны;
+- **протухший токен** — API отвечает `401 Invalid or expired token`; токен удаляется, посетитель становится гостем.
 
-### Демо-данные (`seed.ts`, `plugins/seed-demo-data.client.ts`)
+Состояние — `app/composables/useAuth.ts` (`useState`): токен, пользователь, какое окно входа открыто, открыт ли `GuestPrompt`. Токен (JWT, живёт 30 дней) хранится в `localStorage` под ключом `health-monitor-token`. Плагин `auth.client.ts` при старте читает токен и до монтирования страниц загружает пользователя `GET /auth/me`; если сервер недоступен, токен сохраняется и показывается toast «Could not reach the server».
 
-- Демо-данные лежат в `public/data/demo.json` (генерируется `npm run demo:generate` из `scripts/generate-demo-data.mjs`). Даты хранятся смещениями `daysAgo` и пересчитываются в момент заполнения.
-- Автозаполнение (`seedDemoDataIfEmpty`) выполняется только при самом первом открытии: его охраняет флаг `demoSeeded` в `meta`; записи только добавляются, база не очищается.
-- Кнопки дашборда «Load demo data» и «Clear database» (`replaceWithDemoData`, `clearHealthMonitorData`) работают в одной транзакции и тоже ставят флаг, поэтому очищенная база остаётся пустой после перезагрузки.
+### Вход и регистрация (`AuthModal.vue`)
 
-### Экспорт и импорт
+- Кнопка `Sign in` в шапке открывает окно входа: имя пользователя, пароль, кнопка `Continue with Google`, ссылка на регистрацию.
+- Регистрация — имя (3–32 символа `[A-Za-z0-9_-]`) и пароль (8–128). Email не запрашивается; рядом с паролем — предупреждение, что пароль нельзя восстановить, и совет войти через Google; под формой — что аккаунт общий с Job Tracker. После регистрации пользователь сразу вошёл.
+- Ошибки: `409` — «This username is taken»; `401 Invalid credentials` — «Wrong username or password» с подсказкой про Google; `400` — сообщения полей.
+- После входа или регистрации приложение перезагружается (`reloadNuxtApp`), все данные загружаются уже как пользователь.
+- Выход (`Sign out` в меню пользователя) — удалить токен и перезагрузить приложение; эндпоинта выхода у API нет.
 
-- `export-import.ts` — экспорт и импорт всей базы в JSON. Экспорт пишет формат `version: 2` (глюкоза всегда в ммоль/л). Импорт принимает `version: 1` и `version: 2`; для `version: 1` значения глюкозы проходят перевод из mg/dL. Импорт заменяет все данные в одной транзакции.
-- `csv.ts` — экспорт CSV отдельной сущности со страницы этой сущности.
+### Google Sign-In
+
+- Полностраничный редирект: перед переходом создаётся nonce (`crypto.randomUUID()`), сохраняется в `sessionStorage` (`googleNonce`) и добавляется в адрес возврата `/auth/callback?n=<nonce>`; браузер уходит на `<apiBase>/auth/google?redirect=<адрес возврата>`.
+- `pages/auth/callback.vue` читает фрагмент (`#token=` / `#error=`) и `n`, сразу чистит адрес (`history.replaceState`), сверяет и удаляет nonce. Токен принимается только при совпадении nonce; при несовпадении текущая сессия не меняется, показывается «Sign-in could not be completed, please try again.». `access_denied` — «Sign-in was cancelled.», остальные ошибки — «Google sign-in failed. Please try again.». После успеха — перезагрузка на дашборд.
+- Google работает только с адресов из allowlist API: `https://health-monitor-new.pages.dev` и localhost. На превью веток Cloudflare Pages работает только вход по логину и паролю.
+
+### Удаление аккаунта
+
+- Пункт `Delete account` в меню пользователя (под `Sign out`, красный) открывает `DeleteAccountDialog.vue`.
+- Диалог предупреждает: аккаунт и все его данные в обоих приложениях — Health Monitor и Job Tracker — удаляются безвозвратно, восстановить аккаунт нельзя.
+- Подтверждение — ввод имени пользователя: красная кнопка `Delete account` активна только при точном совпадении. Cancel, Escape и клик по фону закрывают диалог.
+- Запрос `DELETE /auth/me` (пароль не нужен: у Google-аккаунтов его нет, подтверждение — забота фронтенда). На `204` токен удаляется, приложение перезагружается гостем и показывает toast «Your account has been deleted».
+- Ошибка (сеть, 5xx) показывается в диалоге, аккаунт остаётся; повтор безопасен — API дочищает данные.
+
+### Ограничения гостя
+
+- Кнопка `+ Add entry` у гостя открывает `GuestPrompt`: гость видит демо-данные и не может их менять, после входа видны только свои записи; отдельно сказано, что при регистрации email не запрашивается. Кнопки окна открывают вход или регистрацию.
+- Кнопки Ignore/Restore и редактирование заметки симптома у гостя задизейблены (`title="Sign in to change entries"`).
+- `401 Authentication required` от любой записи тоже открывает `GuestPrompt`.
+- CSV-экспорт на страницах сущностей доступен всем.
 
 ## Main Layout
 
 ### Header
 
 - слева: лого (белые HM в кружке цвета primary) и название Health Monitor; на экране 900 и менее название скрыто, остаётся только знак HM
-- по центру: выпадающее меню страниц (`UDropdownMenu`); на кнопке — иконка и название текущей страницы и шеврон, в списке все пять страниц с иконками, текущая выделена; адрес со слешем в конце (`/glucose/`) распознаётся как та же страница, на неизвестном адресе кнопка показывает «Menu»; на экране 640 и менее меню в хэдере скрыто (место справа оставлено под будущие Sign-in и переключатель языка)
-- справа: переключатель светлой/тёмной темы (`ThemeToggle`) и кнопка открытия модального окна ввода данных
+- по центру: выпадающее меню страниц (`UDropdownMenu`); на кнопке — иконка и название текущей страницы и шеврон, в списке все пять страниц с иконками, текущая выделена; адрес со слешем в конце (`/glucose/`) распознаётся как та же страница, на неизвестном адресе кнопка показывает «Menu»; на экране 640 и менее меню в хэдере скрыто
+- справа: переключатель светлой/тёмной темы (`ThemeToggle`), кнопка открытия модального окна ввода данных и вход: у гостя кнопка `Sign in`, у пользователя — меню (`UDropdownMenu`, иконка и имя) с пунктами `Sign out` и `Delete account`
 
 ### Main
 
@@ -324,6 +346,8 @@ Dexie-база `health-monitor`:
 - график веса;
 - график симптомов;
 - последние записи.
+
+Кнопок экспорта/импорта и работы с базой на дашборде нет.
 
 ### Glucose — `/glucose`
 
@@ -348,9 +372,10 @@ Dexie-база `health-monitor`:
 
 - `Игнорировать` открывает confirm dialog;
 - в confirm dialog обязательно вводится причина (`reason`);
-- после подтверждения запись глюкозы обновляется в IndexedDB через `setGlucoseMeasurementIgnore` с `ignore: true` и `reason`;
-- `Восстановить` срабатывает сразу, без подтверждения: `ignore` сбрасывается в `false`, `reason` очищается;
-- строки с `ignore=true` визуально приглушаются.
+- после подтверждения запись глюкозы обновляется через API (`setGlucoseMeasurementIgnore`, `PATCH`) с `ignored: true` и `reason`;
+- `Восстановить` срабатывает сразу, без подтверждения: `ignored: false`, `reason: ''`;
+- строки с `ignored=true` визуально приглушаются;
+- у гостя кнопки задизейблены.
 
 #### График глюкозы
 
@@ -388,9 +413,10 @@ Dexie-база `health-monitor`:
 
 - `Игнорировать` открывает confirm dialog;
 - в confirm dialog обязательно вводится причина (`reason`);
-- после подтверждения запись давления обновляется в IndexedDB через `setBloodPressureMeasurementIgnore` с `ignore: true` и `reason`;
-- `Восстановить` срабатывает сразу, без подтверждения: `ignore` сбрасывается в `false`, `reason` очищается;
-- строки с `ignore=true` визуально приглушаются.
+- после подтверждения запись давления обновляется через API (`setBloodPressureMeasurementIgnore`, `PATCH`) с `ignored: true` и `reason`;
+- `Восстановить` срабатывает сразу, без подтверждения: `ignored: false`, `reason: ''`;
+- строки с `ignored=true` визуально приглушаются;
+- у гостя кнопки задизейблены.
 
 
 ### Weight — `/weight`
@@ -414,9 +440,10 @@ Dexie-база `health-monitor`:
 
 - `Игнорировать` открывает confirm dialog;
 - в confirm dialog обязательно вводится причина (`reason`);
-- после подтверждения запись веса обновляется в IndexedDB через `setWeightMeasurementIgnore` с `ignore: true` и `reason`;
-- `Восстановить` срабатывает сразу, без подтверждения: `ignore` сбрасывается в `false`, `reason` очищается;
-- строки с `ignore=true` визуально приглушаются.
+- после подтверждения запись веса обновляется через API (`setWeightMeasurementIgnore`, `PATCH`) с `ignored: true` и `reason`;
+- `Восстановить` срабатывает сразу, без подтверждения: `ignored: false`, `reason: ''`;
+- строки с `ignored=true` визуально приглушаются;
+- у гостя кнопки задизейблены.
 
 
 ### Symptoms — `/symptoms`
@@ -444,6 +471,7 @@ Dexie-база `health-monitor`:
 - данные в ячейке `notes` заменяются на textarea
 - данные сохраняются при нажатии `Сохранить` или `Enter`
 - редактирование отменяется при нажатии `Отмена` или `Esc`
+- у гостя кнопка `Редактировать` задизейблена
 
 В MVP справочник симптомов статический.  
 Редактирование справочника симптомов выносится в backlog.
@@ -456,7 +484,7 @@ Dexie-база `health-monitor`:
 + Add entry
 ```
 
-Она открывает модальное окно.
+Пользователю она открывает модальное окно, гостю — `GuestPrompt` (см. «Ограничения гостя»).
 
 В модальном окне вкладки:
 
@@ -464,6 +492,8 @@ Dexie-база `health-monitor`:
 - Blood Pressure
 - Weight
 - Symptom / Note
+
+Обязательные поля — по правилам API: глюкоза — одно из значений (натощак или после еды), не больше 30; давление — систолическое, диастолическое и пульс, целые положительные; вес — значение; симптом — тип и интенсивность, целое 1–10.
 
 После успешного сохранения:
 
@@ -550,7 +580,8 @@ type PeriodFilterValue = {
 ### Загрузка данных
 
 - Страницы сущностей используют `useMeasurementList(listFn)`: он владеет фильтром периода (`usePeriodFilter`) и перезапускает загрузку при смене диапазона. Таблицы получают `refresh` как `onUpdated` и вызывают его после игнорирования, восстановления или правки заметки.
-- Дашборд (`pages/index.vue`) использует `usePeriodFilter` напрямую и загружает все четыре репозитория параллельно.
+- Дашборд (`pages/index.vue`) использует `usePeriodFilter` напрямую и загружает данные одним запросом `getDashboardData` (`GET /dashboard`).
+- Ошибка загрузки — toast «Could not load data» и пустые данные.
 
 ### Быстрый ввод
 
@@ -567,16 +598,17 @@ app/types/glucose.ts
 app/types/blood-pressure.ts
 app/types/weight.ts
 app/types/symptom.ts
-app/types/meta.ts
 app/types/dashboard.ts
+app/types/date-range.ts
+app/types/auth.ts
 ```
 
-Эти типы одновременно описывают записи таблиц IndexedDB (`app/lib/db/schema.ts`).
+Типы записей повторяют формат ответов Platform API.
 
 ```ts
 export type IgnoreInput = {
-  ignore: boolean
-  reason?: string
+  ignored: boolean
+  reason: string // non-empty when ignored is true, '' on restore
 }
 
 export type GlucoseMeasurement = {
@@ -584,41 +616,60 @@ export type GlucoseMeasurement = {
   measuredAt: string
   fastingValue: number | null
   afterMealValue: number | null
-  ignore: boolean
   note: string | null
-  reason: string | null
+  ignored: boolean
+  reason: string
   createdAt: string
+  updatedAt: string
 }
 
 export type BloodPressureMeasurement = {
   id: string
   measuredAt: string
-  systolic: number | null
-  diastolic: number | null
-  pulse: number | null
-  ignore: boolean
+  systolic: number
+  diastolic: number
+  pulse: number
   note: string | null
-  reason: string | null
+  ignored: boolean
+  reason: string
   createdAt: string
+  updatedAt: string
 }
 
 export type WeightMeasurement = {
   id: string
   measuredAt: string
-  value: number | null
-  ignore: boolean
+  value: number
   note: string | null
-  reason: string | null
+  ignored: boolean
+  reason: string
   createdAt: string
+  updatedAt: string
 }
 
 export type SymptomEntry = {
   id: string
   happenedAt: string
   type: SymptomOption // из app/constants/symptom-options.ts
-  intensity: number | null
+  intensity: number
   note: string | null
+  ignored: boolean // в UI не используется
+  reason: string
   createdAt: string
+  updatedAt: string
+}
+
+export type DateRangeQuery = {
+  dateFrom?: string // ISO, sent as date_from
+  dateTo?: string // ISO, sent as date_to
+}
+
+export type AuthUser = {
+  id: string
+  username: string
+  hasPassword: boolean
+  createdAt: string
+  updatedAt: string
 }
 ```
 
@@ -649,12 +700,13 @@ app/composables/usePeriodFilter.ts
 
 - создать проект Nuxt;
 - подключить Nuxt UI;
-- хранить данные в IndexedDB через Dexie.js (`app/lib/db/`);
-- заполнять пустую базу демо-данными;
-- сделать репозитории для добавления и получения данных;
+- хранить данные во внешнем Platform API (`app/lib/api/`);
+- гостю показывать демо-данные API, пользователю — только его данные;
+- сделать модули API для добавления и получения данных;
+- сделать вход, регистрацию и вход через Google;
 - сделать ignore / restore для глюкозы, давления и веса;
 - сделать редактирование note у симптомов;
-- сделать экспорт/импорт всей базы в JSON и экспорт CSV по сущности;
+- сделать экспорт CSV по сущности;
 - сделать быстрый ввод через модалку;
 - сделать таблицы;
 - сделать графики;
@@ -662,7 +714,8 @@ app/composables/usePeriodFilter.ts
 
 ### Не входит в MVP
 
-- авторизация (данные хранятся локально в браузере);
+- привязка Google к паролю, установка пароля Google-аккаунту;
+- экспорт/импорт всей базы в JSON;
 - редактирование данных (кроме note у симптомов);
 - удаление данных;
 - импорт CSV;

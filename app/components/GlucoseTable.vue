@@ -8,13 +8,9 @@ const props = defineProps<{
   onUpdated: () => void;
 }>();
 
-function glucoseToMmol(value: number | null) {
-  return value === null ? null : value / 18;
-}
-
 function formatValueParts(item: GlucoseMeasurement) {
-  const fasting = glucoseToMmol(item.fastingValue);
-  const afterMeal = glucoseToMmol(item.afterMealValue);
+  const fasting = item.fastingValue;
+  const afterMeal = item.afterMealValue;
 
   if (fasting !== null && afterMeal !== null) {
     return {

@@ -21,10 +21,6 @@ function average(values: number[]) {
   return total / values.length;
 }
 
-function glucoseRawToMmol(value: number) {
-  return value / 18;
-}
-
 function formatMmol(value: number) {
   return `${value.toFixed(1)}`;
 }
@@ -43,11 +39,7 @@ function getLatestGlucoseValue(record?: DashboardData['glucose'][number]) {
     return null;
   }
 
-  const rawValue = record.afterMealValue ?? record.fastingValue;
-
-  return rawValue === null || rawValue === undefined
-    ? null
-    : glucoseRawToMmol(rawValue);
+  return record.afterMealValue ?? record.fastingValue ?? null;
 }
 
 function formatGlucoseDisplay(record?: DashboardData['glucose'][number]) {
@@ -69,11 +61,11 @@ const dashboard = computed(() => {
     const values: number[] = [];
 
     if (record.fastingValue !== null) {
-      values.push(glucoseRawToMmol(record.fastingValue));
+      values.push(record.fastingValue);
     }
 
     if (record.afterMealValue !== null) {
-      values.push(glucoseRawToMmol(record.afterMealValue));
+      values.push(record.afterMealValue);
     }
 
     return values;

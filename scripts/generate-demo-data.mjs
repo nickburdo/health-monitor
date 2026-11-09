@@ -8,16 +8,16 @@ const outputPath = resolve(__dirname, '../public/data/demo.json');
 mkdirSync(dirname(outputPath), { recursive: true });
 
 const glucoseMeasurement = [
-  { daysAgo: 0, fastingValue: 91, note: 'Morning check' },
-  { daysAgo: 2, afterMealValue: 128, note: 'After lunch' },
-  { daysAgo: 7, fastingValue: 89, note: 'Stable morning' },
-  { daysAgo: 9, afterMealValue: 132, note: 'After dinner' },
-  { daysAgo: 14, fastingValue: 87, note: 'Before breakfast' },
-  { daysAgo: 16, afterMealValue: 124, note: 'After snack' },
-  { daysAgo: 21, fastingValue: 90, note: 'Morning check' },
-  { daysAgo: 23, afterMealValue: 130, note: 'After meal' },
-  { daysAgo: 28, fastingValue: 92, note: 'Morning check' },
-  { daysAgo: 30, afterMealValue: 126, note: 'After meal' },
+  { daysAgo: 0, fastingValue: 5.1, note: 'Morning check' },
+  { daysAgo: 2, afterMealValue: 7.1, note: 'After lunch' },
+  { daysAgo: 7, fastingValue: 4.9, note: 'Stable morning' },
+  { daysAgo: 9, afterMealValue: 7.3, note: 'After dinner' },
+  { daysAgo: 14, fastingValue: 4.8, note: 'Before breakfast' },
+  { daysAgo: 16, afterMealValue: 6.9, note: 'After snack' },
+  { daysAgo: 21, fastingValue: 5.0, note: 'Morning check' },
+  { daysAgo: 23, afterMealValue: 7.2, note: 'After meal' },
+  { daysAgo: 28, fastingValue: 5.1, note: 'Morning check' },
+  { daysAgo: 30, afterMealValue: 7.0, note: 'After meal' },
 ];
 
 const bloodPressureMeasurement = [

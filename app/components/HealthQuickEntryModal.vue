@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { SYMPTOM_OPTIONS } from '~/constants/symptom-options';
+import { MAX_GLUCOSE_MMOL_L } from '~/lib/db/glucose-units';
 import { createGlucoseMeasurement } from '~/lib/db/repositories/glucoseRepository';
 import { createBloodPressureMeasurement } from '~/lib/db/repositories/bloodPressureRepository';
 import { createWeightMeasurement } from '~/lib/db/repositories/weightRepository';
@@ -132,6 +133,15 @@ async function submit() {
         toast.add({
           title: 'A glucose value is required',
           description: 'Fill in fasting or after meal.',
+          color: 'error',
+        });
+        return;
+      }
+
+      if ([fastingValue, afterMealValue].some(value => value !== undefined && value > MAX_GLUCOSE_MMOL_L)) {
+        toast.add({
+          title: 'Glucose must be in mmol/L',
+          description: `Values above ${MAX_GLUCOSE_MMOL_L} mmol/L look like mg/dL.`,
           color: 'error',
         });
         return;

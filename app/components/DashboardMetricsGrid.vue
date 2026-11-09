@@ -123,6 +123,7 @@ const dashboard = computed(() => {
     <HealthMetricCard
       label="Glucose"
       tone="glucose"
+      to="/glucose"
       :value="formatGlucoseDisplay(dashboard.latestGlucose)"
       unit="mmol/L"
       :details="dashboard.glucoseAvg !== null ? `Average for period: ${dashboard.glucoseAvg.toFixed(1)} mmol/L` : 'No active values for the selected period'"
@@ -130,6 +131,7 @@ const dashboard = computed(() => {
     <HealthMetricCard
       label="Blood pressure"
       tone="pressure"
+      to="/blood-pressure"
       :value="dashboard.latestBloodPressure ? `${dashboard.latestBloodPressure.systolic ?? '—'}/${dashboard.latestBloodPressure.diastolic ?? '—'}` : '—'"
       :details="dashboard.bloodPressureAvgSystolic !== null && dashboard.bloodPressureAvgDiastolic !== null
         ? `Average for period: ${formatBloodPressureAxisValue(dashboard.bloodPressureAvgSystolic)} / ${formatBloodPressureAxisValue(dashboard.bloodPressureAvgDiastolic)} mmHg`
@@ -138,6 +140,7 @@ const dashboard = computed(() => {
     <HealthMetricCard
       label="Weight"
       tone="weight"
+      to="/weight"
       :value="dashboard.latestWeight ? formatKilograms(dashboard.latestWeight.value) : '—'"
       unit="kg"
       :details="dashboard.weightChange !== null ? `Change over period: ${formatWeightChange(dashboard.weightChange)}` : 'At least two entries are needed to calculate the change'"
@@ -145,6 +148,7 @@ const dashboard = computed(() => {
     <HealthMetricCard
       label="Symptoms"
       tone="symptoms"
+      to="/symptoms"
       :value="String(dashboard.symptomCount)"
       unit="entries"
       :details="dashboard.topSymptoms.length

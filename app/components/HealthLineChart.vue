@@ -39,13 +39,53 @@ const props = defineProps<{
   yAxisFormatter?: (value: number) => string;
 }>();
 
-const chartWidth = 1000;
-const chartHeight = 288;
 const pointRadius = 5;
-const axisLabelOffset = pointRadius + 5;
 const chartPadding = pointRadius;
+// Rough width of one digit at the 12px axis label font
+const axisCharWidth = 7;
+const axisLabelGap = 8;
 
+// Real size of the plot area; the SVG viewBox uses these pixels, so text and
+// points are never stretched. Defaults are used until the first measurement.
+const svgElement = ref<SVGSVGElement | null>(null);
+const chartWidth = ref(1000);
+const chartHeight = ref(288);
 const activePoint = ref<ChartPoint | null>(null);
+
+function updateChartSize() {
+  const element = svgElement.value;
+
+  if (!element) {
+    return;
+  }
+
+  const { width, height } = element.getBoundingClientRect();
+
+  if (width <= 0 || height <= 0) {
+    return;
+  }
+
+  if (width !== chartWidth.value || height !== chartHeight.value) {
+    // Point coordinates change with the size, so a shown tooltip would be misplaced
+    activePoint.value = null;
+  }
+
+  chartWidth.value = width;
+  chartHeight.value = height;
+}
+
+watch(svgElement, (element, _previous, onCleanup) => {
+  if (!element) {
+    return;
+  }
+
+  updateChartSize();
+  const resizeObserver = new ResizeObserver(updateChartSize);
+  resizeObserver.observe(element);
+
+  // Also runs when the component unmounts and the watcher stops
+  onCleanup(() => resizeObserver.disconnect());
+});
 
 const chartRows = computed(() =>
   props.items
@@ -109,23 +149,25 @@ const valueBounds = computed(() => {
 });
 
 function scaleX(index: number, count: number) {
+  const left = plotLeft.value + chartPadding;
+  const usableWidth = chartWidth.value - chartPadding - left;
+
   if (count <= 1) {
-    return chartWidth / 2;
+    return left + usableWidth / 2;
   }
 
-  const usableWidth = chartWidth - chartPadding * 2;
-  return chartPadding + (usableWidth * index) / (count - 1);
+  return left + (usableWidth * index) / (count - 1);
 }
 
 function scaleY(value: number) {
   const { min, max } = valueBounds.value;
 
   if (max <= min) {
-    return chartHeight / 2;
+    return chartHeight.value / 2;
   }
 
   const progress = (value - min) / (max - min);
-  const usableHeight = chartHeight - chartPadding * 2;
+  const usableHeight = chartHeight.value - chartPadding * 2;
   return chartPadding + usableHeight - usableHeight * progress;
 }
 
@@ -194,9 +236,15 @@ const chartTicks = computed(() => {
 
     return {
       label: formatTick(value),
-      y: chartPadding + (chartHeight - chartPadding * 2) * step,
+      y: chartPadding + (chartHeight.value - chartPadding * 2) * step,
     };
   });
+});
+
+// Left column reserved for the y-axis labels; grid lines and series start after it
+const plotLeft = computed(() => {
+  const longestLabel = Math.max(...chartTicks.value.map(tick => tick.label.length));
+  return longestLabel * axisCharWidth + axisLabelGap;
 });
 
 const hasData = computed(() =>
@@ -221,17 +269,41 @@ const chartTitle = computed(() => {
   return `${first.dateLabel} - ${last.dateLabel}`;
 });
 
+// Rendered tooltip size, measured after it appears; used to keep it inside the chart
+const tooltipElement = ref<HTMLElement | null>(null);
+const tooltipSize = ref({ width: 200, height: 72 });
+const tooltipGap = 8;
+
+watch(
+  activePoint,
+  () => {
+    const element = tooltipElement.value;
+
+    if (element) {
+      tooltipSize.value = { width: element.offsetWidth, height: element.offsetHeight };
+    }
+  },
+  { flush: 'post' },
+);
+
+// Pixel position inside the chart body; the SVG starts at its top-left corner
 const tooltipStyle = computed(() => {
-  if (!activePoint.value) {
+  const point = activePoint.value;
+
+  if (!point) {
     return {};
   }
 
-  const xPercent = (activePoint.value.x / chartWidth) * 100;
-  const yPercent = (activePoint.value.y / chartHeight) * 100;
+  const { width, height } = tooltipSize.value;
+  const maxLeft = Math.max(0, chartWidth.value - width);
+  const left = Math.min(maxLeft, Math.max(0, point.x - width / 2));
+  const above = point.y - pointRadius - tooltipGap - height;
+  // Flip below the point when there is no room above it
+  const top = above >= 0 ? above : point.y + pointRadius + tooltipGap;
 
   return {
-    left: `${Math.min(92, Math.max(8, xPercent))}%`,
-    top: `${Math.min(88, Math.max(12, yPercent))}%`,
+    left: `${left}px`,
+    top: `${top}px`,
   };
 });
 
@@ -279,6 +351,7 @@ function clearPoint() {
     >
       <div
         v-if="activePoint"
+        ref="tooltipElement"
         class="health-line-chart-tooltip"
         :style="tooltipStyle"
       >
@@ -288,11 +361,11 @@ function clearPoint() {
       </div>
 
       <svg
+        ref="svgElement"
         class="health-line-chart-svg"
-        viewBox="0 0 1000 288"
+        :viewBox="`0 0 ${chartWidth} ${chartHeight}`"
         role="img"
         :aria-label="ariaLabel"
-        preserveAspectRatio="none"
       >
         <g
           v-for="tick in chartTicks"
@@ -300,15 +373,16 @@ function clearPoint() {
         >
           <line
             class="health-line-chart-grid-line"
-            :x1="chartPadding"
+            :x1="plotLeft"
             :x2="chartWidth - chartPadding"
             :y1="tick.y"
             :y2="tick.y"
           />
           <text
             class="health-line-chart-axis-label"
-            :x="axisLabelOffset"
+            :x="plotLeft - axisLabelGap"
             :y="tick.y + 4"
+            text-anchor="end"
           >
             {{ tick.label }}
           </text>
@@ -416,6 +490,8 @@ function clearPoint() {
 .health-line-chart-tooltip {
   position: absolute;
   z-index: 2;
+  /* Size by content, not by the space left of `left`, so measurement is stable */
+  width: max-content;
   min-width: 170px;
   max-width: 230px;
   padding: 10px 12px;
@@ -423,7 +499,6 @@ function clearPoint() {
   border-radius: 16px;
   background: var(--tooltip-bg);
   box-shadow: var(--shadow-tooltip);
-  transform: translate(-50%, -115%);
   pointer-events: none;
   display: grid;
   gap: 4px;
@@ -449,7 +524,6 @@ function clearPoint() {
 .health-line-chart-grid-line {
   stroke: var(--chart-grid);
   stroke-width: 1;
-  vector-effect: non-scaling-stroke;
 }
 
 .health-line-chart-axis-label {
@@ -463,7 +537,6 @@ function clearPoint() {
   stroke-width: 4;
   stroke-linecap: round;
   stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
 }
 
 .health-line-chart-point {

@@ -5,11 +5,18 @@ defineProps<{
   value: string;
   unit?: string;
   tone: 'glucose' | 'pressure' | 'weight' | 'symptoms';
+  to?: string;
 }>();
+
+const NuxtLink = resolveComponent('NuxtLink');
 </script>
 
 <template>
-  <article class="health-metric">
+  <component
+    :is="to ? NuxtLink : 'article'"
+    :to="to"
+    class="health-metric"
+  >
     <div class="health-metric-top">
       <span>{{ label }}</span>
       <span
@@ -30,5 +37,5 @@ defineProps<{
     >
       {{ details }}
     </p>
-  </article>
+  </component>
 </template>

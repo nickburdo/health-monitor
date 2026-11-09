@@ -55,18 +55,18 @@ Static site on Cloudflare Pages, project `health-monitor-new`, connected to the 
 
 ### Pages and data flow
 
-- Every page wraps its content in `HealthShell` (header nav, theme toggle, quick entry modal, mobile footer nav).
+- Every page wraps its content in `HealthShell` (header page menu as a `UDropdownMenu` with the current page on the trigger, theme toggle, quick entry modal, mobile footer nav). Dashboard metric cards (`HealthMetricCard` with `to`) link to the entity pages.
 - Entity pages use `useMeasurementList(listFn)`, which owns the period filter (`usePeriodFilter`, presets `3m` / `6m` / `ytd` / `custom`, default `3m`) and re-runs the loader when the range changes. Tables receive `refresh` as `onUpdated` and call it after ignore/restore or note edits.
 - The dashboard (`pages/index.vue`) uses `usePeriodFilter` directly and loads all four repositories in parallel.
 - After a quick entry is saved, `HealthShell` calls `reloadNuxtApp` to reload the current page instead of refreshing individual lists.
 
 ### Charts
 
-`HealthLineChart.vue` is a hand-written SVG chart shared by glucose, blood pressure, weight and the dashboard. Per-entity series and formatters are in `app/utils/health-line-chart/`. Symptoms use a separate bar panel (`DashboardSymptomsPanel`). Symptom types are a static list in `app/constants/symptom-options.ts`.
+`HealthLineChart.vue` is a hand-written SVG chart shared by glucose, blood pressure, weight and the dashboard. It measures its SVG with a `ResizeObserver` and builds the `viewBox` in real pixels (never use `preserveAspectRatio="none"`: it stretches text and points); a left column sized from the longest y-axis label keeps grid and lines off the labels. Per-entity series and formatters are in `app/utils/health-line-chart/`. Symptoms use a separate bar panel (`DashboardSymptomsPanel`). Symptom types are a static list in `app/constants/symptom-options.ts`.
 
 ### Styling and themes
 
-Styling is custom `.health-*` classes in `app/assets/css/main.css`; Nuxt UI components are barely used (mostly `UApp`, `UIcon`, `useToast`). All colors are CSS custom properties on `:root`, overridden for the dark theme in `:root.dark`. `@nuxtjs/color-mode` (bundled with Nuxt UI) toggles the `dark` class on `<html>` via `ThemeToggle.vue`.
+Styling is custom `.health-*` classes in `app/assets/css/main.css`; Nuxt UI components are barely used (mostly `UApp`, `UIcon`, `useToast`, and `UDropdownMenu` for the header menu, styled through its `ui` prop with `.health-nav-menu*` classes). All colors are CSS custom properties on `:root`, overridden for the dark theme in `:root.dark`. `@nuxtjs/color-mode` (bundled with Nuxt UI) toggles the `dark` class on `<html>` via `ThemeToggle.vue`.
 
 ## Docs
 

@@ -11,13 +11,28 @@ const navigation = [
   { label: 'Symptoms', path: '/symptoms', icon: 'i-lucide-clipboard-list' },
 ];
 
-function isActive(path: string) {
-  if (path === '/') {
-    return route.path === '/';
-  }
+// Unknown routes (e.g. 404) show a neutral trigger instead of a wrong page
+const fallbackPage = { label: 'Menu', path: '', icon: 'i-lucide-menu' };
 
-  return route.path === path;
+function isActive(path: string) {
+  // Treat "/glucose/" the same as "/glucose"
+  const currentPath = route.path.length > 1 ? route.path.replace(/\/+$/, '') : route.path;
+
+  return currentPath === path;
 }
+
+const currentPage = computed(
+  () => navigation.find(item => isActive(item.path)) ?? fallbackPage,
+);
+
+const navItems = computed(() =>
+  navigation.map(item => ({
+    label: item.label,
+    icon: item.icon,
+    to: item.path,
+    class: isActive(item.path) ? 'health-nav-menu-item is-active' : 'health-nav-menu-item',
+  })),
+);
 </script>
 
 <template>
@@ -36,20 +51,28 @@ function isActive(path: string) {
           class="health-nav"
           aria-label="Main navigation"
         >
-          <NuxtLink
-            v-for="item in navigation"
-            :key="item.path"
-            :to="item.path"
-            :data-active="isActive(item.path)"
-            :aria-label="item.label"
-            :title="item.label"
+          <UDropdownMenu
+            :items="navItems"
+            :content="{ align: 'start', sideOffset: 8 }"
+            :ui="{ content: 'health-nav-menu', itemLeadingIcon: 'health-nav-menu-icon' }"
           >
-            <UIcon
-              :name="item.icon"
-              class="nav-icon nav-icon-large"
-            />
-            <span class="health-nav-label">{{ item.label }}</span>
-          </NuxtLink>
+            <button
+              type="button"
+              class="health-nav-trigger"
+            >
+              <UIcon
+                :name="currentPage.icon"
+                class="nav-icon"
+                aria-hidden="true"
+              />
+              <span>{{ currentPage.label }}</span>
+              <UIcon
+                name="i-lucide-chevron-down"
+                class="nav-icon health-nav-chevron"
+                aria-hidden="true"
+              />
+            </button>
+          </UDropdownMenu>
         </nav>
 
         <div class="health-actions">
@@ -102,10 +125,6 @@ function isActive(path: string) {
 </template>
 
 <style>
-.nav-icon-large {
-  width: 22px !important;
-  height: 22px !important;
-}
 .nav-icon {
   width: 18px;
   height: 18px;

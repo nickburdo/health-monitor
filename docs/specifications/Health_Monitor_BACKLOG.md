@@ -268,4 +268,4 @@
 - export/import (`export-import.ts`): входит ли таблица в формат, нужна ли новая `version` формата;
 - `public/data/demo.json`, `scripts/generate-demo-data.mjs` и `seed.ts`;
 - открытые вкладки со старой схемой (см. «Обновление схемы при открытых старых вкладках» в техническом долге);
-- обновить раздел «Data layer» в `CLAUDE.md`.
+- обновить раздел «Слой данных» в `docs/specifications/Health_Monitor_Structure.md`; правило в разделе «Architecture» `CLAUDE.md` — только если меняется поведение, которое агент может нарушить.

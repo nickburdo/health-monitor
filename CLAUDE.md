@@ -38,35 +38,18 @@ Vitest only picks up `tests/**/*.test.ts` (node environment, `~`/`@` aliased to 
 
 ## Architecture
 
-Nuxt 4 + Nuxt UI v4 + Tailwind 4, **client-only** (`ssr: false`). There is no server, API or auth: all data lives in the browser's IndexedDB.
+Client-only Nuxt 4 (`ssr: false`) with Nuxt UI v4 and Tailwind 4; no server, API or auth: all data lives in the browser's IndexedDB (Dexie). Full description (data layer, pages, charts, styling): `docs/specifications/Health_Monitor_Structure.md`.
 
-### Deployment
+Deployment: Cloudflare Pages project `health-monitor-new`; a pushed branch gets a preview at `https://<branch>.health-monitor-new.pages.dev` (slashes become dashes), merging into `main` updates https://health-monitor-new.pages.dev/. Details: `docs/deploy_plan.md`.
 
-Static site on Cloudflare Pages, project `health-monitor-new`, connected to the GitHub repository (no deploy workflow or `wrangler` config in the repo). Pushing a branch creates a preview at `https://<branch>.health-monitor-new.pages.dev` (slashes become dashes); merging into `main` updates https://health-monitor-new.pages.dev/. Details: `docs/deploy_plan.md`.
+Rules:
 
-### Data layer (`app/lib/db/`)
-
-- `schema.ts` defines the Dexie database `health-monitor` with four data tables: `glucoseMeasurement`, `bloodPressureMeasurement`, `weightMeasurement`, `symptomEntry`, plus a `meta` key-value table (`version(2)`). Record types live in `app/types/*.ts` and double as table row types.
-- Glucose is stored and shown in mmol/L exactly as entered; never convert it for display. `glucose-units.ts` holds the only conversion: values `> 30` are treated as legacy mg/dL and divided by 18 (rounded to 0.1). It runs in the `version(3)` upgrade (no index changes) and on import of `version: 1` JSON files. Quick entry rejects glucose above `MAX_GLUCOSE_MMOL_L` (30).
-- `repositories/*Repository.ts` provide per-entity access: `list*` (loads the table and filters by an ISO `dateFrom`/`dateTo` range in memory), `create*` (IDs via `crypto.randomUUID()`), and `set*Ignore` for measurements / note updates for symptoms.
-- Input parsing and the ignore rule live in `validation.ts`: ignoring a measurement requires a `reason`; restoring clears it.
-- `seed.ts` + `app/plugins/seed-demo-data.client.ts`: auto-seed from `public/data/demo.json` runs only on the very first open, guarded by the `demoSeeded` flag in `meta`; it only adds records and never clears. `seed.ts` also provides `replaceWithDemoData` and `clearHealthMonitorData` for the dashboard's Load demo data / Clear database buttons (both set the flag, so a cleared DB stays empty after reload). Demo dates are stored as `daysAgo` offsets and resolved at seed time.
-- `export-import.ts`: whole-DB JSON export/import (import is replace-all inside a transaction; export writes `version: 2`, import accepts `1` and `2`). `csv.ts`: per-entity CSV export from each entity page.
-
-### Pages and data flow
-
-- Every page wraps its content in `HealthShell` (header page menu as a `UDropdownMenu` with the current page on the trigger, theme toggle, quick entry modal, mobile footer nav). Dashboard metric cards (`HealthMetricCard` with `to`) link to the entity pages.
-- Entity pages use `useMeasurementList(listFn)`, which owns the period filter (`usePeriodFilter`, presets `3m` / `6m` / `ytd` / `custom`, default `3m`) and re-runs the loader when the range changes. Tables receive `refresh` as `onUpdated` and call it after ignore/restore or note edits.
-- The dashboard (`pages/index.vue`) uses `usePeriodFilter` directly and loads all four repositories in parallel.
-- After a quick entry is saved, `HealthShell` calls `reloadNuxtApp` to reload the current page instead of refreshing individual lists.
-
-### Charts
-
-`HealthLineChart.vue` is a hand-written SVG chart shared by glucose, blood pressure, weight and the dashboard. It measures its SVG with a `ResizeObserver` and builds the `viewBox` in real pixels (never use `preserveAspectRatio="none"`: it stretches text and points); a left column sized from the longest y-axis label keeps grid and lines off the labels. Per-entity series and formatters are in `app/utils/health-line-chart/`. Symptoms use a separate bar panel (`DashboardSymptomsPanel`). Symptom types are a static list in `app/constants/symptom-options.ts`.
-
-### Styling and themes
-
-Styling is custom `.health-*` classes in `app/assets/css/main.css`; Nuxt UI components are barely used (mostly `UApp`, `UIcon`, `useToast`, and `UDropdownMenu` for the header menu, styled through its `ui` prop with `.health-nav-menu*` classes). All colors are CSS custom properties on `:root`, overridden for the dark theme in `:root.dark`. `@nuxtjs/color-mode` (bundled with Nuxt UI) toggles the `dark` class on `<html>` via `ThemeToggle.vue`.
+- Glucose is stored and shown in mmol/L exactly as entered; never convert it for display. The only conversion (legacy mg/dL) is in `app/lib/db/glucose-units.ts`.
+- JSON export (`export-import.ts`): bump the format `version` when the format or units change, and keep import working for older versions.
+- Demo auto-seed only adds records and is guarded by the `demoSeeded` flag in `meta`; Load demo data / Clear database set the flag too, so a cleared DB stays empty.
+- After a quick entry is saved, `HealthShell` reloads the page with `reloadNuxtApp`; don't add per-list refresh for new entries.
+- `HealthLineChart` builds its `viewBox` in real pixels from a `ResizeObserver`; never use `preserveAspectRatio="none"` (it stretches text and points).
+- Style with `.health-*` classes in `main.css`; style Nuxt UI components with these classes (through their `ui` prop or `class`) and color tokens.
 
 ## Docs
 

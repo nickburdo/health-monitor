@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { GlucoseMeasurement } from '~/types/glucose';
-import { listGlucoseMeasurements } from '~/lib/db/repositories/glucoseRepository';
-import { downloadCsv, toCsv } from '~/lib/db/csv';
+import { listGlucoseMeasurements } from '~/lib/api/glucose';
+import { downloadCsv, toCsv } from '~/utils/csv';
 import {
   formatGlucoseAxisValue,
   formatGlucoseValue,
@@ -17,7 +17,7 @@ function exportCsv() {
     'measuredAt',
     'fastingValue',
     'afterMealValue',
-    'ignore',
+    'ignored',
     'note',
     'reason',
   ]);

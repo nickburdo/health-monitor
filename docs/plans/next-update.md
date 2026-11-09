@@ -20,3 +20,7 @@
 4. [x] Собственный диалог подтверждения в стиле приложения вместо `window.confirm`. План: [`docs/plans/confirm-dialog-plan.md`](../plans/confirm-dialog-plan.md).
 5. [x] Глюкоза в mmol/L без пересчётов: убрать деление на 18, перевести старые данные из mg/dL в mmol/L. План: [`docs/plans/glucose-mmol-units-plan.md`](../plans/glucose-mmol-units-plan.md).
 6. [x] Обновление внешнего вида: выпадающее меню в шапке, карточки дашборда — ссылки, шрифт единиц, графики без сплющивания. План: [`docs/plans/ui-layout-refresh-plan.md`](../plans/ui-layout-refresh-plan.md).
+
+## Step 3: ✅ Выполнено — внешний API и авторизация
+
+1. [x] Данные через Platform API вместо IndexedDB; вход (логин/пароль, Google), регистрация, гость видит демо-данные и ничего не меняет; удаление аккаунта; кнопки базы на дашборде убраны. План: [`docs/plans/platform-api-auth-plan.md`](../plans/platform-api-auth-plan.md).

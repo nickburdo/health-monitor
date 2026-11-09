@@ -6,7 +6,7 @@ type ChartRow = Record<
   number | string | boolean | null | undefined
 > & {
   measuredAt: string;
-  ignore: boolean;
+  ignored: boolean;
 };
 
 type ChartSeries = {
@@ -89,7 +89,7 @@ watch(svgElement, (element, _previous, onCleanup) => {
 
 const chartRows = computed(() =>
   props.items
-    .filter(item => !item.ignore)
+    .filter(item => !item.ignored)
     .slice()
     .sort(
       (left, right) =>

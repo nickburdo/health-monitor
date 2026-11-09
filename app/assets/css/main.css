@@ -864,6 +864,10 @@ a.health-metric:focus-visible {
   box-shadow: inset 0 1px 0 var(--input-inset);
 }
 
+.health-input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
 .health-input:focus,
 .health-textarea:focus {
   outline: 2px solid var(--focus-ring);
@@ -919,9 +923,95 @@ a.health-metric:focus-visible {
 }
 
 .health-auth-google-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   width: 100%;
   justify-content: center;
   margin-top: 16px;
+}
+
+.health-auth-switch {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.health-text-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--primary-strong);
+  font: inherit;
+  font-weight: 750;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.health-text-button:disabled {
+  cursor: progress;
+  opacity: 0.72;
+}
+
+.health-account-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 220px;
+}
+
+.health-account-trigger-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.health-guest-prompt-note {
+  margin: 18px 0 0;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.health-guest-prompt-buttons {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.health-account-menu-danger,
+.health-account-menu-danger[data-highlighted] {
+  color: var(--danger);
+}
+
+.health-account-menu-danger[data-highlighted] {
+  background: var(--danger-soft);
+}
+
+.health-delete-account-name {
+  color: var(--text);
+  font-weight: 850;
+}
+
+.health-account-menu-label {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+/* Icon-only account button on phones; the aria-label/text stays for screen readers */
+@media (max-width: 640px) {
+  .health-account-trigger {
+    padding: 11px;
+  }
+
+  .health-account-trigger-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }
 
 .health-auth-callback-card {
@@ -956,6 +1046,14 @@ a.health-metric:focus-visible {
 .health-button:disabled {
   cursor: progress;
   opacity: 0.72;
+}
+
+/* Disabled for guests (not busy): no progress cursor, no hover lift */
+.health-button[data-locked='true']:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  transform: none;
+  box-shadow: none;
 }
 
 .health-modal-summary {
@@ -1378,20 +1476,6 @@ a.health-metric:focus-visible {
 
 .health-dashboard-filter {
   margin-top: 26px;
-}
-
-.health-dashboard-data-actions {
-  display: flex;
-  grid-column: 1 / -1;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.health-dashboard-data-actions-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
 }
 
 .health-dashboard-summary {

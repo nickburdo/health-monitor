@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { formatWhen, formatWhenParts } from '~/utils/date-format';
-import { setBloodPressureMeasurementIgnore } from '~/lib/db/repositories/bloodPressureRepository';
+import { setBloodPressureMeasurementIgnore } from '~/lib/api/blood-pressure';
 
 type BloodPressureRow = {
   id: string;
@@ -8,7 +8,7 @@ type BloodPressureRow = {
   systolic: number | null;
   diastolic: number | null;
   pulse: number | null;
-  ignore: boolean;
+  ignored: boolean;
   note: string | null;
   reason: string | null;
 };
@@ -46,11 +46,11 @@ function bloodPressureSummary(item: BloodPressureRow) {
 }
 
 function displayNote(item: BloodPressureRow) {
-  if (item.ignore) {
-    return item.reason ?? '—';
+  if (item.ignored) {
+    return item.reason || '—';
   }
 
-  return item.note ?? '—';
+  return item.note || '—';
 }
 </script>
 
@@ -94,7 +94,7 @@ function displayNote(item: BloodPressureRow) {
             v-for="item in props.items"
             :key="item.id"
             class="health-table-row"
-            :data-ignored="item.ignore"
+            :data-ignored="item.ignored"
           >
             <td class="health-table-cell-date">
               <span class="health-table-date">

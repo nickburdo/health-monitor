@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { WeightMeasurement } from '~/types/weight';
-import { listWeightMeasurements } from '~/lib/db/repositories/weightRepository';
-import { downloadCsv, toCsv } from '~/lib/db/csv';
+import { listWeightMeasurements } from '~/lib/api/weight';
+import { downloadCsv, toCsv } from '~/utils/csv';
 import {
   formatWeightAxisValue,
   formatWeightValue,
@@ -16,7 +16,7 @@ function exportCsv() {
   const csvContent = toCsv(data.value, [
     'measuredAt',
     'value',
-    'ignore',
+    'ignored',
     'note',
     'reason',
   ]);

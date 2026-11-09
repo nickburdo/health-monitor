@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useAuth } from '~/composables/useAuth';
+import { apiErrorDescription } from '~/lib/api/client';
 import type { IgnoreInput } from '~/types';
 
 type SummaryLine = {
@@ -10,7 +12,7 @@ type SummaryLine = {
 const props = defineProps<{
   item: {
     id: string;
-    ignore: boolean;
+    ignored: boolean;
   };
   setIgnore: (id: string, input: IgnoreInput) => Promise<void>;
   entityLabel: string;
@@ -24,6 +26,8 @@ const emit = defineEmits<{
 }>();
 
 const toast = useToast();
+// Guests read demo data only: the API refuses every write.
+const { isGuest } = useAuth();
 const ignoreDialogOpen = ref(false);
 const ignoreReason = ref('');
 const savingId = ref<string | null>(null);
@@ -42,12 +46,9 @@ function closeIgnoreDialog() {
   errorText.value = '';
 }
 
+// Null when the API client already reacted (guest prompt or session reset).
 function errorMessage(error: unknown) {
-  if (error instanceof Error && error.message) {
-    return error.message;
-  }
-
-  return 'Could not change the status';
+  return apiErrorDescription(error, 'Could not change the status');
 }
 
 async function ignoreSelected() {
@@ -62,7 +63,7 @@ async function ignoreSelected() {
     savingId.value = props.item.id;
 
     await props.setIgnore(props.item.id, {
-      ignore: true,
+      ignored: true,
       reason: normalizedReason,
     });
 
@@ -74,7 +75,13 @@ async function ignoreSelected() {
     closeIgnoreDialog();
     emit('updated');
   } catch (error) {
-    errorText.value = errorMessage(error);
+    const message = errorMessage(error);
+
+    if (message === null) {
+      closeIgnoreDialog();
+    } else {
+      errorText.value = message;
+    }
   } finally {
     savingId.value = null;
   }
@@ -84,7 +91,7 @@ async function restoreSelected() {
   try {
     savingId.value = props.item.id;
 
-    await props.setIgnore(props.item.id, { ignore: false });
+    await props.setIgnore(props.item.id, { ignored: false, reason: '' });
 
     toast.add({
       title: 'Entry restored',
@@ -93,11 +100,15 @@ async function restoreSelected() {
 
     emit('updated');
   } catch (error) {
-    toast.add({
-      title: 'Restore failed',
-      description: errorMessage(error),
-      color: 'error',
-    });
+    const message = errorMessage(error);
+
+    if (message !== null) {
+      toast.add({
+        title: 'Restore failed',
+        description: message,
+        color: 'error',
+      });
+    }
   } finally {
     savingId.value = null;
   }
@@ -134,11 +145,12 @@ onBeforeUnmount(() => {
 
 <template>
   <button
-    v-if="!item.ignore"
+    v-if="!item.ignored"
     type="button"
     class="health-button health-button-secondary health-button-small health-table-icon-button"
-    :disabled="savingId === item.id"
-    title="Ignore"
+    :disabled="isGuest || savingId === item.id"
+    :data-locked="isGuest || undefined"
+    :title="isGuest ? 'Sign in to change entries' : 'Ignore'"
     aria-label="Ignore"
     @click="openIgnoreDialog"
   >
@@ -149,8 +161,9 @@ onBeforeUnmount(() => {
     v-else
     type="button"
     class="health-button health-button-small health-table-icon-button"
-    :disabled="savingId === item.id"
-    title="Restore"
+    :disabled="isGuest || savingId === item.id"
+    :data-locked="isGuest || undefined"
+    :title="isGuest ? 'Sign in to change entries' : 'Restore'"
     aria-label="Restore"
     @click="restoreSelected"
   >

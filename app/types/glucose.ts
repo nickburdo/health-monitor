@@ -3,10 +3,11 @@ export type GlucoseMeasurement = {
   measuredAt: string;
   fastingValue: number | null;
   afterMealValue: number | null;
-  ignore: boolean;
   note: string | null;
-  reason: string | null;
+  ignored: boolean;
+  reason: string;
   createdAt: string;
+  updatedAt: string;
 };
 
 export type CreateGlucoseMeasurementInput = {

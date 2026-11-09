@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { BloodPressureMeasurement } from '~/types/blood-pressure';
-import { listBloodPressureMeasurements } from '~/lib/db/repositories/bloodPressureRepository';
-import { downloadCsv, toCsv } from '~/lib/db/csv';
+import { listBloodPressureMeasurements } from '~/lib/api/blood-pressure';
+import { downloadCsv, toCsv } from '~/utils/csv';
 import {
   formatBloodPressureAxisValue,
   formatBloodPressureValue,
@@ -19,7 +19,7 @@ function exportCsv() {
     'systolic',
     'diastolic',
     'pulse',
-    'ignore',
+    'ignored',
     'note',
     'reason',
   ]);

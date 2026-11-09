@@ -1,6 +1,6 @@
 # Health Monitor
 
-Personal health tracking app built with Nuxt 4 and Nuxt UI. The app is local-first: all data (glucose, blood pressure, weight, symptoms) is stored client-side in IndexedDB via Dexie.js. There is no backend, no database server, and no authentication — everything lives in the browser.
+Personal health tracking app built with Nuxt 4 and Nuxt UI. Data (glucose, blood pressure, weight, symptoms) is stored in the external Platform API (`https://platform-api.nick-burdo.workers.dev`, project `platform-api`). Guests see read-only demo data; after signing in (username and password, or Google) a user sees and edits only their own data.
 
 The interface has a light and a dark theme, switched from the header. The first visit follows the OS theme; after that the choice is saved in the browser.
 
@@ -20,20 +20,17 @@ Start the app on `http://localhost:3030`:
 npm run dev
 ```
 
-On first run, if the local database is empty, the app seeds itself from `public/data/demo.json`.
-
-## Demo Data
-
-`public/data/demo.json` is generated from `scripts/generate-demo-data.mjs`. To regenerate it:
+The app talks to the production API by default. To use a local API instance, set `NUXT_PUBLIC_API_BASE`:
 
 ```bash
-npm run demo:generate
+NUXT_PUBLIC_API_BASE=http://localhost:8787 npm run dev
 ```
 
-## Data Export / Import
+Google Sign-In works only on origins allowed by the API: localhost and https://health-monitor-new.pages.dev (not on branch previews).
 
-- Export or import the whole database as JSON from the dashboard. Import replaces all local data.
-- Export any single entity as CSV from its own page.
+## Data Export
+
+Export any single entity as CSV from its own page.
 
 ## Deployment
 

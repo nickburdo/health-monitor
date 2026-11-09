@@ -3,12 +3,9 @@ import DashboardLatestEntries from '~/components/DashboardLatestEntries.vue';
 import DashboardMetricsGrid from '~/components/DashboardMetricsGrid.vue';
 import DashboardSummaryPanel from '~/components/DashboardSummaryPanel.vue';
 import DashboardSymptomsPanel from '~/components/DashboardSymptomsPanel.vue';
-import DashboardDataActions from '~/components/DashboardDataActions.vue';
 import type { DashboardData } from '~/types/dashboard';
-import { listGlucoseMeasurements } from '~/lib/db/repositories/glucoseRepository';
-import { listBloodPressureMeasurements } from '~/lib/db/repositories/bloodPressureRepository';
-import { listWeightMeasurements } from '~/lib/db/repositories/weightRepository';
-import { listSymptomEntries } from '~/lib/db/repositories/symptomRepository';
+import { apiErrorDescription } from '~/lib/api/client';
+import { getDashboardData } from '~/lib/api/dashboard';
 import {
   formatBloodPressureAxisValue,
   formatBloodPressureValue,
@@ -35,16 +32,19 @@ const emptyDashboardData: DashboardData = {
 };
 
 const data = ref<DashboardData>(emptyDashboardData);
+const toast = useToast();
 
 async function refresh() {
-  const [glucose, bloodPressure, weight, symptoms] = await Promise.all([
-    listGlucoseMeasurements(query.value),
-    listBloodPressureMeasurements(query.value),
-    listWeightMeasurements(query.value),
-    listSymptomEntries(query.value),
-  ]);
+  try {
+    data.value = await getDashboardData(query.value);
+  } catch (error) {
+    data.value = emptyDashboardData;
 
-  data.value = { bloodPressure, glucose, symptoms, weight };
+    const message = apiErrorDescription(error, 'Request failed');
+    if (message !== null) {
+      toast.add({ title: 'Could not load data', description: message, color: 'error' });
+    }
+  }
 }
 
 watch(query, refresh);
@@ -123,7 +123,6 @@ useSeoMeta({
       </div>
 
       <DashboardSummaryPanel :data="dashboardData" />
-      <DashboardDataActions @changed="refresh" />
     </section>
 
     <DashboardMetricsGrid :data="dashboardData" />

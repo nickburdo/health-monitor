@@ -62,19 +62,19 @@ const items = computed<LatestEntry[]>(() => {
     ...props.data.glucose.map(record => ({
       title: 'Glucose',
       subtitle: `${formatWhen(record.measuredAt)} · ${formatGlucoseEntryValue(record)}`,
-      ignored: record.ignore,
+      ignored: record.ignored,
       timestamp: new Date(record.measuredAt).getTime(),
     })),
     ...props.data.bloodPressure.map(record => ({
       title: 'Blood pressure',
       subtitle: `${formatWhen(record.measuredAt)} · ${formatBloodPressureEntryValue(record)}`,
-      ignored: record.ignore,
+      ignored: record.ignored,
       timestamp: new Date(record.measuredAt).getTime(),
     })),
     ...props.data.weight.map(record => ({
       title: 'Weight',
       subtitle: `${formatWhen(record.measuredAt)} · ${record.value !== null ? formatWeightValue(record.value) : '—'}`,
-      ignored: record.ignore,
+      ignored: record.ignored,
       timestamp: new Date(record.measuredAt).getTime(),
     })),
     ...props.data.symptoms.map(record => ({

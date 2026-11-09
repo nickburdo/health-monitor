@@ -757,11 +757,33 @@ a.health-metric:focus-visible {
   box-shadow: var(--shadow-modal);
 }
 
+/* Row 1: the badge on the left and the close button on the right, centred on one line;
+   the title and lead below span the full width. The text wrapper is flattened with
+   display: contents so its children become grid items. */
 .health-modal-header {
-  display: flex;
-  align-items: start;
-  justify-content: space-between;
-  gap: 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 18px;
+  align-items: center;
+}
+
+.health-modal-header > div {
+  display: contents;
+}
+
+.health-modal-header > div > * {
+  grid-column: 1 / -1;
+}
+
+.health-modal-header > div > .health-eyebrow {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+}
+
+.health-modal-header > .health-modal-close {
+  grid-column: 2;
+  grid-row: 1;
 }
 
 .health-modal-title {
@@ -779,6 +801,8 @@ a.health-metric:focus-visible {
 }
 
 .health-modal-close {
+  /* Keep the round shape: a long header text must not shrink the button */
+  flex: 0 0 auto;
   width: 42px;
   height: 42px;
   background: var(--control-bg);
@@ -1040,7 +1064,17 @@ a.health-metric:focus-visible {
 }
 
 .health-modal-compact {
-  width: min(480px, 100%);
+  width: min(590px, 100%);
+}
+
+/* Compact dialogs: centred title and lead (the badge stays on the left) */
+.health-modal-compact .health-modal-title,
+.health-modal-compact .health-modal-lead {
+  text-align: center;
+}
+
+.health-modal-compact .health-modal-lead {
+  margin-inline: auto;
 }
 
 .health-button:disabled {
@@ -1758,10 +1792,20 @@ a.health-metric:focus-visible {
     border-radius: 24px;
   }
 
-  .health-modal-header,
+  /* The header keeps its badge/close row, so the close button stays top-right */
   .health-modal-actions {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  /* Phones: every dialog centres its title and lead, like the compact dialogs */
+  .health-modal-title,
+  .health-modal-lead {
+    text-align: center;
+  }
+
+  .health-modal-lead {
+    margin-inline: auto;
   }
 
   .health-modal-switcher,
